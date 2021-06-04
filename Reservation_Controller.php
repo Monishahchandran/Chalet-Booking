@@ -54,7 +54,8 @@ if($last2!=""){
 
   
     $rent=$request->rent;
-   // echo $rent;die();
+    $commission_chalet=0;
+    
 $status="";
    if($data['reward_discount']!=0){
     $reward_dis=DB::table('tb_rewards')->where('userid', $request->userid)->first();
@@ -96,10 +97,12 @@ else{
       if($data['total_paid']==$rent){
         if($data['total_paid']>=$every_spend){
           $this->reward($request->userid);
-         
+
+   
+       $commission_chalet=$this->commission_chalet($request->chaletid,$rent);  
 $status="Paid";
         }
-       
+       $commission_chalet=$this->commission_chalet($request->chaletid,$rent);
           $status="Paid";
 
       }
@@ -111,6 +114,7 @@ $status="Paid";
          $remaining=$original-$rent;
           if($remaining==0)
        {
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent); 
         $status='Paid';
        }
        else{
@@ -121,6 +125,7 @@ $status="Paid";
          $remaining=$rent-$original;
           if($remaining==0)
        {
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent); 
         $status='Paid';
        }
        else{
@@ -139,8 +144,13 @@ $status="Paid";
        if($data['total_paid']==$rent){
         if($data['total_paid']>=$every_spend){
           $this->reward($request->userid);
+$commission_chalet=$this->commission_chalet($request->chaletid,$rent);
+
+
+
 $status="Paid";
         }
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent);
         $status="Paid";
       }
       else if($data['total_paid']<=$rent&&$data['total_paid']!=$rent&&$data['total_paid']!=""){
@@ -150,6 +160,7 @@ $status="Paid";
          $remaining=$original-$rent;
           if($remaining==0)
        {
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent); 
         $status='Paid';
        }
        else{
@@ -160,6 +171,7 @@ $status="Paid";
          $remaining=$rent-$original;
           if($remaining==0)
        {
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent); 
         $status='Paid';
        }
        else{
@@ -178,9 +190,11 @@ $status="Paid";
        if($data['total_paid']==$rent){
         if($data['total_paid']>=$every_spend){
           $this->reward($request->userid);
+          $commission_chalet=$this->commission_chalet($request->chaletid,$rent);
           $status="Paid";
 
         }
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent);
         $status="Paid";
       }
       else if($data['total_paid']<=$rent&&$data['total_paid']!=$rent&&$data['total_paid']!=null){
@@ -192,6 +206,7 @@ $status="Paid";
          $remaining=$original-$rent;
           if($remaining==0)
        {
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent); 
         $status='Paid';
        }
        else{
@@ -202,10 +217,13 @@ $status="Paid";
          $remaining=$rent-$original;
           if($remaining==0)
        {
+        $commission_chalet=$this->commission_chalet($request->chaletid,$rent); 
         $status='Paid';
+
        }
        else{
           $status="Remaining";
+          
        }
        }
 
@@ -214,13 +232,14 @@ $status="Paid";
       }
       else if($data['total_paid']==null){
         $status="Unpaid";
+        
       }
 
     }
 
 $tb_chalet = DB::table('tb_chalet')->where('id', $request->chaletid)->first();
         $id = DB::table('tb_reservation')->insertGetId(
-            ['userid'=>$data['userid'],'chaletid'=>$data['chaletid'],'selected_package' => $data['selected_package'], 'check_in' => $data['check_in'],'check_out' => $data['check_out'],'reservation_id'=>$reservation_id,'total_paid'=>$data['total_paid'],'reward_discount'=>$data['reward_discount'],'offer_discount'=>$data['offer_discount'],'deposit'=>$data['deposit'],'status'=>$status,"checkin_time"=>$check_in,"checkout_time"=>$check_out,"ownerid"=>$ownerid,"package_price"=>$rent,"payment_gateway"=>$data['payment_gateway'],"payment_id"=>$data['payment_id'],"authorization_id"=>$data['authorization_id'],"track_id"=>$data['track_id'],"transaction_id"=>$data['transaction_id'],"invoice_reference"=>$data['invoice_reference'],"reference_id"=>$data['reference_id'],"owner_status"=>$owner_status]
+            ['userid'=>$data['userid'],'chaletid'=>$data['chaletid'],'selected_package' => $data['selected_package'], 'check_in' => $data['check_in'],'check_out' => $data['check_out'],'reservation_id'=>$reservation_id,'total_paid'=>$data['total_paid'],'reward_discount'=>$data['reward_discount'],'offer_discount'=>$data['offer_discount'],'deposit'=>$data['deposit'],'status'=>$status,"checkin_time"=>$check_in,"checkout_time"=>$check_out,"ownerid"=>$ownerid,"package_price"=>$rent,"payment_gateway"=>$data['payment_gateway'],"payment_id"=>$data['payment_id'],"authorization_id"=>$data['authorization_id'],"track_id"=>$data['track_id'],"transaction_id"=>$data['transaction_id'],"invoice_reference"=>$data['invoice_reference'],"reference_id"=>$data['reference_id'],"owner_status"=>$owner_status,"owner_commission"=>$commission_chalet]
     );
 
 
@@ -283,6 +302,7 @@ $location= $tb_chalet->location;
                         "reservation_id"=>($booking->reservation_id==null) ? 0 : $booking->reservation_id,
                         "deposit"=>($booking->deposit==null) ? 0 : $booking->deposit,
                        'rent'=>($rent==null) ? 0 : $rent,
+                       
                        "status"=>$status,
                        "remaining"=>$remaining,
                      "ownerid"=>$booking->ownerid,
@@ -307,6 +327,15 @@ $location= $tb_chalet->location;
          return json_encode($result);
 
             
+}
+
+public function commission_chalet($chaletid,$rent){
+   $chalet_commission=DB::table('tb_chalet')->where('id', $chaletid)->first();
+   $commission=$chalet_commission->commision;
+   $comm=$commission/100.00;
+   //echo $comm;die();
+   $commission_chalet1=$rent*$comm;
+   return $commission_chalet1;
 }
 
 
@@ -590,11 +619,14 @@ public function remainingpaid(Request $request){
     $data['invoice_reference']=$request->invoice_reference;
     $data['reference_id']=$request->reference_id;
   $booking1 = DB::table('tb_reservation')->where('id', $request->reservation_id)->first();
+  $package=$booking1->package_price;
   $total=$booking1->total_paid;
+  $chaletid=$booking1->chaletid;
+  $commission_chalet=$this->commission_chalet($chaletid,$package); 
   $amount=$total+$request->total_paid;
   $affected = DB::table('tb_reservation')
               ->where('id', $request->reservation_id)
-              ->update(['total_paid' => $amount,'status'=>'Paid','payment_gateway'=>$data['payment_gateway'],'payment_id'=>$data['payment_id'],'authorization_id'=>$data['authorization_id'],'track_id'=>$data['track_id'],'transaction_id'=>$data['transaction_id'],'invoice_reference'=>$data['invoice_reference'],'reference_id'=>$data['reference_id']]);
+              ->update(['total_paid' => $amount,'status'=>'Paid','payment_gateway'=>$data['payment_gateway'],'payment_id'=>$data['payment_id'],'authorization_id'=>$data['authorization_id'],'track_id'=>$data['track_id'],'transaction_id'=>$data['transaction_id'],'invoice_reference'=>$data['invoice_reference'],'reference_id'=>$data['reference_id'],'owner_commission'=>$commission_chalet]);
                $booking = DB::table('tb_reservation')->where('id', $request->reservation_id)->first();
                $reservation_data=array("userid"=>$booking->userid,
                         "chaletid"=>$booking->chaletid,
@@ -610,6 +642,7 @@ public function remainingpaid(Request $request){
                         "reservation_id"=>($booking->reservation_id==null) ? 0 : $booking->reservation_id,
                         "deposit"=>($booking->deposit==null) ? 0 : $booking->deposit,
                        'rent'=>($booking->package_price==null) ? 0 : $booking->package_price,
+                       
                        "status"=>($booking->status==null) ? 0 : $booking->status,
                        
                      "ownerid"=>$booking->ownerid,
