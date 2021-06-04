@@ -97,6 +97,20 @@ class ChaletList_Controller extends Controller
     $data['package'] = $request->package;
 
     $chaid = "";
+   $season = DB::table('tb_seasondates')->where('season_start','<=', $request->from_date)->where('season_end','>=', $request->to_date)->count();
+if($season>0){
+  if ($data['package'] == 'weekdays') {
+      $rent = 'weekdays_seasonprice';
+    } else if ($data['package'] == 'weekend') {
+      $rent = 'weekend_seasonprice';
+    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
+      $rent = 'week_seasonprice';
+    }
+
+}
+
+else{
+
     if ($data['package'] == 'weekdays') {
       $rent = 'weekday_rent';
     } else if ($data['package'] == 'weekend') {
@@ -104,6 +118,7 @@ class ChaletList_Controller extends Controller
     } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
       $rent = 'week_rent';
     }
+  }
 
 
     $chalet2 = DB::table('tb_reservation')->where('check_in', $request->from_date)->where('check_out', $request->to_date)->get();

@@ -484,6 +484,12 @@ else{
          $lat=$loc['latitude'];
        $long=$loc['longitude'];
        $chaletdetails=array();
+        $uploadfile = DB::table('tb_chaletupload')->where('chaletid', $chaletlist->id)->where('file_type', 'image')->orderBy('id', 'ASC')->first();
+//print_r($uploadfile);
+//foreach ($uploadfile as $value) {
+  $cover = $uploadfile->file_name;
+
+       $cover_photo = 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
 
 $chaletdetails[]=array(
           'chalet_id' => $chaletlist->id,
@@ -491,6 +497,7 @@ $chaletdetails[]=array(
        "location"=>($chaletlist->location==null) ? "" :$chaletlist->location,
           "latitude"=>($lat==null) ? 0 : (double)$lat,
             "longitude"=>($long==null) ? 0 : (double)$long,
+             'cover_photo'=>$cover_photo,
         'weekday_rent'=>($chaletlist->weekday_rent==null) ? "" :  $chaletlist->weekday_rent,
         'weekend_rent'=>($chaletlist->weekend_rent==null) ? "" : $chaletlist->weekend_rent,
         'week_rent'=>($chaletlist->week_rent== null) ? "" : $chaletlist->week_rent,
