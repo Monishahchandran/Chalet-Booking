@@ -1038,7 +1038,7 @@
                                                             </constraints>
                                                         </imageView>
                                                         <textField opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vva-hk-HS2" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                            <rect key="frame" x="74" y="6.5" width="112" height="34"/>
+                                                            <rect key="frame" x="74" y="4" width="112" height="39"/>
                                                             <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                             <color key="textColor" red="0.47058823529999999" green="0.47058823529999999" blue="0.47058823529999999" alpha="1" colorSpace="calibratedRGB"/>
                                                             <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="14"/>
@@ -1067,7 +1067,7 @@
                                                             </connections>
                                                         </textField>
                                                         <textField opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4k5-Wc-0Bd" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                            <rect key="frame" x="200" y="6.5" width="164" height="34"/>
+                                                            <rect key="frame" x="200" y="3.5" width="164" height="40"/>
                                                             <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                             <color key="textColor" red="0.47058823529999999" green="0.47058823529999999" blue="0.47058823529999999" alpha="1" colorSpace="calibratedRGB"/>
                                                             <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -1424,7 +1424,7 @@
                                                         </constraints>
                                                     </imageView>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FaC-NB-cs5" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                        <rect key="frame" x="52" y="9.5" width="302" height="34"/>
+                                                        <rect key="frame" x="52" y="6.5" width="302" height="40"/>
                                                         <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                         <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -1480,7 +1480,7 @@
                                                         </constraints>
                                                     </imageView>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dcv-RM-cgy" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                        <rect key="frame" x="52" y="10.5" width="302" height="34"/>
+                                                        <rect key="frame" x="52" y="7.5" width="302" height="39.5"/>
                                                         <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                         <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -1647,7 +1647,7 @@
                                                                             </constraints>
                                                                         </imageView>
                                                                         <textField opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="XeB-Jf-kUa" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                            <rect key="frame" x="45.5" y="9" width="142" height="34"/>
+                                                                            <rect key="frame" x="45.5" y="6" width="142" height="40"/>
                                                                             <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                                             <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -1676,7 +1676,7 @@
                                                                             </connections>
                                                                         </textField>
                                                                         <textField opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6kG-0R-EYt" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                            <rect key="frame" x="202.5" y="9" width="151.5" height="34"/>
+                                                                            <rect key="frame" x="202.5" y="6" width="151.5" height="40"/>
                                                                             <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                                             <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -1732,7 +1732,7 @@
                                                                     <rect key="frame" x="0.0" y="58" width="374" height="57.5"/>
                                                                     <subviews>
                                                                         <textField opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="KZ4-NM-Bgh" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                            <rect key="frame" x="46" y="8.5" width="308" height="34"/>
+                                                                            <rect key="frame" x="46" y="5.5" width="308" height="40"/>
                                                                             <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -2050,7 +2050,7 @@
                                                                     </constraints>
                                                                 </imageView>
                                                                 <textField opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LfJ-om-W22" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                    <rect key="frame" x="47" y="10" width="307" height="34"/>
+                                                                    <rect key="frame" x="47" y="7" width="307" height="40"/>
                                                                     <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                                     <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -2109,7 +2109,7 @@
                                                                     </constraints>
                                                                 </imageView>
                                                                 <textField opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4l9-oB-Km3" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                    <rect key="frame" x="47" y="9.5" width="307" height="34"/>
+                                                                    <rect key="frame" x="47" y="6.5" width="307" height="40"/>
                                                                     <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                                     <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -2168,7 +2168,7 @@
                                                                     </constraints>
                                                                 </imageView>
                                                                 <textField opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xoJ-5k-JyZ" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                    <rect key="frame" x="47" y="10" width="307" height="34"/>
+                                                                    <rect key="frame" x="47" y="7" width="307" height="40"/>
                                                                     <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <color key="textColor" red="0.31764705879999999" green="0.36078431370000003" blue="0.43529411759999997" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                                     <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -2230,7 +2230,7 @@
                                                                     </constraints>
                                                                 </imageView>
                                                                 <textField opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jlY-yZ-Uid" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                    <rect key="frame" x="47.5" y="15" width="105" height="34"/>
+                                                                    <rect key="frame" x="47.5" y="12" width="105" height="40"/>
                                                                     <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <color key="textColor" red="0.47058823529999999" green="0.47058823529999999" blue="0.47058823529999999" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -2259,7 +2259,7 @@
                                                                     </connections>
                                                                 </textField>
                                                                 <textField opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0BR-ga-fm8" customClass="SkyFloatingLabelTextField" customModule="SkyFloatingLabelTextField">
-                                                                    <rect key="frame" x="172.5" y="15" width="181.5" height="34"/>
+                                                                    <rect key="frame" x="172.5" y="12" width="181.5" height="40"/>
                                                                     <color key="tintColor" red="1" green="0.41176470590000003" blue="0.41176470590000003" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <color key="textColor" red="0.47058823529999999" green="0.47058823529999999" blue="0.47058823529999999" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="15"/>
@@ -3144,6 +3144,62 @@
             <point key="canvasLocation" x="5900" y="-1414"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="0BR-ga-fm8">
+            <size key="intrinsicContentSize" width="181.5" height="39.988671874999994"/>
+        </designable>
+        <designable name="4k5-Wc-0Bd">
+            <size key="intrinsicContentSize" width="164" height="39.988671874999994"/>
+        </designable>
+        <designable name="4l9-oB-Km3">
+            <size key="intrinsicContentSize" width="307" height="39.988671874999994"/>
+        </designable>
+        <designable name="6kG-0R-EYt">
+            <size key="intrinsicContentSize" width="151.5" height="39.988671874999994"/>
+        </designable>
+        <designable name="7Ow-Cv-ddp">
+            <size key="intrinsicContentSize" width="340" height="39.988671874999994"/>
+        </designable>
+        <designable name="Akw-Wi-irV">
+            <size key="intrinsicContentSize" width="166" height="39.988671874999994"/>
+        </designable>
+        <designable name="FaC-NB-cs5">
+            <size key="intrinsicContentSize" width="302" height="39.988671874999994"/>
+        </designable>
+        <designable name="KZ4-NM-Bgh">
+            <size key="intrinsicContentSize" width="308" height="39.988671874999994"/>
+        </designable>
+        <designable name="LIf-mH-FGs">
+            <size key="intrinsicContentSize" width="331" height="39.988671874999994"/>
+        </designable>
+        <designable name="LfJ-om-W22">
+            <size key="intrinsicContentSize" width="307" height="39.988671874999994"/>
+        </designable>
+        <designable name="OEb-Aa-Upw">
+            <size key="intrinsicContentSize" width="166" height="39.988671874999994"/>
+        </designable>
+        <designable name="VNk-Sp-aBz">
+            <size key="intrinsicContentSize" width="331" height="39.988671874999994"/>
+        </designable>
+        <designable name="XeB-Jf-kUa">
+            <size key="intrinsicContentSize" width="142" height="39.988671874999994"/>
+        </designable>
+        <designable name="dcv-RM-cgy">
+            <size key="intrinsicContentSize" width="302" height="39.988671874999994"/>
+        </designable>
+        <designable name="jlY-yZ-Uid">
+            <size key="intrinsicContentSize" width="105" height="39.988671874999994"/>
+        </designable>
+        <designable name="vGI-Bf-wnF">
+            <size key="intrinsicContentSize" width="331" height="39.988671874999994"/>
+        </designable>
+        <designable name="vva-hk-HS2">
+            <size key="intrinsicContentSize" width="112" height="38.823671875000002"/>
+        </designable>
+        <designable name="xoJ-5k-JyZ">
+            <size key="intrinsicContentSize" width="307" height="39.988671874999994"/>
+        </designable>
+    </designables>
     <resources>
         <image name="ChangePassword1" width="92" height="92"/>
         <image name="Deselect" width="30" height="30"/>

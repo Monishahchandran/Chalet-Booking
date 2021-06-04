@@ -13,7 +13,6 @@ struct IntroScreenStruct {
 }
 class IntroScreenVC: UIViewController {
     
-    
     @IBOutlet weak var collectionView: UICollectionView!
     var currentPage:Int?
     var scrView = UIScrollView()

@@ -9,8 +9,6 @@ import UIKit
 
 class CustomTabbarController: UITabBarController {
 
-    
-    
     let image = UIImage(named: "icn_profile")
     let selectedImage = UIImage(named: "icn_SelectedProfile")
     let selectedImageLogin = UIImage(named: "icn_profile")
