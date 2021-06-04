@@ -1,0 +1,87 @@
+/*
+ Localizable.strings
+ AbyChaletApp
+ 
+ Created by Visakh M P on 02/06/2021.
+ Copyright © 2021 sics. All rights reserved.
+ */
+
+
+
+/*IntroScene*/
+"Open Aby Chalet App" = "افتح تطبيق Abychalet";
+"Select The Date And Find Available chalets" = "حدد التاريخ وابحث عن الشاليهات المتاحة";
+"Payment" = "الدفع الآن";
+"Enjoy" = "Enjoy";
+/*Login & SignUp*/
+"Login" = "تسجيل الدخول";
+"SignUp" = "تسجيل";
+"Forgot password?" = "هل نسيت كلمة السر ؟";
+"Email Address" = "البريد الإلكتروني";
+"Password" = "كلمه السر";
+"LOGIN" = "تسجيل الدخول";
+"First Name" = "الاسم الأول";
+"Last Name" = "الاسم الاخير";
+"Date of Birth" = "تاريخ الميلاد";
+"Day" = "";
+"Month" = "";
+"Year" = "";
+"Female" = "أنثى";
+"Male" = "ذكر";
+"Confirm Password" = "";
+"Country Code" = "مفتاح الدولة";
+"Mobile Number" = "رقم الهاتف";
+"SIGN UP" = "تسجيل";
+/*Forgot Password*/
+"Forgot password" = "هل نسيت كلمة السر ";
+"Reset your password" = "";
+"Enter the email address you used create your account and we will email you a link to reset your password" = "أدخل عنوان البريد الإلكتروني الذي استخدمته لإنشاء حسابك وسنرسل لك رابطًا عبر البريد الإلكتروني لإعادة تعيين كلمة المرور الخاصة بك";
+"Reset" = "";
+"Enter a new password below" = "أدخل كلمة مرور جديدة";
+"New Password" = "كلمة السر الجديدة";
+"Re-enter new password" = "أعد كلمة السر الجديدة";
+"New Password" = "كلمة السر الجديدة";
+"Completed" = "";
+"Verification" = "";
+"OTP Sent" = "";
+"Confirmation Code" = "";
+"Enter Confirmation Code" = "أدخل رمز التأكيد";
+"Enter the 4-digit code we sent to" = "أدخل الرمز التأكيد المكون من 4 أرقام الذي أرسلناه إلى";
+"Request a new one" = "اطلب رمز جديد";
+"Timeout in" = "";
+"Invalid Code. Please check your code and try again" = "الرمز غير صحيح. يرجى التحقق من الرمز الخاص بك وحاول مرة أخرى";
+/*Alert Title and Messages*/
+"Message" = "رسالة";
+"Please Enter Email Address and Password" = "";
+"Please Enter Email Address" = "";
+"Please Enter Password" = "";
+"Please Enter Valid Email Address" = "";
+"Processing..." = "";
+"Successfully Logged In" = "تم تسجيل الدخول بنجاح";
+"OK" = "";
+"Please Enter First Name" = "";
+"Please Enter Last Name" = "";
+"Please Enter Day of birth" = "";
+"Please Enter Month of birth" = "";
+"Please Enter Year Of birth" = "";
+"Please Enter Date Of birth" = "";
+"Please Select Gender" = "";
+"Please Enter Email Address" = "";
+"Please Enter Valid Email Address" = "";
+"Please Enter Password" = "";
+"Please Enter Minimum 5 Characters In Password" = "";
+"Please Enter Confirm Password" = "";
+"Please Enter Minimum 5 Characters In Re-enter Password" = "";
+"Passwords do not match" = "";
+"Please Enter Country Code" = "";
+"Please Enter Mobile Number" = "";
+"Please Enter Minimum 6 and Maximum 14 Characters In Mobile Number" = "";
+"You are not registered with us" = "";
+"Reset successfully" = "تم إعادة التعيين بنجاح";
+"Your password has been changed" = "تم تغيير كلمة السر الخاصة بك";
+"Verified successfully" = "";
+"Your Account has been Verified" = "";
+"Are you sure you want to logout?" = "هل أنت متأكد أنك تريد تسجيل الخروج";
+"Verifcation Failed" = "";
+"Invalid OTP" = "";
+"Please Request a new OTP" = "";

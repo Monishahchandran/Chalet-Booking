@@ -1,0 +1,6 @@
+framework module Pods_AbyChaletApp {
+  umbrella header "Pods-AbyChaletApp-umbrella.h"
+
+  export *
+  module * { export * }
+}
