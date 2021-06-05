@@ -55,7 +55,7 @@
                             <!-- <i class="fa fa-asterisk" aria-hidden="true" id="farequired" style="color: red;font-size: 10px;"></i> -->
     </label>
                             <div class="col-md-5 col-sm-9 col-xs-12">
-                                <input required="required" name="deposit_available" id="deposit_available" value="{{$admindata->deposit_available}}" type="text" class="form-control" placeholder="48"> Hours before Check-in
+                                <input required="required" name="deposit_available" id="deposit_available"  value="{{$admindata->deposit_available}}" type="text" class="form-control" placeholder="48"> Hours before Check-in
                             </div>
                         </div>
                         <div class="item form-group">
@@ -63,8 +63,9 @@
                             <!-- <i class="fa fa-asterisk" aria-hidden="true" id="farequired" style="color: red;font-size: 10px;"></i> -->
                             </label>
                             <div class="col-md-5 col-sm-9 col-xs-12">
-                                <input required="required" type="text" name="remaining_amt_pay" id="reamining_amt_pay" value="{{$admindata->remaining_amt_pay}}" class="form-control" placeholder="72"> Hours before the Check-in date
-                            </div>
+                                <input required="required" type="text" name="remaining_amt_pay" id="reamining_amt_pay" onchange="deposit_validation();" value="{{$admindata->remaining_amt_pay}}" class="form-control" placeholder="72"> Hours before the Check-in date
+                            </div>  
+                            <span id='deposit_validation'></span>
                         </div>
                         <div class="form-group">
                             <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Offers Expires before </label>
@@ -427,6 +428,15 @@ http://www.domain.com"></textarea>
 </div>
 <!-- /page content -->
 <script>
+ function deposit_validation() {
+    $deposit_available=$('#deposit_available').val();
+    $deposit=$('#reamining_amt_pay').val();
+    // alert($deposit);
+    if($deposit>$deposit_available){
+        $('#deposit_validation').html('Hours remaining to pay Must be Lower than Deposit available hour').css('color', 'red'); 
+    }
+ }
+
     $('#password, #cpassword').on('keyup', function() {
         if ($('#password').val() == $('#cpassword').val()) {
             $('#message').html('Matching').css('color', 'green');
