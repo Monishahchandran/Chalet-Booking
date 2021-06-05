@@ -23,6 +23,51 @@ class Helper
         $count = Reservation::select('*')->where('ownerid', $id)->count();
         return $count;
     }
+    public static function get_count_paidchaletreservation($id)
+    {
+        $count = Reservation::select('*')->where('ownerid', $id)->where('status', '=', 'Paid')->count();
+        return $count;
+    }
+    public static function get_count_unpaidchaletreservation($id)
+    {
+        $count = Reservation::select('*')->where('ownerid', $id)->where('status', '=', 'Remaining')->count();
+        return $count;
+    }
+     public static function get_owner_totalpaid($id)
+    {
+        $count = Reservation::select('*')->where('ownerid', $id)->sum('total_paid');
+        return $count;
+    }
+    public static function get_owner_commission($id)
+    {
+        $count = Reservation::select('*')->where('ownerid', $id)->sum('owner_commission');
+        return $count;
+    }
+    public static function get_count_ownerchaletreservation($id)
+    {
+        $count = Reservation::select('*')->where('chaletid', $id)->count();
+        return $count;
+    }
+    public static function get_count_paidownerchaletreservation($id)
+    {
+        $count = Reservation::select('*')->where('chaletid', $id)->where('status', '=', 'Paid')->count();
+        return $count;
+    }
+    public static function get_count_unpaidownerchaletreservation($id)
+    {
+        $count = Reservation::select('*')->where('chaletid', $id)->where('status', '=', 'Remaining')->count();
+        return $count;
+    }
+    public static function get_chalet_totalpaid($id)
+    {
+        $count = Reservation::select('*')->where('chaletid', $id)->sum('total_paid');
+        return $count;
+    }
+    public static function get_chalet_commission($id)
+    {
+        $count = Reservation::select('*')->where('chaletid', $id)->sum('owner_commission');
+        return $count;
+    }
     public static function get_chalet_image($id)
     {
         $imagefile = ChaletUpload::select('*')->where('chaletid', $id)->where('file_type', 'image')->orderBy('id', 'ASC')->value('file_name');
@@ -93,5 +138,45 @@ class Helper
     {
         $count = Chalet::select('*')->where('ownerid', $id)->where('is_activestatus', '1')->count();
         return $count;
+    }
+    public static function get_remaining($id)
+    {
+        $result = Reservation::select('*')->where('ownerid', $id)->where('status', '=', 'Remaining')->get();
+        $s = 0;
+        foreach ($result as $sum) {
+            $total_paid = $sum->total_paid;
+            // echo $total_paid.',';
+            $package_price = $sum->package_price;
+            // echo $package_price.'=';
+            if ($package_price > $total_paid) {
+                $remaining_amt = $package_price - $total_paid;
+            } else {
+                $remaining_amt = $total_paid - $package_price;
+            }
+            // echo $remaining_amt.';';
+            $s=$s + $remaining_amt;
+            
+        }
+        return  $s;
+    }
+    public static function get_chalet_totalpaidremaining($id)
+    {
+        $result = Reservation::select('*')->where('chaletid', $id)->where('status', '=', 'Remaining')->get();
+        $s = 0;
+        foreach ($result as $sum) {
+            $total_paid = $sum->total_paid;
+            // echo $total_paid.',';
+            $package_price = $sum->package_price;
+            // echo $package_price.'=';
+            if ($package_price > $total_paid) {
+                $remaining_amt = $package_price - $total_paid;
+            } else {
+                $remaining_amt = $total_paid - $package_price;
+            }
+            // echo $remaining_amt.';';
+            $s=$s + $remaining_amt;
+            
+        }
+        return  $s;
     }
 }
