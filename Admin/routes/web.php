@@ -76,16 +76,20 @@ Route::post('/editowner', 'SuperAdmin_Controller@editowner')->name('editowner');
 Route::get('/Chalet-List/{id}', 'SuperAdmin_Controller@owner_chaletlist')->name('owner_chaletlist');
 Route::get('/Total-Reservations/{id}', 'SuperAdmin_Controller@totalreservation')->name('totalreservation');
 Route::post('/send_bankdetails', 'SuperAdmin_Controller@send_bankdetails')->name('send_bankdetails');
-
-
-
-
-
-
-
-
-
-
+Route::get('/TotalReservations/{cid}/{wid}', 'SuperAdmin_Controller@chaletreservation')->name('chaletreservation');
+Route::get('/notifications-edit-System/{id}', 'SuperAdmin_Controller@systemnotification')->name('systemnotification');
+Route::post('/update_systemnotification', 'SuperAdmin_Controller@update_systemnotification')->name('update_systemnotification');
+Route::get('/Chalet-Invoices-PAID/{cid}/{wid}', 'SuperAdmin_Controller@paidreservationinvoice')->name('paidreservationinvoice');
+Route::get('/Owner-Invoices-Total-PAID/{id}', 'SuperAdmin_Controller@paidchaletreservationinvoice')->name('paidchaletreservationinvoice');
+Route::get('/Owner-Invoices-Total-UnPaid/{id}', 'SuperAdmin_Controller@unpaidchaletreservationinvoice')->name('unpaidchaletreservationinvoice');
+Route::get('/Owner-Invoices-Total-Remaining/{id}', 'SuperAdmin_Controller@remainingchaletreservationinvoice')->name('remainingchaletreservationinvoice');
+Route::get('/Chalet-Invoices-UnPaid/{cid}/{wid}', 'SuperAdmin_Controller@unpaidreservationinvoice')->name('unpaidreservationinvoice');
+Route::get('/Chalet-Invoices-Remaining/{cid}/{wid}', 'SuperAdmin_Controller@remainingreservationinvoice')->name('remainingreservationinvoice');
+Route::get('/deleteowner/{id}', 'SuperAdmin_Controller@deleteowner')->name('deleteowner');
+Route::post('/update_refunddate', 'SuperAdmin_Controller@update_refunddate')->name('update_refunddate');
+Route::post('/blockowner', 'SuperAdmin_Controller@blockowner')->name('blockowner');
+Route::post('/blockuser', 'SuperAdmin_Controller@blockuser')->name('blockuser');
+Route::get('/cancelreservation/{id}/{page}', 'SuperAdmin_Controller@cancelreservation')->name('cancelreservation');
 
 //web admin create chalet mail request
 Route::get('/adminmail', function () {return view('mailWeb/index');})->name('adminmail');
