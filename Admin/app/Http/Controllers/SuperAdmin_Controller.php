@@ -21,6 +21,8 @@ use App\Models\ChaletEvent;
 use App\Models\Offers;
 use App\Models\Agreement;
 use App\Models\Reservation;
+use App\Models\SystemNotification;
+
 use Validator, Redirect, Response;
 use Image;
 use App\Photo;
@@ -142,9 +144,8 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        // $user_id = base64_decode(Session::get('adminid'));
-        // print_r(Session::get('adminlog'));
-        return view('superadmin/sa_notificationssystem');
+        $data['systemnotification'] = SystemNotification::select('*')->get();
+        return view('superadmin/sa_notificationssystem',$data);
     }
     public function chalet_listall()
     {
@@ -223,7 +224,7 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.deposit', '!=', '0')->get();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.deposit', '!=', '0')->where('tb_reservation.status', '=', 'remaining')->get();
         return view('superadmin/sa_chaletinvoicestotaldeposits', $data);
     }
     public function chaletinvoicestotalrefundmoney()
@@ -232,9 +233,8 @@ class SuperAdmin_Controller extends Controller
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
         // $user_id = base64_decode(Session::get('adminid'));
-
-
-        return view('superadmin/sa_chaletinvoicestotalrefundmoney');
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.booking_status','1')->get();
+        return view('superadmin/sa_chaletinvoicestotalrefundmoney', $data);
     }
     public function depositedmoney_to_owner()
     {
@@ -925,8 +925,9 @@ class SuperAdmin_Controller extends Controller
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
         $user_id = base64_decode($id);
+        $data['chaletdetails'] ="";
         $data['ownerdetails'] = Owner::select('*')->where('id', $user_id)->first();
-        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->get();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.ownerid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->get();
         return view('superadmin/sa_totalreservations', $data);
     }
     public function send_bankdetails(Request $request)
@@ -934,41 +935,209 @@ class SuperAdmin_Controller extends Controller
         $data['holder_name'] = $request->holder_name;
         $data['bank_name'] = $request->bank_name;
         $data['iban_num'] = $request->iban_num;
-        $user_id= $request->ownerid;
+        $user_id = $request->ownerid;
         $email = $request->email;
-        // echo $user_id;
-       $ownerdetails= Owner::select('*')->where('id', $user_id)->first();
-    //    print_r($ownerdetails);die();
-       $data['owner_name']=$ownerdetails->first_name.' '.$ownerdetails->last_name;
-       if(!empty($ownerdetails->civil_id)){
-$civilid="- CIVIL ID";
+        if (!empty($request->email)) {
+            if (empty($request->holder_name) || empty($request->bank_name) || empty($request->iban_num)) {
+                return response()->json(['success' => 'The Bank fields are empty']);
+            } else {
+                // echo $user_id;
+                $ownerdetails = Owner::select('*')->where('id', $user_id)->first();
+                //    print_r($ownerdetails);die();
+                $data['owner_name'] = $ownerdetails->first_name . ' ' . $ownerdetails->last_name;
+                if (!empty($ownerdetails->civil_id)) {
+                    $civilid = "- CIVIL ID:".url('uploads/chalet_uploads/civilid/') .'/'.$ownerdetails->civil_id;
+                } else {
+                    $civilid = "";
+                }
+                if (!empty($ownerdetails->chalet_ownership)) {
+                    $chalet_ownership = "- Chalet ownership:".url('uploads/chalet_uploads/ownership/') .'/'.$ownerdetails->chalet_ownership;
+                } else {
+                    $chalet_ownership = "";
+                }
+                if (!empty($ownerdetails->agreement)) {
+                    $agreement = "- Agreement:".url('uploads/chalet_uploads/agreement/') .'/'.$ownerdetails->chalet_ownership;
+                } else {
+                    $agreement = "";
+                }
+                $data = array(
+                    'holder_name' => $request->holder_name,
+                    'bank_name' => $request->bank_name,
+                    'iban_num' => $request->iban_num,
+                    'owner_name' => $ownerdetails->first_name . ' ' . $ownerdetails->last_name,
+                    'civilid' => $civilid,
+                    'chalet_ownership' => $chalet_ownership,
+                    'agreement' => $agreement
+                );
+                Mail::send('bankmail', $data, function ($message) use ($email) {
+                    $message->to($email)->subject('Message');
+                    // $message->from('varshag.srishti@gmail.com', 'The Stock');
+                });
+                if (Mail::failures()) {
+                    return response()->json(['success' => 'Failed to Send Mail.Please try again with valid email id.']);
+                } else {
+                    return response()->json(['success' => 'Successfully Send Mail.']);
+                }
+            }
+        } else {
+            return response()->json(['success' => 'Please Enter a mail to send.']);
+        }
+    }
+    public function chaletreservation($cid,$wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $user_id = base64_decode($wid);
+        $chalet_id = base64_decode($cid);
+        $data['ownerdetails'] = Owner::select('*')->where('id', $user_id)->first();
+        $data['chaletdetails'] =Chalet::select('*')->where('id', $chalet_id)->first();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.chaletid', $chalet_id)->get();
+        return view('superadmin/sa_totalreservations', $data);
+    }
+    public function systemnotification($id)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $id = base64_decode($id);
+        $data['notification'] = SystemNotification::where('id', $id)->first();
+        return view('superadmin/sa_editnotificationsystem', $data);
+    }
+    public function update_systemnotification(Request $request)
+    {
+        $title = $request->title;
+        $message = $request->message;
+        $id = $request->id;
+        SystemNotification::where('id', $id)->update(array('title' => $title,'message' => $message));
+        return redirect('/notifications-System')->with('success', 'Successfully Edited');
+    }
+    public function paidreservationinvoice($cid,$wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $user_id = base64_decode($wid);
+        $chalet_id = base64_decode($cid);
+        $data['ownerdetails'] = Owner::select('*')->where('id', $user_id)->first();
+        $data['chaletdetails'] =Chalet::select('*')->where('id', $chalet_id)->first();
+        $data['status'] ="Paid";
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.chaletid', $chalet_id)->where('tb_reservation.status', '=', 'paid')->get();
+       return view('superadmin/sa_reservationinvoice', $data);
+    }
+    public function paidchaletreservationinvoice($wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $id = base64_decode($wid);
+        $data['status'] ="Paid";
+        $data['chaletdetails'] ="";
+        $data['ownerdetails'] = Owner::select('*')->where('id', $id)->first();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.ownerid', $id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'paid')->get();
+        return view('superadmin/sa_ownertotalpaid', $data);
+    }
+    public function unpaidchaletreservationinvoice($wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $id = base64_decode($wid);
+        $data['status'] ="UnPaid";
+        $data['chaletdetails'] ="";
+        $data['ownerdetails'] = Owner::select('*')->where('id', $id)->first();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.ownerid', $id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
+        return view('superadmin/sa_ownertotalpaid', $data);
+    }
+    public function remainingchaletreservationinvoice($wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $id = base64_decode($wid);
+        $data['status'] ="Remaining";
+        $data['chaletdetails'] ="";
+        $data['ownerdetails'] = Owner::select('*')->where('id', $id)->first();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.ownerid', $id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
+        return view('superadmin/sa_ownertotalpaid', $data);
+    }
+    public function unpaidreservationinvoice($cid,$wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $user_id = base64_decode($wid);
+        $chalet_id = base64_decode($cid);
+        $data['ownerdetails'] = Owner::select('*')->where('id', $user_id)->first();
+        $data['chaletdetails'] =Chalet::select('*')->where('id', $chalet_id)->first();
+        $data['status'] ="UnPaid";
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.chaletid', $chalet_id)->where('tb_reservation.status', '=', 'remaining')->get();
+       return view('superadmin/sa_reservationinvoice', $data);
+    }
+    public function remainingreservationinvoice($cid,$wid)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $user_id = base64_decode($wid);
+        $chalet_id = base64_decode($cid);
+        $data['ownerdetails'] = Owner::select('*')->where('id', $user_id)->first();
+        $data['chaletdetails'] =Chalet::select('*')->where('id', $chalet_id)->first();
+        $data['status'] ="Remaining";
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.chaletid', $chalet_id)->where('tb_reservation.status', '=', 'remaining')->get();
+       return view('superadmin/sa_reservationinvoice', $data);
+    }
+    public function deleteowner($id)
+    {
+        $id = base64_decode($id);
+       $count= Reservation::select('*')->where('ownerid', $id)->where('owner_status','0')->count();
+       if ($count == 0) {
+        Owner::where('id', $id)->delete();
+        return redirect('/Owner')->with('success', 'Successfully Deleted Owner');
        }else{
-        $civilid="";
+        return redirect('/Owner')->with('error', 'Reservations is pending for this Owner');  
        }
-       if(!empty($ownerdetails->chalet_ownership)){
-        $chalet_ownership="- Chalet ownership";
-               }else{
-                $chalet_ownership="";
-               }
-               if(!empty($ownerdetails->agreement)){
-                $agreement="- Agreement";
-                       }else{
-                        $agreement="";
-                       }
-        $data = array('holder_name' => $request->holder_name,
-         'bank_name' => $request->bank_name,
-          'iban_num' => $request->iban_num,
-          'owner_name' =>$ownerdetails->first_name.' '.$ownerdetails->last_name,
-          'civilid' => $civilid,
-          'chalet_ownership' => $chalet_ownership,
-          'agreement' =>$agreement
-        );
-
-
-        Mail::send('bankmail', $data, function ($message) use ($email) {
-            $message->to($email)->subject('Message');
-            // $message->from('varshag.srishti@gmail.com', 'The Stock');
-        });
-        return response()->json(['success' => 'Successfully Changed Status.']);
+    }
+    public function update_refunddate(Request $request)
+    {
+        $refund_date = $request->refund_date;
+        $id = $request->reserv_id;
+        Reservation::where('id', $id)->update(array('refund_status' => '1','refund_date' => $refund_date));
+        return response()->json(['success' => 'Successfully Updated']);
+    }
+    public function blockowner(Request $request)
+    {
+        $status = $request->status;
+        $id = $request->ownerid;
+        Owner::where('id', $id)->update(array('block_status' => $status));
+        return response()->json(['success' => 'Successfully Blocked.']);
+    }
+    public function blockuser(Request $request)
+    {
+        $status = $request->status;
+        $id = $request->userid;
+        Users::where('id', $id)->update(array('block_status' => $status));
+        return response()->json(['success' => 'Successfully Blocked.']);
+    }
+    public function cancelreservation($id,$page)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        // $id = base64_decode($id);
+        $reservation = Reservation::where('tb_reservation.id', $id)->select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->first();
+        $userdetails = (new \App\Helper)->get_user_details($reservation->userid);
+        Reservation::where('id', $id)->update(array('booking_status' => '1'));
+     if($page=='totalinvoice')
+       { return redirect('/Chalet-Invoices-Total')->with("error","The reservation was canceled, and the amount of (KD ".$reservation->total_paid.") and Refund to ".$userdetails->first_name." ".$userdetails->last_name    .", 
+        For Chalet ( ".$reservation->chalet_name." )");}
+        else if($page=='totalpaidinvoice'){
+            return redirect('/Chalet-Invoices-Total-PAID')->with("error","The reservation was canceled, and the amount of (KD ".$reservation->total_paid.") and Refund to ".$userdetails->first_name." ".$userdetails->last_name    .", 
+            For Chalet ( ".$reservation->chalet_name." )");
+        }
+        else if($page=='depositinvoice'){
+            return redirect('/Chalet-Invoices-Total-Deposits')->with("error","The reservation was canceled, and the amount of (KD ".$reservation->total_paid.") and Refund to ".$userdetails->first_name." ".$userdetails->last_name    .", 
+            For Chalet ( ".$reservation->chalet_name." )");
+        }
     }
 }
