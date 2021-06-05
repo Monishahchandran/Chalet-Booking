@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
-            <div class="alert alert-danger" id="dangermsg" style="display:none;" role="alert" align="center"></div>
+                <div class="alert alert-danger" id="dangermsg" style="display:none;" role="alert" align="center"></div>
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success" role="alert" align="center">
                     Profile has been Saved
@@ -115,7 +115,7 @@
                                         <td width="0" valign="top">x</td>
                                     </tr>
                                     <tr>
-                                    <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" type="file" required="required" name="civilid" id="civilid" class="form-control"></td>
+                                        <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" type="file" required="required" name="civilid" id="civilid" class="form-control"></td>
                                     </tr>
                                 </table>
                             </div>
@@ -124,9 +124,11 @@
                             <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Chalet ownership</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
                                 <table border="0" width="100%">
-                                    <tr><td width="0" valign="top">x</td></tr>
                                     <tr>
-                                    <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" required="required" type="file" name="ownership" id="ownership" class="form-control"></td>
+                                        <td width="0" valign="top">x</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" required="required" type="file" name="ownership" id="ownership" class="form-control"></td>
                                     </tr>
                                 </table>
                             </div>
@@ -135,9 +137,11 @@
                             <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Agreement</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
                                 <table border="0" width="100%">
-                                    <tr><td width="0" valign="top">x</td></tr>
                                     <tr>
-                                    <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" type="file" required="required" name="agreement" id="agreement" class="form-control"></td>
+                                        <td width="0" valign="top">x</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" type="file" required="required" name="agreement" id="agreement" class="form-control"></td>
                                     </tr>
                                 </table>
                             </div>
@@ -146,7 +150,7 @@
                         <div class="form-group">
                             <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Bank Account Holder Name</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
-                            <input id="holder_name" class="form-control col-md-7 col-xs-12" type="text" name="holder_name" required="required" value="{{$ownerdetails->bank_holder_name}}">
+                                <input id="holder_name" class="form-control col-md-7 col-xs-12" type="text" name="holder_name" required="required" value="{{$ownerdetails->bank_holder_name}}">
                             </div>
                         </div>
                         <div class="form-group">
@@ -194,10 +198,12 @@
                         <div class="form-group">
                             <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Email To</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
-                                <input id="tomail" name="tomail" class="form-control col-md-7 col-xs-12" type="text" name="middle-name">
+                                <input id="tomail" name="tomail" class="form-control col-md-7 col-xs-12" type="email" name="middle-name">
                                 <br><br>
-                                <button id="send" onclick="sendmail();" type="button" class="btn btn-success">Send Documents and Bank Detail</button> 
+                                <button id="send" onclick="sendmail();" type="button" class="btn btn-success">Send Documents and Bank Detail</button>
                                 <!-- <a href="Example.htm" target="_blank">Example</a> -->
+                                <br><br>
+                                <span id='result_message'></span>
                             </div>
                         </div>
                         <hr>
@@ -209,21 +215,28 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">New Password
                             </label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
-                            <input type="hidden" id="old_password" name="old_password" class="form-control col-md-7 col-xs-12" value="{{$ownerdetails->password}}" >
-                            <input type="password" id="password" name="password" class="form-control col-md-7 col-xs-12" placeholder="New Password" required="required">
+                                <input type="hidden" id="old_password" name="old_password" class="form-control col-md-7 col-xs-12" value="{{$ownerdetails->password}}">
+                                <input type="password" id="password" name="password" class="form-control col-md-7 col-xs-12" placeholder="New Password" required="required">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Repeat New Passwords</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
-                            <input id="cpassword" class="form-control col-md-7 col-xs-12" type="password" name="cpassword" placeholder="Repeat New Passwords" required="required">
+                                <input id="cpassword" class="form-control col-md-7 col-xs-12" type="password" name="cpassword" placeholder="Repeat New Passwords" required="required">
                             </div>
                             <span id='message'></span>
                         </div>
                         <div class="ln_solid"></div>
                         <div class="form-group">
                             <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-                            <button id="send" type="button" class="btn btn-success" onclick="myFunction()">Save</button>
+                                <button id="submit-data" type="button" class="btn btn-success" disabled="" onclick="myFunction()">Save</button>
+                                <span id="changebutton">
+                                @if($ownerdetails->block_status=='0')
+                                <button id="blockbutton" type="button" onclick="blockowner('1');" class="btn btn-danger">Block</button>
+                                @else
+                                <button id="blockbutton" type="button" onclick="blockowner('0');" class="btn btn-info">UnBlock</button>
+                                @endif
+</span>
                             </div>
                         </div>
                     </form>
@@ -233,6 +246,21 @@
     </div>
 </div>
 <script>
+    var button = $('#submit-data');
+    $('form :input').not(button).bind('keyup change', function() {
+        // get all that inputs that has changed
+        var changed = $('form :input').not(button).filter(function() {
+            if (this.type == 'radio' || this.type == 'checkbox') {
+                return this.checked != $(this).data('default');
+            } else {
+                return this.value != $(this).data('default');
+            }
+        });
+        // disable if none have changed - else enable if at least one has changed
+        $('#submit-data').prop('disabled', !changed.length);
+        $('#blockbutton').prop('disabled', true);
+    });
+
     $("#photo").change(function() {
         $('#image_preview').html("");
         var total_file = document.getElementById("photo").files.length;
@@ -246,6 +274,7 @@
         } else
             $('#message').html('Not Matching').css('color', 'red');
     });
+
     function myFunction() {
         if ($('#password').val() == $('#cpassword').val()) {
             // $('#message').html('Matching').css('color', 'green');
@@ -397,13 +426,13 @@
 
         return Result;
     }
+
     function sendmail() {
         $holder_name = $('#holder_name').val();
         $bank_name = $('#bank_name').val();
         $iban_num = $('#iban_num').val();
         $tomail = $('#tomail').val();
         $ownerid = $('#ownerid').val();
-        // alert($ownerid);
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -418,17 +447,53 @@
                 holder_name: $holder_name,
                 bank_name: $bank_name,
                 iban_num: $iban_num,
-                email:$tomail,
-                ownerid:$ownerid
+                email: $tomail,
+                ownerid: $ownerid
             },
             beforeSend: function() {
                 // Show image container
                 // $("#loader1").show();
             },
             success: function(data) {
-                  alert(data.success);
-
+                //   alert(data.success);
+                $('#result_message').html(data.success).css('color', 'green');
             },
+            complete: function(data) {
+                // Hide image container
+                // $("#loader1").hide();
+            }
+        });
+
+        // });
+    }
+    function blockowner($status) {
+        $ownerid = $('#ownerid').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        // alert(check);
+        // data:{status:name, password:password, email:email},
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('blockowner') }}",
+            data: {
+                status: $status,
+                ownerid: $ownerid
+            },
+            beforeSend: function() {
+                // Show image container
+                // $("#loader1").show();
+            },
+            success: function(data) {
+                //   alert(data.success);
+                if($status==1)
+                {$('#changebutton').html('<button id="blockbutton" type="button" onclick="blockowner('+0+');" class="btn btn-info">UnBlock</button>');
+                }else{
+                    $('#changebutton').html(' <button id="blockbutton" type="button" onclick="blockowner('+1+');" class="btn btn-danger">Block</button>');  
+                }
+                },
             complete: function(data) {
                 // Hide image container
                 // $("#loader1").hide();

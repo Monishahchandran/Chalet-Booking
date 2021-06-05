@@ -88,8 +88,9 @@
                         <td>none
                         <!-- <button>100 KD</button> -->
                         </td>
-
-                        <td align="center"><a href="user-profile.php" class="btn btn-success btn-xs">Profile</a></td>
+                        <?php $userid = base64_encode($udetails->id); ?>
+                        <td align="center"><a class="btn btn-success btn-xs" href="{{ url('/user-profile') }}/<?php echo $userid; ?>">Profile</a>
+                            </td>
 
                     </tr>
                     @endforeach    

@@ -8,6 +8,9 @@
     @if ($message = Session::get('success'))
         <div class="alert alert-success" role="alert" align="center"> {{ $message }}</div>
         @endif
+        @if ($message = Session::get('error'))
+        <div class="alert alert-danger" role="alert" align="center"> {{ $message }}</div>
+        @endif
         <div class="x_title">
             <h1>Owner's</h1>
         </div>
@@ -73,14 +76,21 @@
                         } ?>
                     </td>
                     <td>
-                        <button class="btn btn-danger btn-xs" onclick="window.location.href='Chalet-List.php';">500 KD</button>
-                    </td>
+                    <?php $wid=base64_encode($wdetails->id);?>
+                    <?php if(((new \App\Helper)->get_remaining($wdetails->id)) != 0){ ?>
+                    <a class="btn btn-danger  btn-xs" href="{{ url('/Chalet-List') }}/<?php echo $wid; ?>">{{(new \App\Helper)->get_remaining($wdetails->id) }} KD</a>
+                    <?php }else{?>
+                          <button>{{(new \App\Helper)->get_remaining($wdetails->id) }} KD</button>
+                     <?php   } ?>
+</td>
                     <td align="center">
                     <?php $id=base64_encode($wdetails->id);?>
                         <a class="btn btn-success btn-xs" href="{{ url('/Owner-profile') }}/<?php echo $id; ?>" >Profile</a>
                         <br>
                         <a class="btn btn-primary btn-xs" href="{{ url('/Chalet-add') }}/<?php echo $id; ?>" >Add Chalet</a>
-                </tr>
+                        <br>
+                        <a class="btn btn-danger btn-xs" href="{{ url('/deleteowner') }}/<?php echo $id; ?>"  >Delete</a>
+             </tr>
                 @endforeach  
                 
             </tbody>

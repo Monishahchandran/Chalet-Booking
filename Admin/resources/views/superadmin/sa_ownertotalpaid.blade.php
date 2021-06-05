@@ -1,8 +1,11 @@
 @extends('superadmin.layouts.sa_layout')
-@if(!empty($chaletdetails))
-@section('title', "Total Reservations of Chalet")
-@else
-@section('title', "Total Reservations of Owner")
+@if($status=="Paid")
+@section('title', "All Paid of Owner")
+@elseif($status=="UnPaid")
+@section('title', "All UnPaid of Owner")
+@endif
+@if($status=="Remaining")
+@section('title', "All Remaining of Owner")
 @endif
 @section('content')
 
@@ -68,11 +71,20 @@
     <!-- /User Blocked -->
     <div class="x_panel">
         <div class="x_title">
-            <h1>Total Reservations of @if(!empty($chaletdetails))Chalet @else Owner @endif</h1>
+            <h1>All
+                @if($status=="Paid")
+                <b style="color: limegreen">Paid</b>
+                @elseif($status=="UnPaid")
+                <b style="color: orangered">UnPaid</b>
+                @elseif($status=="Remaining")
+                <b style="color: #FF9933">Remaining</b>
+                @endif
+                of Owner
+            </h1>
         </div>
         <div class="x_content">
             <div class="col-md-6 col-sm-12 col-xs-6">
-                <h3> @if(!empty($chaletdetails))Chalet Details @else Owner Details @endif</h3>
+                <h3> @if(!empty($chaletdetails))Chalet Details@else Owner Details @endif</h3>
                 <address>
                     @if(!empty($chaletdetails))
                     <b>{{$chaletdetails->chalet_name}}</b>
@@ -113,21 +125,21 @@
                     <a class="btn btn-success  btn-xs" href="{{ url('/Owner-Invoices-Total-PAID') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidchaletreservation($ownerdetails->id) }}</a>
                     @else
                     <?php $cid = base64_encode($chaletdetails->id); ?>
-                    <a class="btn btn-success  btn-xs" href="{{ url('/Chalet-Invoices-PAID') }}/<?php echo $cid; ?>/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidownerchaletreservation($chaletdetails->id) }}</a>
+                    <a class="btn btn-success  btn-xs" href="{{ url('/Chalet-InvoicesPAID') }}/<?php echo $cid; ?>/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidownerchaletreservation($chaletdetails->id) }}</a>
                     @endif
                     <br>Total <b style="color: orangered">UnPaid </b>:
                     @if(empty($chaletdetails))
-                    <a class="btn btn-danger  btn-xs" href="{{ url('/Chalet-Invoices-UnPaid') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidchaletreservation($ownerdetails->id) }}</a>
+                    <a class="btn btn-danger  btn-xs" href="{{ url('/Owner-Invoices-Total-UnPaid') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidchaletreservation($ownerdetails->id) }}</a>
                     @else
                     <?php $cid = base64_encode($chaletdetails->id); ?>
-                    <a class="btn btn-danger  btn-xs" href="{{ url('/Chalet-Invoices-UnPaid') }}/<?php echo $cid; ?>/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidownerchaletreservation($chaletdetails->id) }}</a>
+                    <a class="btn btn-danger  btn-xs" href="{{ url('/Chalet-Invoices-UnPaid') }}/<?php echo $cid; ?>">{{(new \App\Helper)->get_count_unpaidownerchaletreservation($chaletdetails->id) }}</a>
                     @endif
                     <br>Total <b style="color: #FF9933">Remaining </b>:
                     @if(empty($chaletdetails))
-                    <a class="btn btn-warning  btn-xs" href="{{ url('/Chalet-Invoices-Remaining') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidchaletreservation($ownerdetails->id) }}</a>
+                    <a class="btn btn-warning  btn-xs" href="{{ url('/Owner-Invoices-Total-Remaining') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidchaletreservation($ownerdetails->id) }} </a>
                     @else
                     <?php $cid = base64_encode($chaletdetails->id); ?>
-                    <a class="btn btn-warning  btn-xs" href="{{ url('/Chalet-Invoices-Remaining') }}/<?php echo $cid; ?>/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidownerchaletreservation($chaletdetails->id) }}</a>
+                    <a class="btn btn-warning  btn-xs" href="{{ url('/Chalet-Invoices-Remaining') }}/<?php echo $cid; ?>">{{(new \App\Helper)->get_count_unpaidownerchaletreservation($chaletdetails->id) }} </a>
                     @endif
                     <br>Total Amount : <strong>
                         @if(empty($chaletdetails))

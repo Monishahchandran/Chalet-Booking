@@ -2,19 +2,21 @@
 @section('title', "All Remaining of Chalet's")
 @section('content')
 <!-- page content -->
+@if ($message = Session::get('error'))
 <div class="x_panel">
-    <div class="alert alert-danger" role="alert" align="center">
-        The reservation was canceled, and the amount of (KD 200) and Refund to khalifa Yousef ALqenaei
+    <div class="alert alert-danger" role="alert" align="center">{{$message}}
+        <!-- The reservation was canceled, and the amount of (KD 200) and Refund to khalifa Yousef ALqenaei
         <br>
-        For Chalet ( Chalet Name )
+        For Chalet ( Chalet Name ) -->
         <!-- Please hide note -->
-        <hr>
+        <!-- <hr>
         <i>Note:</i> 1 - Return the money manually by contacting the customer by phone
         <br>
-        2 - The amount cannot be refunded yet Check-Out Date
+        2 - The amount cannot be refunded yet Check-Out Date -->
         <!-- Please hide note -->
     </div>
 </div>
+@endif
 <div>
     <!-- /User Blocked -->
     <div class="x_panel">
@@ -116,14 +118,21 @@
                                 </table>
                             </td>
                             <td>
-                            <button class="btn btn-warning btn-xs" onclick="window.location.href='Invoic-Paid-Remaining.php';">Paid ( Remaining )</button>
                             <?php $id = base64_encode($rdetails->rid); ?>
-                                <a class="btn btn-success btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid</a>
+                            <a class="btn btn-warning btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid ( Remaining )</a>
+                               
                             </td>
                             <td>
                                 <?php $userid = base64_encode($userdetails->id); ?>
                                 <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
                                 <br><a class="btn btn-primary btn-xs" href="{{ url('/user-profile') }}/<?php echo $userid; ?>">User Profile</a>
+                                <br> <?php $current_date= date('Y-m-d');$checkin=$rdetails->check_in; 
+                            if( ($current_date<$checkin) && ($rdetails->booking_status=='0')){
+                            ?>
+                    <a class="btn btn-danger btn-xs" href="{{ url('/cancelreservation') }}/<?php echo $rdetails->rid; ?>/<?php echo 'depositinvoice'; ?>">Cancel Reservation</a>
+                                       
+                                <!-- <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target=".bs-example-modal-lgx">Cancel Reservation</button> -->
+                            <?php } ?>
                             </td>
                         </tr>
                         @endforeach

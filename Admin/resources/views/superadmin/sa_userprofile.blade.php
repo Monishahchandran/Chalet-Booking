@@ -3,6 +3,7 @@
 @section('content')
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 <div class="">
     <div class="clearfix"></div>
     <div class="row">
@@ -25,7 +26,7 @@
                 <br />
                 <form class="form-horizontal form-label-left" method="POST" action="{{ url('update_userprofile') }}" enctype="multipart/form-data" id="myform">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="userid" value="{{ $userdetails->id }}">
+                    <input type="hidden" name="userid" id="userid" value="{{ $userdetails->id }}">
                     <div class="form-group">
                         <label class="col-md-3 col-sm-3 col-xs-12 control-label">Profile Photo
                         </label>
@@ -364,9 +365,14 @@
             <div class="ln_solid"></div>
             <div class="form-group">
                 <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-                    <button id="send" type="submit" class="btn btn-success">Save</button>
-                    <button id="send" type="button" class="btn btn-danger">Block</button> OR
-                    <button id="send" type="button" class="btn btn-info">UnBlock</button>
+                    <button id="submit-data" type="submit" disabled="" class="btn btn-success">Save</button>
+                    <span id="changebutton">
+                                @if($userdetails->block_status=='0')
+                                <button id="blockbutton" type="button" onclick="blockuser('1');" class="btn btn-danger">Block</button>
+                                @else
+                                <button id="blockbutton" type="button" onclick="blockuser('0');" class="btn btn-info">UnBlock</button>
+                                @endif
+</span>
                     <br>
                     <br>
                     <br>
@@ -377,11 +383,62 @@
     </div>
 </div>
 <script>
+    var button = $('#submit-data');
+    $('form :input').not(button).bind('keyup change', function() {
+        // get all that inputs that has changed
+        var changed = $('form :input').not(button).filter(function() {
+            if (this.type == 'radio' || this.type == 'checkbox') {
+                return this.checked != $(this).data('default');
+            } else {
+                return this.value != $(this).data('default');
+            }
+        });
+        // disable if none have changed - else enable if at least one has changed
+        $('#submit-data').prop('disabled', !changed.length);
+        $('#blockbutton').prop('disabled', true);
+    });
     $('#password, #cpassword').on('keyup', function() {
         if ($('#password').val() == $('#cpassword').val()) {
             $('#message').html('Matching').css('color', 'green');
         } else
             $('#message').html('Not Matching').css('color', 'red');
     });
+
+    function blockuser($status) {
+        $userid = $('#userid').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        // alert(check);
+        // data:{status:name, password:password, email:email},
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('blockuser') }}",
+            data: {
+                status: $status,
+                userid: $userid
+            },
+            beforeSend: function() {
+                // Show image container
+                // $("#loader1").show();
+            },
+            success: function(data) {
+                //   alert(data.success);
+                if($status==1)
+                {$('#changebutton').html('<button id="blockbutton" type="button" onclick="blockuser('+0+');" class="btn btn-info">UnBlock</button>');
+                }else{
+                    $('#changebutton').html(' <button id="blockbutton" type="button" onclick="blockuser('+1+');" class="btn btn-danger">Block</button>');  
+                }
+                },
+            complete: function(data) {
+                // Hide image container
+                // $("#loader1").hide();
+            }
+        });
+
+        // });
+    }
 </script>
 @endsection

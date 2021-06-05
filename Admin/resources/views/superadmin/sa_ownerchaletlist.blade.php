@@ -87,21 +87,31 @@
             <div class="col-md-6 col-sm-12 col-xs-6">
                 <h3>Reservations information</h3>
                 <address>
-                    Total Reservations : <button class="btn btn-info btn-xs" onclick="window.location.href='Owner-Reservations.php';">6</button>
+                    Total Reservations :<a class="btn btn-info  btn-xs" href="{{ url('/Total-Reservations') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_chaletreservation($ownerdetails->id) }}</a>
+                    <br>Total <b style="color: limegreen">PAID </b>:
+                    <a class="btn btn-success  btn-xs" href="{{ url('/Owner-Invoices-Total-PAID') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidchaletreservation($ownerdetails->id) }}</a>
+                    <br>Total <b style="color: orangered">UnPaid </b>:
+                    <a class="btn btn-danger  btn-xs" href="{{ url('/Owner-Invoices-Total-UnPaid') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidchaletreservation($ownerdetails->id) }}</a>
+                    <br>Total <b style="color: #FF9933">Deposits </b>:
+                    <a class="btn btn-warning  btn-xs" href="{{ url('/Owner-Invoices-Total-Remaining') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_unpaidchaletreservation($ownerdetails->id) }}</a>
 
-                    <br>Total <b style="color: limegreen">PAID </b>: <button class="btn btn-success btn-xs" onclick="window.location.href='Owner-Invoices-Total-PAID.php';">4</button>
+                    <br>Total Amount : <strong> {{(new \App\Helper)->get_owner_totalpaid($ownerdetails->id) }}</strong> KD
 
-                    <br>Total <b style="color: orangered">UnPaid </b>: <button class="btn btn-danger btn-xs" onclick="window.location.href='Owner-Invoices-Total-UnPaid.php';">1</button>
+                    <br>Total Commission : <strong> {{(new \App\Helper)->get_owner_commission($ownerdetails->id) }}</strong> KD
 
-                    <br>Total <b style="color: #FF9933">Deposits </b>: <button class="btn btn-warning btn-xs" onclick="window.location.href='Owner-Invoices-Total-Remaining.php';">1</button>
+                    <br>Total Amount after Commission : <strong>
+                        @if((new \App\Helper)->get_owner_totalpaid($ownerdetails->id) >(new \App\Helper)->get_owner_commission($ownerdetails->id))
+                        {{(new \App\Helper)->get_owner_totalpaid($ownerdetails->id)-(new \App\Helper)->get_owner_commission($ownerdetails->id)}}
+                        @else{
+                        {{(new \App\Helper)->get_owner_commission($ownerdetails->id)-(new \App\Helper)->get_owner_totalpaid($ownerdetails->id)}}
+                        }
+                        @endif
+                    </strong> KD
 
-                    <br>Total Amount : <strong>10.000</strong> KD
+                    <br>Total Amounts to be Transferred :
+                    <?php $wid = base64_encode($ownerdetails->id); ?>
+                    <a class="btn btn-danger  btn-xs" href="{{ url('/Chalet-List') }}/<?php echo $wid; ?>">{{(new \App\Helper)->get_remaining($ownerdetails->id) }} KD</a>
 
-                    <br>Total Commission : <strong>1.000</strong> KD
-
-                    <br>Total Amount after Commission : <strong>9.000</strong> KD
-
-                    <br>Total Amounts to be Transferred : <button class="btn btn-danger btn-xs">500 KD</button>
 
                 </address>
 
@@ -123,29 +133,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach($chaletlist as $cdetails)
+                    @foreach($chaletlist as $cdetails)
                     <tr>
                         <td>{{$loop->iteration}}</td>
                         <td>
-                        <strong>{{$cdetails->chalet_name}}</strong></br></br>
+                            <strong>{{$cdetails->chalet_name}}</strong></br></br>
                             Weekdays : <strong>{{$cdetails->weekday_rent}}</strong> KD</br>
                             Weekend : <strong>{{$cdetails->weekend_rent}}</strong> KD</br>
                             Week : <strong>{{$cdetails->week_rent}}</strong> KD
                         </td>
                         <td>
-                            <button class="btn btn-success btn-xs" onclick="window.location.href='Total-Reservations.php';">3</button>
+                            <?php $cid = base64_encode($cdetails->cid); ?>
+                            <?php if (((new \App\Helper)->get_count_ownerchaletreservation($cdetails->cid)) != 0) { ?>
+                                <a class="btn btn-info  btn-xs" href="{{ url('/TotalReservations') }}/<?php echo $cid; ?>/<?php echo $id; ?>">{{(new \App\Helper)->get_count_ownerchaletreservation($cdetails->id) }}</a>
+                            <?php } else {
+                                echo  "none";
+                            } ?>
                         </td>
                         <td>
-                            <button>1500 KD</button>
+                            <button> {{(new \App\Helper)->get_chalet_totalpaid($cdetails->cid) }} KD</button>
                         </td>
                         <td>
-                            <button>5%</button>
+                            <button>{{$cdetails->commision}}%</button>
                         </td>
                         <td>
-                            <button class="btn btn-danger btn-xs">500 KD</button>
+                            <button class="btn btn-danger btn-xs">{{(new \App\Helper)->get_chalet_totalpaidremaining($cdetails->cid)}} KD</button>
                         </td>
                         <td align="center">
-                        @if($cdetails->auto_acceptbooking==0)
+                            @if($cdetails->auto_acceptbooking==0)
                             <label><input type="checkbox" id="booking<?php echo $loop->iteration; ?>" class="js-switch" name="booking_status" onclick="mybookingFunction('<?php echo $cdetails->cid; ?>','booking<?php echo $loop->iteration; ?>')"></label>
                             @endif
                             @if($cdetails->auto_acceptbooking==1)
@@ -153,7 +168,7 @@
                             @endif
                         </td>
                         <td align="center">
-                        @if($cdetails->is_activestatus==1)
+                            @if($cdetails->is_activestatus==1)
                             <label><input type="checkbox" id="myCheck<?php echo $loop->iteration; ?>" onclick="myFunction('<?php echo $cdetails->cid; ?>','myCheck<?php echo $loop->iteration; ?>')" class="js-switch" name="chalet_status" checked> </label>
                             @endif
                             @if($cdetails->is_activestatus==0)
@@ -161,8 +176,9 @@
                             @endif
                         </td>
                         <td align="center">
-                        <?php $id = base64_encode($cdetails->cid); $page = base64_encode('list');?>
-                            <a class="btn btn-primary btn-xs" href="{{ url('/Chalet-edit') }}/<?php echo $id; ?>/<?php echo $page; ?>" >Edit</a>
+                            <?php $id = base64_encode($cdetails->cid);
+                            $page = base64_encode('list'); ?>
+                            <a class="btn btn-primary btn-xs" href="{{ url('/Chalet-edit') }}/<?php echo $id; ?>/<?php echo $page; ?>">Edit</a>
                     </tr>
                     @endforeach
                 </tbody>

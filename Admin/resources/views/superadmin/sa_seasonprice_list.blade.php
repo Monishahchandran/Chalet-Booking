@@ -82,8 +82,8 @@
                         </td>
                         <td width="80%" valign="top">
                         
-                            <h3>:<input type="text" onkeypress='validate(event)' style="border: transparent;" onclick="change();" name="season_start" id="season_start" value="@if(!empty($seasondate)){{$seasondate->season_start}}@endif" placeholder="01/05/2021"/></h3>
-                            <h3>:<input type="text" onkeypress='validate(event)' name="season_end" onclick="change();" id="season_end" style="border: transparent;" value="@if(!empty($seasondate)){{$seasondate->season_end}}@endif" placeholder="30/09/2021"/> </h3>
+                            <h3>:<input type="text" onkeypress='validate(event)' style="border: transparent;" onclick="change();" name="season_start" id="season_start" value="@if(!empty($seasondate)){{$seasondate->season_start}}@endif" placeholder="01/05"/></h3>
+                            <h3>:<input type="text" onkeypress='validate(event)' name="season_end" onclick="change();" id="season_end" style="border: transparent;" value="@if(!empty($seasondate)){{$seasondate->season_end}}@endif" placeholder="30/09"/> </h3>
                             <!-- <span id='errormessage'></span><br> -->
                             <button id="send" type="button" onclick="myFunction()" class="btn btn-success">Edit Date</button>
                            

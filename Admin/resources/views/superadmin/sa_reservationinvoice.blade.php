@@ -1,9 +1,5 @@
 @extends('superadmin.layouts.sa_layout')
-@if(!empty($chaletdetails))
 @section('title', "Total Reservations of Chalet")
-@else
-@section('title', "Total Reservations of Owner")
-@endif
 @section('content')
 
 <!-- bootstrap-wysiwyg -->
@@ -68,32 +64,30 @@
     <!-- /User Blocked -->
     <div class="x_panel">
         <div class="x_title">
-            <h1>Total Reservations of @if(!empty($chaletdetails))Chalet @else Owner @endif</h1>
+            <h1>Total Reservations of Chalet
+                @if($status=="Paid")
+                <b style="color: limegreen">Paid</b>
+                @elseif($status=="UnPaid")
+                <b style="color: orangered">UnPaid</b>
+                @elseif($status=="Remaining")
+                <b style="color: #FF9933">Remaining</b>
+                @endif
+            </h1>
         </div>
         <div class="x_content">
             <div class="col-md-6 col-sm-12 col-xs-6">
-                <h3> @if(!empty($chaletdetails))Chalet Details @else Owner Details @endif</h3>
+                <h3>Chalet Details</h3>
                 <address>
                     @if(!empty($chaletdetails))
                     <b>{{$chaletdetails->chalet_name}}</b>
+                    @endif
                     <br>Owner:{{$ownerdetails->first_name}}&nbsp;{{$ownerdetails->last_name}}
                     <br>{{$ownerdetails->gender}}
                     <br>{{$ownerdetails->country}}
                     <br>Email: {{$ownerdetails->email}}
                     <br>Mobile: {{$ownerdetails->country_code}}{{$ownerdetails->phone}}
+                    @if(!empty($chaletdetails))
                     <br>Commission: <b style="color: orangered">-{{$chaletdetails->commision}}%</b>
-
-                    @else
-
-                    <b>{{$ownerdetails->first_name}}&nbsp;{{$ownerdetails->last_name}}</b>
-                    <br>{{$ownerdetails->gender}}
-                    <br>{{$ownerdetails->country}}
-                    <br>Email:{{$ownerdetails->email}}
-                    <br>Mobile: {{$ownerdetails->country_code}}{{$ownerdetails->phone}}
-                    <br>
-                    <?php $id = base64_encode($ownerdetails->id); ?>
-                    <a class="btn btn-success btn-xs" href="{{ url('/Owner-profile') }}/<?php echo $id; ?>">Profile</a>
-
                     @endif
                 </address>
             </div><!-- /.col -->
@@ -110,7 +104,7 @@
                     @endif
                     <br>Total <b style="color: limegreen">PAID </b>:
                     @if(empty($chaletdetails))
-                    <a class="btn btn-success  btn-xs" href="{{ url('/Owner-Invoices-Total-PAID') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidchaletreservation($ownerdetails->id) }}</a>
+                    <a class="btn btn-success  btn-xs" href="{{ url('/Chalet-Invoices-PAID') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidchaletreservation($ownerdetails->id) }}</a>
                     @else
                     <?php $cid = base64_encode($chaletdetails->id); ?>
                     <a class="btn btn-success  btn-xs" href="{{ url('/Chalet-Invoices-PAID') }}/<?php echo $cid; ?>/<?php echo $id; ?>">{{(new \App\Helper)->get_count_paidownerchaletreservation($chaletdetails->id) }}</a>
