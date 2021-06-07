@@ -329,5 +329,37 @@ public function adminmail(Request $request){
 
 
 
+
+
+
+public function view_profile(Request $request){
+  $data['userid']=$request->userid;
+       $userdetails = DB::table('tb_users')->where('id', $request->userid)->first();
+       $details=array("id"=>$userdetails->id,
+                           "first_name"=>($userdetails->first_name==null) ? "" : $userdetails->first_name,
+                            "last_name"=>($userdetails->last_name==null) ? "" : $userdetails->last_name,
+                            "email"=>($userdetails->email==null) ? "" : $userdetails->email,
+                            "password"=>(base64_decode($userdetails->password)==null) ? "" : base64_decode($userdetails->password),
+                            "phone"=>($userdetails->phone==null) ? "" : $userdetails->phone,
+                             "dob"=>($userdetails->dob==null) ? "" : $userdetails->dob,
+                             "gender"=>($userdetails->gender==null) ? "" : $userdetails->gender,
+                             "profile_pic"=>($userdetails->profile_pic==null)? "" : 'https://web.sicsglobal.com/aby_chalet/uploads/profile_pic/' . $userdetails->profile_pic,
+                             "created_at"=>($userdetails->created_at==null) ? "" : $userdetails->created_at,
+                             "updated_at"=>($userdetails->updated_at==null) ? "" : $userdetails->updated_at,
+                             "device_token"=>($userdetails->device_token==null) ? "" : $userdetails->device_token ,
+                              "country"=>($userdetails->country==null) ? "" : $userdetails->country,
+                              "country_code"=>($userdetails->country_code==null) ? "" : $userdetails->country_code,
+                              "email_verification"=>($userdetails->email_verification==null) ? "" : $userdetails->email_verification);
+        $result['status']=true;
+            $result['message']='User Details';
+          
+            $result['user_details']=$details;
+
+       return json_encode($result);
+              
+
+
+}
+
     }
 ?>

@@ -39,3 +39,4 @@ Route::post('/agreements', 'api\Reservation_Controller@agreement');
 Route::post('/view_admin', 'api\Reservation_Controller@view_admin');
 Route::get('/remaining_status', 'api\Crone_Controller@remaining_status');
 Route::get('/check_reward', 'api\Crone_Controller@check_reward');
+Route::post('/view_profile', 'api\UserAuth_Controller@view_profile');
