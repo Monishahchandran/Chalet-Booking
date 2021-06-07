@@ -179,4 +179,16 @@ class Helper
         }
         return  $s;
     }
+    public static function get_totalcommission()
+    {
+        $result = Reservation::select('*')->where('status', '=', 'Paid')->sum('owner_commission');
+        return $result;
+    }
+    public static function total_deposittobedone()
+    {
+        $totalp = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('total_paid');
+        $totalcommission = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('owner_commission');
+        $result=$totalp-$totalcommission;
+        return $result;
+    }
 }
