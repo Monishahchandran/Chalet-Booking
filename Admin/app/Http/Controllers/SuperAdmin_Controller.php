@@ -241,9 +241,8 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        // $user_id = base64_decode(Session::get('adminid'));
-        // print_r(Session::get('adminlog'));
-        return view('superadmin/sa_depositedmoney_to_owner');
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'paid')->get();
+        return view('superadmin/sa_depositedmoney_to_owner', $data);
     }
     public function addowner_view()
     {
@@ -300,7 +299,46 @@ class SuperAdmin_Controller extends Controller
                     $agreement = "";
                 }
                 Owner::insert([['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'country' => $request->country, 'phone' => $request->phone, 'gender' => $request->gender, 'profile_pic' => $profile_pic, 'civil_id' => $civil_id, 'chalet_ownership' => $chalet_ownership, 'agreement' => $agreement, 'bank_holder_name' => $request->holder_name, 'bank_name' => $request->bank_name, 'iban_num' => $request->iban_num, 'password' => base64_encode($request->password)]]);
-
+                $last = Owner::select('id')->latest()->first();
+                $user_id = $last->id;
+                $email = $request->email;
+                $ownerdetails = Owner::select('*')->where('id', $user_id)->first();
+                //    print_r($ownerdetails);die();
+                $data['owner_name'] = $ownerdetails->first_name . ' ' . $ownerdetails->last_name;
+                if (!empty($ownerdetails->civil_id)) {
+                    $civilid = "- CIVIL ID:" . url('uploads/chalet_uploads/civilid/') . '/' . $ownerdetails->civil_id;
+                } else {
+                    $civilid = "";
+                }
+                if (!empty($ownerdetails->chalet_ownership)) {
+                    $chalet_ownership = "- Chalet ownership:" . url('uploads/chalet_uploads/ownership/') . '/' . $ownerdetails->chalet_ownership;
+                } else {
+                    $chalet_ownership = "";
+                }
+                if (!empty($ownerdetails->agreement)) {
+                    $agreement = "- Agreement:" . url('uploads/chalet_uploads/agreement/') . '/' . $ownerdetails->chalet_ownership;
+                } else {
+                    $agreement = "";
+                }
+                $data = array(
+                    'holder_name' => $request->holder_name,
+                    'bank_name' => $request->bank_name,
+                    'iban_num' => $request->iban_num,
+                    'owner_name' => $ownerdetails->first_name . ' ' . $ownerdetails->last_name,
+                    'civilid' => $civilid,
+                    'chalet_ownership' => $chalet_ownership,
+                    'agreement' => $agreement,
+                    'title' => 'Welcome to Aby Chalet',
+                    'email' => $request->email,
+                    'country' => $request->country,
+                    'phone' => $request->phone,
+                    'gender' => $request->gender,
+                    'password' => $request->password
+                );
+                Mail::send('ownermail', $data, function ($message) use ($email) {
+                    $message->to($email)->subject('Message');
+                    // $message->from('varshag.srishti@gmail.com', 'The Stock');
+                });
                 return redirect('/Owner')->with('success', 'Successfully Created Owner');
             } else {
                 return back()->withInput()->with('error', 'Please enter matching Passwords');;
@@ -391,9 +429,9 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $remain=$request->remaining_amt_pay;
-        $deposit=$request->deposit_available;
-        if ($remain>$deposit) {
+        $remain = $request->remaining_amt_pay;
+        $deposit = $request->deposit_available;
+        if ($remain > $deposit) {
             return back()->withInput()->with('error', 'Hours remaining to pay Must be Lower than Deposit available hour');
         } else {
             if (($request->adminpassword) == ($request->cadminpassword)) {
@@ -875,6 +913,7 @@ class SuperAdmin_Controller extends Controller
         }
         // echo $request->ownerid;die();
         $ownerdetails = Owner::select('*')->where('id', $request->ownerid)->first();
+        $email = $ownerdetails->email;
         // print_r($ownerdetails);die();
         if ($request->hasFile('photo')) {
             $pfileimg = $request->photo;
@@ -913,6 +952,42 @@ class SuperAdmin_Controller extends Controller
             $agreement = $ownerdetails->agreement;
         }
         Owner::where('id', $request->ownerid)->update(array('first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'country' => $request->country, 'phone' => $request->phone, 'gender' => $request->gender, 'profile_pic' => $profile_pic, 'civil_id' => $civil_id, 'chalet_ownership' => $chalet_ownership, 'agreement' => $agreement, 'bank_holder_name' => $request->holder_name, 'bank_name' => $request->bank_name, 'iban_num' => $request->iban_num, 'password' => $password));
+
+        //    print_r($ownerdetails);die();
+        if (!empty($civil_id)) {
+            $civilid = "- CIVIL ID:" . url('uploads/chalet_uploads/civilid/') . '/' . $ownerdetails->civil_id;
+        } else {
+            $civilid = "";
+        }
+        if (!empty($chalet_ownership)) {
+            $chalet_ownership = "- Chalet ownership:" . url('uploads/chalet_uploads/ownership/') . '/' . $ownerdetails->chalet_ownership;
+        } else {
+            $chalet_ownership = "";
+        }
+        if (!empty($agreement)) {
+            $agreement = "- Agreement:" . url('uploads/chalet_uploads/agreement/') . '/' . $ownerdetails->chalet_ownership;
+        } else {
+            $agreement = "";
+        }
+        $data = array(
+            'holder_name' => $request->holder_name,
+            'bank_name' => $request->bank_name,
+            'iban_num' => $request->iban_num,
+            'owner_name' => $request->first_name . ' ' . $request->last_name,
+            'civilid' => $civilid,
+            'chalet_ownership' => $chalet_ownership,
+            'agreement' => $agreement,
+            'title' => 'Updated Owner Details',
+            'email' => $request->email,
+            'country' => $request->country,
+            'phone' => $request->phone,
+            'gender' => $request->gender,
+            'password' => $request->password
+        );
+        Mail::send('ownermail', $data, function ($message) use ($email) {
+            $message->to($email)->subject('Message');
+            // $message->from('varshag.srishti@gmail.com', 'The Stock');
+        });
         return back()->with('success', 'Successfully Updated Details');
     }
     public function owner_chaletlist($id)
@@ -1116,6 +1191,21 @@ class SuperAdmin_Controller extends Controller
         $status = $request->status;
         $id = $request->ownerid;
         Owner::where('id', $id)->update(array('block_status' => $status));
+        $ownerdetails = Owner::select('*')->where('id', $id)->first();
+        $email = $ownerdetails->email;
+        if ($status == 1) {
+            $adminmessage = "Aby Chalet Blocked You";
+        } else {
+            $adminmessage = "Aby Chalet UnBlocked You";
+        }
+        $data = array(
+            'title' => 'Hi! ' . $ownerdetails->first_name . ' ' . $ownerdetails->last_name,
+            'message' => $adminmessage
+        );
+        Mail::send('blockmail', $data, function ($message) use ($email) {
+            $message->to($email)->subject('Message');
+            // $message->from('varshag.srishti@gmail.com', 'The Stock');
+        });
         return response()->json(['success' => 'Successfully Blocked.']);
     }
     public function blockuser(Request $request)
@@ -1144,5 +1234,11 @@ class SuperAdmin_Controller extends Controller
             return redirect('/Chalet-Invoices-Total-Deposits')->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
             For Chalet ( " . $reservation->chalet_name . " )");
         }
+    }
+    public function owner_deposit(Request $request)
+    {
+        $id = $request->reserv_id;
+        Reservation::where('id', $id)->update(array('owner_moneydeposit' => '1'));
+        return response()->json(['success' => 'Successfully Updated']);
     }
 }
