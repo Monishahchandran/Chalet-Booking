@@ -41,7 +41,7 @@ Route::get('/add-Owner', 'SuperAdmin_Controller@addowner_view')->name('addowner_
 Route::post('/addowner', 'SuperAdmin_Controller@addowner');
 Route::get('/Chalet-add/{id}', 'SuperAdmin_Controller@addchalet_view')->name('addchalet_view');
 Route::post('/addchalet', 'SuperAdmin_Controller@addchalet');
-Route::post('/update_chaletstatus', 'SuperAdmin_Controller@update_chaletstatus')->name('update_chaletstatus');
+Route::post('/update_chaletstatus', 'SuperAdmin_Controller@update   _chaletstatus')->name('update_chaletstatus');
 Route::post('/update_bookingstatus', 'SuperAdmin_Controller@update_bookingstatus')->name('update_bookingstatus');
 Route::get('/Chalet-edit/{id}/{page}', 'SuperAdmin_Controller@editchalet_view')->name('editchalet_view');
 Route::post('/updatesettings', 'SuperAdmin_Controller@updatesettings');
@@ -90,6 +90,10 @@ Route::post('/update_refunddate', 'SuperAdmin_Controller@update_refunddate')->na
 Route::post('/blockowner', 'SuperAdmin_Controller@blockowner')->name('blockowner');
 Route::post('/blockuser', 'SuperAdmin_Controller@blockuser')->name('blockuser');
 Route::get('/cancelreservation/{id}/{page}', 'SuperAdmin_Controller@cancelreservation')->name('cancelreservation');
+Route::post('/owner_deposit', 'SuperAdmin_Controller@owner_deposit')->name('owner_deposit');
+
+
+
 
 //web admin create chalet mail request
 Route::get('/adminmail', function () {return view('mailWeb/index');})->name('adminmail');
