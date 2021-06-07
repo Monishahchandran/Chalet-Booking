@@ -1,9 +1,56 @@
 @extends('superadmin.layouts.sa_layout')
 @section('title', "Deposited Money To Owner")
 @section('content')
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}" />
+<style>
+    .lds-hourglass {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+        /* position: absolute;
+    margin-left:627px;
+    margin-top:290px;*/
+    }
+
+    .lds-hourglass:after {
+        content: " ";
+        display: block;
+        border-radius: 50%;
+        width: 0;
+        height: 0;
+        margin: 8px;
+        box-sizing: border-box;
+        border: 32px solid #fff;
+        border-color: #2A3F54 transparent #2A3F54 transparent;
+        animation: lds-hourglass 1.2s infinite;
+        margin-left: 457px;
+    }
+
+    @keyframes lds-hourglass {
+        0% {
+            transform: rotate(0);
+            animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+
+        50% {
+            transform: rotate(900deg);
+            animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        100% {
+            transform: rotate(1800deg);
+        }
+    }
+</style>
 <div>
     <!-- /User Blocked -->
     <div class="x_panel">
+        <!-- Image loader -->
+        <div id='loader1' class="lds-hourglass" style="display:none;"></div>
+        <!-- Image loader -->
         <div class="x_title">
             <h1>Deposited <b style="color: limegreen">Money</b> To Owner </h1>
         </div>
@@ -11,13 +58,15 @@
             <!-- /.col -->
             <div class="col-md-6 col-sm-12 col-xs-6">
                 <h3>Reservations information</h3>
-                <br>Total Amount of <b>Reservation </b>: <button>100.000</button> KD
+                <?php $total_paid = (new \App\Helper)->get_totalpaid();
+        $total_commission= (new \App\Helper)->get_totalcommission();
+        $total_deposittobedone = (new \App\Helper)->total_deposittobedone();
+        ?>
+                <br>Total Amount of <b>Reservation </b>: <button>{{$total_paid }}</button> KD
+                <br>Total Amount of <b>Commission </b>: <button>{{$total_commission}}</button> KD
+                <br>Total Amount after <b>Commission</b> : <button>{{$total_paid-$total_commission }}</button> KD
 
-                <br>Total Amount of <b>Commission </b>: <button>10.000</button> KD
-
-                <br>Total Amount after <b>Commission</b> : <button>90.000</button> KD
-
-                <br>Total amounts to be <b>Deposited</b> : <button>5.500</button> KD
+                <br>Total amounts to be <b>Deposited</b> : <button>{{$total_deposittobedone}}</button> KD
                 <br>
             </div>
             <div>
@@ -42,169 +91,69 @@
                         </tr>
 
                     </thead>
-
-
-
                     <tbody>
-
+                        @foreach($reservationlist as $rdetails)
+                        <?php $userdetails = (new \App\Helper)->get_user_details($rdetails->userid); ?>
                         <tr>
-
-                            <td>Inv000001</td>
-
+                            <td>{{$rdetails->reservation_id}}</td>
                             <td>
-                                <b>LoLo Ali</b>
-
-                                <br>Female
-
-                                <br>Kuwait
-
-                                <br>Email: admin@6rb.net
-
-                                <br>Mobile: +965-99791234
+                                <b>{{$userdetails->first_name}}&nbsp;{{$userdetails->last_name}}</b>
+                                <br>{{$userdetails->gender}}
+                                <br>{{$userdetails->country}}
+                                <br>Email:{{$userdetails->email}}
+                                <br>Mobile:{{$userdetails->country_code}}{{$userdetails->phone}}
                             </td>
                             <td>
-                                <strong>Chalet Name</strong>
+                                <strong>{{$rdetails->chalet_name}}</strong>
                                 <br><br>
-                                Weekdays
+                                @if($rdetails->selected_package == 'week_rent')
+                                Week
+                                @elseif($rdetails->selected_package == 'weekend_rent')
+                                Weekend
+                                @else
+                                Weekday
+                                @endif
                                 <br>
-
-                                <b style="color: limegreen">Check-in</b>: 28/03/2021
-
+                                <b style="color: limegreen">Check-in</b>: {{$rdetails->check_in}}
                                 <br>
-
-                                <b style="color: red">Check-Out</b>: 31/03/2021
+                                <b style="color: red">Check-Out</b>: {{$rdetails->check_out}}
                             </td>
                             <td>
                                 <table border="0" width="100%" cellpadding="5" cellspacing="0">
-
                                     <tr>
-
                                         <td width="40%">
-
                                             <ul>
-
                                                 <li>Rental price</li>
-
                                                 <li>Commission</li><br>
-
                                                 <li>Total Deposited</li>
                                             </ul>
-
                                         </td>
-
                                         <td width="60%" valign="top">
-
-                                            : <strong>600 KD </strong><br>
-
-                                            : <b style="color: #FF9933">( 10% ) -60 KD</b><br><br>
-
-                                            : <b style="color: limegreen">0 KD</b><br>
+                                            : <strong>{{$rdetails->package_price}} KD </strong><br>
+                                            : <b style="color: #FF9933">( {{$rdetails->commision}}% ) -{{$rdetails->owner_commission}} KD</b><br><br>
+                                            : <b style="color: limegreen">{{$rdetails->package_price-$rdetails->commision}} KD</b><br>
                                         </td>
                                     </tr>
                                 </table>
-
                             </td>
                             <td align="center">
-
-                                <button class="btn btn-warning btn-xs">Processing</button>
-
+                                <div id="deposit">
+                                    @if($rdetails->owner_moneydeposit==0)
+                                    <button class="btn btn-warning btn-xs" id="deposit_status<?php echo $loop->iteration; ?>" onclick="changestatus('<?php echo $rdetails->rid ?>');">Processing</button>
+                                    @else
+                                    <button class="btn btn-success btn-xs">Deposited</button>
+                                    @endif
+                                </div>
                             </td>
-
                             <td>
-
-                                <button class="btn btn-success btn-xs" onclick="window.location.href='Invoic-Paid.php';">Invoic</button><br>
-
+                                <?php $id = base64_encode($rdetails->rid);
+                                $userid = base64_encode($userdetails->id); ?>
+                                <a class="btn btn-success btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Invoic</a><br>
                                 <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
-
-                                <br><button class="btn btn-primary btn-xs" onclick="window.location.href='user-profile.php';">User Profile</button>
-
+                                <br><a class="btn btn-primary btn-xs" href="{{ url('/user-profile') }}/<?php echo $userid; ?>">User Profile</a>
                             </td>
                         </tr>
-                        <tr>
-
-                            <td>Inv000002</td>
-
-                            <td>
-                                <b>khalifa Yousef ALqenaei</b>
-
-                                <br>Male
-
-                                <br>Kuwait
-
-                                <br>Email: admin@6rb.net
-
-                                <br>Mobile: +965-99791234
-                            </td>
-                            <td>
-
-                                <strong>Chalet Name</strong>
-                                <br><br>
-
-                                Weekdays
-
-                                <br>
-
-                                <b style="color: limegreen">Check-in</b>: 28/03/2021
-
-                                <br>
-
-                                <b style="color: red">Check-Out</b>: 31/03/2021
-
-                            </td>
-
-
-
-                            <td>
-
-
-
-                                <table border="0" width="100%" cellpadding="5" cellspacing="0">
-
-                                    <tr>
-
-                                        <td width="40%">
-
-                                            <ul>
-
-                                                <li>Rental price</li>
-
-                                                <li>Commission</li><br>
-
-                                                <li>Total Deposited</li>
-
-
-
-                                            </ul>
-
-                                        </td>
-
-                                        <td width="60%" valign="top">
-
-                                            : <strong>800 KD </strong><br>
-
-                                            : <b style="color: #FF9933">( 20% ) -160 KD</b><br><br>
-
-                                            : <b style="color: limegreen">640 KD</b><br>
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            </td>
-                            <td>
-
-                                <button class="btn btn-success btn-xs" onclick="window.location.href='Invoic-Deposited.php';">Deposited</button>
-
-                            </td>
-
-                            <td>
-                                <button class="btn btn-success btn-xs" onclick="window.location.href='Invoic-Paid.php';">Invoic</button><br>
-
-                                <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
-
-                                <br><button class="btn btn-primary btn-xs" onclick="window.location.href='user-profile.php';">User Profile</button>
-
-                            </td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -213,4 +162,34 @@
     </div>
 </div>
 <!-- /User Blocked -->
+<script>
+    function changestatus($rid) {
+        // alert($season_start)
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        // data:{status:name, password:password, email:email},
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('owner_deposit') }}",
+            data: {
+                reserv_id: $rid
+            },
+            beforeSend: function() {
+                // Show image container
+                $("#loader1").show();
+            },
+            success: function(data) {
+                //   alert(data.success);
+                $('#deposit').html('<button class="btn btn-success btn-xs">Deposited</button>');
+            },
+            complete: function(data) {
+                // Hide image container
+                $("#loader1").hide();
+            }
+        });
+    }
+</script>
 @endsection
