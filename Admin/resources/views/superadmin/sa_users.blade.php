@@ -65,27 +65,63 @@
 
                         </td>
 
-                        <td>none
-                        <!-- <a href="User-Reservations.php" target="_blank" class="btn btn-info btn-xs">6</a> -->
+                        <td>
+                        <?php $id=base64_encode($udetails->id);?>
+                    <?php if(((new \App\Helper)->get_count_userchaletreservation($udetails->id)) != 0){ ?>
+                        <a class="btn btn-info  btn-xs" href="{{ url('/User-Reservations') }}/<?php echo $id; ?>">{{(new \App\Helper)->get_count_userchaletreservation($udetails->id) }}</a>
+                        <?php }else{
+                           echo  "none";
+                        } ?>
                         </td>
-
-                        <td>none
+                        <td>
+                        <?php $id=base64_encode($udetails->id);?>
+                    <?php if(((new \App\Helper)->get_usertotalpaid($udetails->id)) != 0){ ?>
+                        <?php $page = base64_encode('paid'); ?>
+                        <a class="btn btn-success  btn-xs" href="{{ url('/User-Invoices') }}/<?php echo $id; ?>/<?php echo $page; ?>">{{(new \App\Helper)->get_usertotalpaid($udetails->id) }}</a>
+                        <?php }else{
+                           echo  "none";
+                        } ?>
                         <!-- <a href="User-Invoices-Total-PAID.php" target="_blank" class="btn btn-success btn-xs">4</a> -->
                         </td>
 
-                        <td>none
+                        <td>
+                        <?php $id=base64_encode($udetails->id);?>
+                    <?php if(((new \App\Helper)->get_usertotalunpaid($udetails->id)) != 0){ ?>
+                        <?php $page = base64_encode('unpaid'); ?>
+                        <a class="btn btn-danger  btn-xs" href="{{ url('/User-Invoices') }}/<?php echo $id; ?>/<?php echo $page; ?>">{{(new \App\Helper)->get_usertotalunpaid($udetails->id) }}</a>
+                        <?php }else{
+                           echo  "none";
+                        } ?>
                         <!-- <a href="User-Invoices-Total-UnPaid.php" target="_blank" class="btn btn-danger btn-xs">1</a> -->
                         </td>
 
-                        <td>none
+                        <td>
+                        <?php $id=base64_encode($udetails->id);?>
+                    <?php if(((new \App\Helper)->get_usertotalunpaid($udetails->id)) != 0){ ?>
+                        <?php $page = base64_encode('deposit'); ?>
+                        <a class="btn btn-warning  btn-xs" href="{{ url('/User-Invoices') }}/<?php echo $id; ?>/<?php echo $page; ?>">{{(new \App\Helper)->get_usertotalunpaid($udetails->id) }}</a>
+                        <?php }else{
+                           echo  "none";
+                        } ?>
                         <!-- <a href="User-Invoices-Total-Remaining.php" target="_blank" class="btn btn-warning btn-xs">1</a> -->
                         </td>
 
-                        <td>none
-                        <!-- <button>2.250 KD</button.> -->
+                        <td>
+                        <?php $id=base64_encode($udetails->id);?>
+                    <?php if(((new \App\Helper)->get_usertotalamount($udetails->id)) != 0){ ?>
+                  <button>   {{(new \App\Helper)->get_usertotalamount($udetails->id) }}</button>
+                        <?php }else{
+                           echo  "none";
+                        } ?>
                         </td>
 
-                        <td>none
+                        <td>
+                        <?php $id=base64_encode($udetails->id);?>
+                    <?php if(((new \App\Helper)->get_rewards($udetails->id)) != 0){ ?>
+                  <button>   {{(new \App\Helper)->get_rewards($udetails->id) }}</button>
+                        <?php }else{
+                           echo  "none";
+                        } ?>
                         <!-- <button>100 KD</button> -->
                         </td>
                         <?php $userid = base64_encode($udetails->id); ?>

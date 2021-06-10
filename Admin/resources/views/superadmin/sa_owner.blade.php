@@ -22,26 +22,15 @@
             <thead>
                 <tr>
                     <th width="1%">No.</th>
-
                     <th width="25%">Owner Details</th>
-
                     <th width="15%">Chalets</th>
-
                     <th width="15%">Active</th>
-
                     <th width="15%">Reservations</th>
-
                     <th width="15%">Balance</th>
-
                     <th width="15%">Action</th>
-
                 </tr>
-
             </thead>
-
-
-
-            <tbody>
+<tbody>
             @foreach($ownerdetails as $wdetails)
             <?php $activecount = (new \App\Helper)->get_activechalets($wdetails->id); ?>
                 <tr>

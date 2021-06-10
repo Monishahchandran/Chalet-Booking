@@ -224,12 +224,12 @@
                         <div class="item form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Invite friend</label>
                             <div class="col-md-5 col-sm-9 col-xs-12">
-                                <textarea class="form-control" name="invite_friend" value="{{$admindata->invite_friend}}" rows="5" placeholder="Hi,
+                                <textarea class="form-control" name="invite_friend"  rows="5" placeholder="Hi,
 Aby Chalet
 
 Download App And Enjoy
 
-http://www.domain.com"></textarea>
+http://www.domain.com">{{$admindata->invite_friend}}</textarea>
                             </div>
                         </div>
                         <div class="item form-group">
