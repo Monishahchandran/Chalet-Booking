@@ -9,6 +9,7 @@ use App\Models\HolidayAndEvents;
 use App\Models\ChaletEvent;
 use App\Models\Offers;
 use App\Models\Users;
+use App\Models\Rewards;
 
 class Helper
 {
@@ -189,6 +190,31 @@ class Helper
         $totalp = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('total_paid');
         $totalcommission = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('owner_commission');
         $result=$totalp-$totalcommission;
+        return $result;
+    }
+    public static function get_count_userchaletreservation($id)
+    {
+        $count = Reservation::select('*')->where('userid', $id)->count();
+        return $count;
+    }
+    public static function get_usertotalpaid($id)
+    {
+        $result = Reservation::select('*')->where('status', '=', 'Paid')->where('userid', $id)->count();
+        return $result;
+    }
+    public static function get_usertotalunpaid($id)
+    {
+        $result = Reservation::select('*')->where('status', '=', 'Remaining')->where('userid', $id)->count();
+        return $result;
+    }
+    public static function get_usertotalamount($id)
+    {
+        $result = Reservation::select('*')->where('status', '=', 'Paid')->where('userid', $id)->sum('total_paid');
+        return $result;
+    }
+    public static function get_rewards($id)
+    {
+        $result = Rewards::select('*')->where('id', $id)->sum('rewarded_amt');
         return $result;
     }
 }
