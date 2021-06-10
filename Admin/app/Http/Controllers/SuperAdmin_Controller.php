@@ -109,7 +109,7 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $data['userdetails'] = Users::select('*')->get();;
+        $data['userdetails'] = Users::select('*')->get();
         return view('superadmin/sa_users', $data);
     }
     public function usersblocked()
@@ -117,9 +117,8 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        // $user_id = base64_decode(Session::get('adminid'));
-        // print_r(Session::get('adminlog'));
-        return view('superadmin/sa_usersblocked');
+        $data['userdetails'] = Users::select('*')->where('block_status','1')->get();
+        return view('superadmin/sa_usersblocked',$data);
     }
     public function notifications()
     {
@@ -1215,6 +1214,17 @@ class SuperAdmin_Controller extends Controller
         Users::where('id', $id)->update(array('block_status' => $status));
         return response()->json(['success' => 'Successfully Blocked.']);
     }
+    public function unblockuser($id)
+    { 
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $id=base64_decode($id);
+        $userdetails = (new \App\Helper)->get_user_details($id);
+        // print_r( $userdetails);die();
+        Users::where('id', $id)->update(array('block_status' => '0'));
+        return redirect('/users-blocked')->with('success', $userdetails->first_name.' '.$userdetails->last_name.', Has been UnBlock');
+    }
     public function cancelreservation($id, $page)
     {
         if (session('adminlog') == false) {
@@ -1223,6 +1233,7 @@ class SuperAdmin_Controller extends Controller
         // $id = base64_decode($id);
         $reservation = Reservation::where('tb_reservation.id', $id)->select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->first();
         $userdetails = (new \App\Helper)->get_user_details($reservation->userid);
+        // echo $reservation->userid;die();
         Reservation::where('id', $id)->update(array('booking_status' => '1'));
         if ($page == 'totalinvoice') {
             return redirect('/Chalet-Invoices-Total')->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
@@ -1233,6 +1244,11 @@ class SuperAdmin_Controller extends Controller
         } else if ($page == 'depositinvoice') {
             return redirect('/Chalet-Invoices-Total-Deposits')->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
             For Chalet ( " . $reservation->chalet_name . " )");
+        }else if($page == 'userreservation') {
+            $id = base64_encode($reservation->userid);
+            // echo $id;die();
+            return redirect('/User-Reservations/' . $id)->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
+            For Chalet ( " . $reservation->chalet_name . " )");
         }
     }
     public function owner_deposit(Request $request)
@@ -1240,5 +1256,35 @@ class SuperAdmin_Controller extends Controller
         $id = $request->reserv_id;
         Reservation::where('id', $id)->update(array('owner_moneydeposit' => '1'));
         return response()->json(['success' => 'Successfully Updated']);
+    }
+    public function userreservation($id)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $user_id = base64_decode($id);
+        $data['userdetails'] = Users::select('*')->where('id', $user_id)->first();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->get();
+    //    print_r($data['reservationlist']);die();
+        return view('superadmin/sa_userreservation', $data);
+    }
+    public function userinvoice($id,$page)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $user_id = base64_decode($id);
+        $page = base64_decode($page);
+        $data['pages'] =  $page ;
+        $data['userdetails'] = Users::select('*')->where('id', $user_id)->first();
+        if($page=='paid')
+        {$data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'paid')->get();
+        }elseif($page=='unpaid'){
+            $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
+        }else{
+            $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
+        }
+            //    print_r($data['reservationlist']);die();
+        return view('superadmin/sa_userinvoices', $data);
     }
 }
