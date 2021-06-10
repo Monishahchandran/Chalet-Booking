@@ -110,18 +110,181 @@
 																			<tr>
 																				<td width="100%">
 																					<h1>
-																	<font color="#FFFFFF">
-																						{{$message}}</font>
+																						<font color="#FFFFFF">
+																							Owner Details </font>
 																					</h1>
 																				</td>
 																			</tr>
-																			
-																			
+																			<tr>
+																				<td width="100%">
+																					<font size="5" color="#FFFFFF">
+																						Name:{{$owner_name}} 
+																					</font>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td width="100%">
+																					<font size="5" color="#FFFFFF">
+																						Email:{{$email}} </font>
+																				</td>
+																			</tr>
+                                                                            <tr>
+																				<td width="100%">
+																					<font size="5" color="#FFFFFF">
+																						Password:{{$password}} </font>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td width="100%">
+																					<font size="5" color="#FFFFFF">
+																						Country:{{$country}} </font>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td width="100%">
+																					<font size="5" color="#FFFFFF">
+																						Mobile:{{$phone}} </font>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td width="100%">
+																					<font size="5" color="#FFFFFF">
+																						Gender:{{$gender}} </font>
+																				</td>
+																			</tr>
 																			<tr>
 																				<td width="100%" height="50"></td>
 																			</tr>
-																		
-																			
+																			<tr>
+																				<td width="100%">
+																					<h1>
+																						<font color="#FFFFFF">
+																							Bank Detail </font>
+																					</h1>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td width="100%">
+																					<h3>
+																						<font size="5" color="#FFFFFF">
+																							Bank Account Holder Name :
+																						</font>
+
+																						<span lang="ar-kw"
+																							style="font-weight: 400">
+
+																							<font size="5"
+																								color="#FFFFFF">
+
+																								{{$holder_name}} 
+																							</font>
+																						</span>
+																					</h3>
+
+																				</td>
+
+																			</tr>
+
+																			<tr>
+
+																				<td width="100%">
+
+																					<h3>
+
+																						<font size="5" color="#FFFFFF">
+
+																							Bank Name :
+
+																							<span
+																								style="font-weight: 400">
+
+																								{{$bank_name}}</span>
+																						</font>
+																					</h3>
+
+																				</td>
+
+																			</tr>
+
+																			<tr>
+
+																				<td width="100%">
+
+																					<h3>
+
+																						<font size="5" color="#FFFFFF">
+
+																							IBAN Number :
+
+																							<span
+																								style="font-weight: 400">
+
+																								{{$iban_num}}</span>
+																						</font>
+																					</h3>
+
+																				</td>
+
+																			</tr>
+
+																			<tr>
+
+																				<td width="100%" height="50"></td>
+
+																			</tr>
+
+																			<tr>
+
+																				<td width="100%">
+
+																					<h1>
+
+																						<font color="#FFFFFF">
+
+																							Attached Documents </font>
+																					</h1>
+
+																				</td>
+
+																			</tr>
+
+
+
+																			<tr>
+
+																				<td width="100%">
+
+																					<font size="5" color="#FFFFFF">
+
+                                                                                    {{$civilid}}</font>
+																				</td>
+
+																			</tr>
+
+																			<tr>
+
+																				<td width="100%">
+
+																					<font size="5" color="#FFFFFF">
+
+																					{{$chalet_ownership}}</font>
+																				</td>
+
+																			</tr>
+
+																			<tr>
+
+																				<td width="100%">
+
+
+
+																					<font size="5" color="#FFFFFF">
+
+																					{{$agreement}}</font>
+																				</td>
+
+																			</tr>
+
 																		</table>
 
 																	</td>

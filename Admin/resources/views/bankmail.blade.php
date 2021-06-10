@@ -230,7 +230,7 @@
 
                                                                                 <td align="center" height="50">
 
-                                                                                    <font size="6">Thank You</font>
+                                                                                    <font size="6" style="color: black;">Thank You</font>
                                                                                 </td>
 
                                                                             </tr>
