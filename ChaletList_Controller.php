@@ -132,6 +132,7 @@ else{
     $chalet = DB::table('tb_owner')
       ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
       ->where('tb_chalet.id', '!=', $chaid)
+      ->where('tb_chalet.is_activestatus','=',1)
       ->get();
     //print_r($chalet);die();
 
@@ -237,30 +238,18 @@ else{
 
 
 
-
-
   public function searchHolidays(Request $request)
   {
 
 
-    // $result1 = DB::table('tb_holidayandevents')->get();
     $result1 = DB::table('tb_holidayandevents')
       ->Join('tb_chaletevents', 'tb_holidayandevents.id', '=', 'tb_chaletevents.event_id')
       ->where('tb_chaletevents.chaletevent_status', 1)
       ->where('tb_holidayandevents.holiday_status', 1)
+     ->groupBy('tb_holidayandevents.event_name')
       ->get();
-    $cha = array();
-    $cha1 = array();
-    $chalet_details = array();
-    if ($result1 != "") {
 
-      foreach ($result1 as $holiday) {
-        $chaletid = $holiday->chalet_id;
-
-        $chalet = DB::table('tb_owner')
-          ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
-          ->where('tb_chalet.id', '=', $chaletid)
-          ->get();
+      //print_r($result1);
 
         $chalet1 = DB::table('tb_superadmin')->where('id', 1)->first();
         $check_in = ($chalet1->check_in == null) ? "" : $chalet1->check_in;
@@ -269,8 +258,31 @@ else{
         $available_deposit = ($chalet1->deposit_available == null) ? "" : $chalet1->deposit_available;
         $remaining_amt_pay = ($chalet1->remaining_amt_pay == null) ? "" : $chalet1->remaining_amt_pay;
         $offer_expiry = ($chalet1->offer_expiry == null) ? "" : $chalet1->offer_expiry;
+       
+$holi=array();
+ if($result1!=""){
+  foreach ($result1 as $holiday) {
+        
+        $eventname=$holiday->event_name;
+        //echo $eventname;
+        $sqlholiday=DB::table('tb_holidayandevents')
+      ->Join('tb_chaletevents', 'tb_holidayandevents.id', '=', 'tb_chaletevents.event_id')
+      ->where('tb_holidayandevents.event_name','=',$eventname)
+      ->where('tb_chaletevents.chaletevent_status', 1)
+      ->where('tb_holidayandevents.holiday_status', 1)
+      ->get();
+       $chalet_list=array();
+     
+       
+         foreach ($sqlholiday as $holidayresult) {
+          $chaletid = $holidayresult->chalet_id;
 
-        foreach ($chalet as $chaletlist) {
+           $chalet = DB::table('tb_owner')
+          ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
+          ->where('tb_chalet.id', '=', $chaletid)
+          ->where('tb_chalet.is_activestatus','=',1)
+          ->get();
+          foreach ($chalet as $chaletlist) {
 
 
           $result1 = DB::table('tb_chaletdetails')->where('chaletid', $chaletlist->id)->where('ownerid', $chaletlist->ownerid)->get();
@@ -307,7 +319,8 @@ else{
 
           $cover = $result3->file_name;
           $cover_photo = 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
-          $chalet_list[] = array(
+
+           $chalet_list[] = array(
             'chalet_id' => $chaletlist->id,
             'chalet_name' => ($chaletlist->chalet_name == null) ? "" : $chaletlist->chalet_name,
             'cover_photo' => $cover_photo,
@@ -340,38 +353,41 @@ else{
             'created_at' => ($chaletlist->created_at == null) ? "" : $chaletlist->created_at,
             'updated_at' => ($chaletlist->updated_at == null) ? "" : $chaletlist->updated_at
           );
-
-
-
-
-
-
-
-
-
-          $holi[] = array(
-            'id' => $holiday->id,
-            'event_name' => ($holiday->event_name == null) ? "" : $holiday->event_name,
-            'events_checkin' => ($holiday->check_in == null) ? "" : date("Y-m-d", strtotime($holiday->check_in)),
-            'events_checkout' => ($holiday->check_out == null) ? "" : date("Y-m-d", strtotime($holiday->check_out)),
+         }
+       }
+         // $holi=array();
+         $holi[] = array(
+            'id' => $holidayresult->id,
+            'event_name' => ($holidayresult->event_name == null) ? "" : $holidayresult->event_name,
+            'events_checkin' => ($holidayresult->check_in == null) ? "" : date("Y-m-d", strtotime($holidayresult->check_in)),
+            'events_checkout' => ($holidayresult->check_out == null) ? "" : date("Y-m-d", strtotime($holidayresult->check_out)),
             'user_details' => $chalet_list
 
           );
-        }
-        $post = array(
+
+
+
+      }
+       $post = array(
           'status' => true,
           'message' => 'Holidays And Events Listed', 'chalet_list' =>  $holi
         );
-      }
-    } else {
-      $holi = array();
+
+
+        }
+        else{
+         
       $post = array(
         'status' => false,
         'message' => 'No Holidays and Events', 'chalet_list' =>  $holi
       );
-    }
+        
+      }
+      
+
     return json_encode($post);
   }
+
 
 
   public function offers(Request $request)
@@ -383,6 +399,9 @@ else{
     $check_out = ($admin_result->check_out == null) ? "" : $admin_result->check_out;
     $remaining_amt = ($admin_result->remaining_amt_pay == null) ? "" : $admin_result->remaining_amt_pay;
     $offer_expiry = ($admin_result->offer_expiry == null) ? "" : $admin_result->offer_expiry;
+    $min_deposit = ($admin_result->deposit == null) ? "" : $admin_result->deposit;
+    $available_deposit = ($admin_result->deposit_available == null) ? "" : $admin_result->deposit_available;
+  
     // echo $offer_expiry;die();
     $admin = array(
       'remaining_amt' => $remaining_amt,
@@ -412,6 +431,7 @@ else{
           ->select('*','tb_chalet.id as cid')
             ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
             ->where('tb_chalet.id', '=', $chaletid)
+
             ->first();
             // print_r($chalet);die();
           $checkin = strtotime($offers->offer_checkin);
@@ -426,16 +446,16 @@ else{
 
 
           if ($days == 3) {
-            $re = $chalet->weekday_rent;
+            $re = (int)$chalet->weekday_rent;
             $rent = $chalet->weekday_rent - $offers->discount_amt;
           }
           if ($days == 2) {
-            $re = $chalet->weekend_rent;
-            $rent = $chalet->weekend_rent - $offers->discount_amt;
+            $re = (int)$chalet->weekend_rent;
+            $rent = (int)$chalet->weekend_rent - $offers->discount_amt;
           }
-          if ($days == 6) {
-            $re = $chalet->week_rent;
-            $rent = $chalet->week_rent - $offers->discount_amt;
+         if ($days == 6) {
+            $re = (int)$chalet->week_rent;
+            $rent = (int)$chalet->week_rent - $offers->discount_amt;
           } else {
             $re = 0;
             $rent = 0;
@@ -472,9 +492,20 @@ else{
      $orgdate = $chalets->offer_checkout;  
     $check_out_date = date("d-m-Y", strtotime($orgdate));
 
+
+
+    $result3 = DB::table('tb_chaletupload')->where('chaletid', $chalets->id)->where('file_type', 'image')->orderBy('id', 'ASC')->first();
+
+
+      $cover = $result3->file_name;
+      
+      // echo "coverphoto=>".$result3->file_name;
+      $cover_photo = 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
+
           $chalet_array[] = array(
             'chalet_id' => $chalet->id,
             'chalet_name' => ($chalet->chalet_name == null) ? "" : $chalet->chalet_name,
+            'cover_photo' => $cover_photo,
             'admincheck_in' => $check_in,
             'admincheck_out' => $check_out,
             'check_in'=>($chalets->offer_checkin==null)? "" : $checkdate,
@@ -493,9 +524,13 @@ else{
             'bank_holder_name' => ($chalet->bank_holder_name == null) ? "" : $chalet->bank_holder_name,
             'bank_name' => ($chalet->bank_name == null) ? "" : $chalet->bank_name,
             'iban_num' => ($chalet->iban_num == null) ? "" : $chalet->iban_num,
-            'original_price' => $re,
+            'original_price' => ($re==null)? 0 : $re,
             'rent' => $rent,
             'discount_amt' => ($offers->discount_amt == null) ? 0 : $offers->discount_amt,
+            'min_deposit' => $min_deposit,
+        'available_deposit' => $available_deposit,
+        'remaining_amt_pay' => $remaining_amt,
+        'offer_expiry' => $offer_expiry,
             'chalet_details' => $cha,
             'chalet_upload' => $cha1,
             'created_at' => ($chalet->created_at == null) ? "" : $chalet->created_at,

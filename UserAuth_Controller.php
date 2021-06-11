@@ -103,11 +103,11 @@ $details=array("id"=>$userdata->id,
   {
     $data['email'] = $request->email;
     $data['password'] = $request->password;
-    $count = DB::table('tb_users')->where('email', $request->email)->where('password', base64_encode($request->password))->count();
-          $count1 = DB::table('tb_owner')->where('email', $request->email)->where('password', base64_encode($request->password))->count();
+    $count = DB::table('tb_users')->where('email', $request->email)->where('password', base64_encode($request->password))->where('block_status',0)->count();
+          $count1 = DB::table('tb_owner')->where('email', $request->email)->where('password', base64_encode($request->password))->where('block_status',0)->count();
       
          if ($count==1) {
-             $userdetails1 = DB::table('tb_users')->where('email', $request->email)->where('password', base64_encode($request->password))->first();
+             $userdetails1 = DB::table('tb_users')->where('email', $request->email)->where('password', base64_encode($request->password))->where('block_status',0)->first();
           $veri=$userdetails1->email_verification;
 
 if($veri==1){
@@ -150,7 +150,7 @@ if($veri==1){
             $affected = DB::table('tb_owner')
               ->where('email', $request->email)
               ->update(['device_token' => $request->device_token]);
-               $userdetails = DB::table('tb_owner')->where('email', $request->email)->where('password', base64_encode($request->password))->first();
+               $userdetails = DB::table('tb_owner')->where('email', $request->email)->where('password', base64_encode($request->password))->where('block_status',0)->first();
                $details=array("id"=>$userdetails->id,
                            "first_name"=>($userdetails->first_name==null)? "" : $userdetails->first_name,
                             "last_name"=>($userdetails->last_name==null) ? "" : $userdetails->last_name,
@@ -197,7 +197,7 @@ if($veri==1){
               ->update(['password' => base64_encode($request->new_password)]);
               if(!$affected){
                 $result['status']=false;
-            $result['message']='Failed';
+            $result['message']='This password is your old password.Please Enter new one.';
            // $result['user_details']=$data;
               }
               else{
@@ -317,7 +317,7 @@ public function adminmail(Request $request){
   $data['phone']=$request->phone;
   $data['name']=$request->name;
   $data['message']=$request->message;
-  $email="athirasurendran.sics@gmail.com";
+  $email="admin@6rb.net";
    $data = array('name' => $request->name,'phone'=>$request->phone,'message'=>$request->message);
             
 
