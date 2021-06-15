@@ -109,7 +109,36 @@
                                                                                 <td width="100%">
                                                                                     <h3>
                                                                                         <font size="5" color="#FFFFFF">Bank Name :<span style="font-weight: 400">
-                                                                                                {{$bank_name}}</span>
+                                                                                                <!-- {{$bank_name}} -->
+                                                                                            <?php if ($bank_name == "BKM") { ?>Ahli United
+                                                                                            <?php } elseif ($bank_name == "ABK") { ?>Al Ahli Bank of Kuwait
+                                                                                            <?php } elseif ($bank_name == "BNP") { ?>BNP-BNP Paribas
+                                                                                            <?php } elseif ($bank_name == "BBK") { ?>BOB&amp;K-Bank of Bahrain and Kuwait
+                                                                                            <?php } elseif ($bank_name == "BOB") {  ?>BOBBK-Boubyan Bank
+                                                                                            <?php } elseif ($bank_name == "BUR") {  ?> BURGAN-Burgan Bank of Kuwait
+                                                                                            <?php } elseif ($bank_name == "COB") {  ?> CBK- Commercial Bank of Kuwait
+                                                                                            <?php } elseif ($bank_name == "CBK") {  ?> Central- Central Bank of Kuwait
+                                                                                            <?php } elseif ($bank_name == "CIT") {  ?> CITI-CitiBank Kuwait
+                                                                                            <?php } elseif ($bank_name == "DOH") {  ?> DOHA BANK
+                                                                                            <?php } elseif ($bank_name == "GBK") {  ?> GULF- Gulf Bank
+                                                                                            <?php } elseif ($bank_name == "HSB") {  ?> HSBC-HSBC
+                                                                                            <?php } elseif ($bank_name == "IBK") {  ?> IBK-Industrial Bank of Kuwait
+                                                                                            <?php } elseif ($bank_name == "ICK") {  ?> Industrial and Commercial Bank of China Limited - Kuwait
+                                                                                            <?php } elseif ($bank_name == "KFH") {  ?> KFH-Kuwait Finance House
+                                                                                            <?php } elseif ($bank_name == "KIB") {  ?> KIB-Kuwait International Bank
+                                                                                            <?php } elseif ($bank_name == "MSR") {  ?> Mashreq Bank
+                                                                                            <?php } elseif ($bank_name == "MSQ") {  ?> Masqat Bank
+                                                                                            <?php } elseif ($bank_name == "RAJ") {  ?> Masraf Al-Rajhi
+                                                                                            <?php } elseif ($bank_name == "NBK") {  ?> National Bank Of Kuwait NBK
+                                                                                            <?php } elseif ($bank_name == "NBA") {  ?>NBAD-National Bank of Abu Dhabi
+                                                                                            <?php } elseif ($bank_name == "QNB") {  ?> QATAR NATIONAL BANK KUWAIT
+                                                                                            <?php } elseif ($bank_name == "SCB") {  ?> SCB-Saving and Credit Bank
+                                                                                            <?php } elseif ($bank_name == "UNB") {  ?> Union National Bank - Kuwait
+                                                                                            <?php } elseif ($bank_name == "WRB") {  ?> Warba Bank
+                                                                                            <?php } else {
+                                                                                                    echo " ";
+                                                                                                } ?>
+                                                                                            </span>
                                                                                         </font>
                                                                                     </h3>
 
@@ -150,14 +179,19 @@
 
                                                                             </tr>
 
-
-
                                                                             <tr>
-
-                        <td width="100%"> <font size="5" color="#FFFFFF"> {{$civilid}} </font>
-                                                                                </td> </tr><tr>
- <td width="100%"><font size="5" color="#FFFFFF"> {{$chalet_ownership}}</font></td></tr> <tr><td width="100%">
-<font size="5" color="#FFFFFF">{{$agreement}} </font>
+                                                                                <td width="100%">
+                                                                                    <font size="5" color="#FFFFFF">- CIVIL ID: <a href="<?php echo $civilid; ?>">( click here )</a></font>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td width="100%">
+                                                                                    <font size="5" color="#FFFFFF">- Chalet ownership:<a href="<?php echo $chalet_ownership; ?>">( click here )</a></font>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td width="100%">
+                                                                                    <font size="5" color="#FFFFFF"> - Agreement:<a href="<?php echo $agreement; ?>">( click here )</a> </font>
                                                                                 </td>
 
                                                                             </tr>
