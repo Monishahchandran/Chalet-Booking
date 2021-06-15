@@ -238,10 +238,10 @@
                                                                     </h3>
                                                                 </td>
 
-                                                                <td align="right" width="50%"><a href="#" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red">Delete</a> </td>
+                                                                <td align="right" width="50%"><a onclick="document.getElementById('agreement1').value = '';" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red">Delete</a> </td>
                                                             </tr>
                                                             <tr>
-                                                                <td align="center" width="100%" colspan="2" dir="rtl" cellpadding="5"><input type="text" id="first-name" name="agreement[]" class="form-control" dir="rtl"></td>
+                                                                <td align="center" width="100%" colspan="2" dir="rtl" cellpadding="5"><input type="text" id="agreement1" name="agreement[]" class="form-control" dir="rtl"></td>
 
                                                             </tr>
                                                         </table>
@@ -257,13 +257,13 @@
                                                                     </h3>
                                                                 </td>
 
-                                                                <td align="right" width="50%"><a href="#" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red">Delete</a> </td>
+                                                                <td align="right" width="50%"><a onclick="document.getElementById('agreement2').value = '';" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red">Delete</a> </td>
 
                                                             </tr>
 
                                                             <tr>
 
-                                                                <td align="center" width="100%" colspan="2" dir="rtl" cellpadding="5"><input type="text" id="first-name" name="agreement[]" class="form-control" dir="rtl"></td>
+                                                                <td align="center" width="100%" colspan="2" dir="rtl" cellpadding="5"><input type="text" id="agreement2" name="agreement[]" class="form-control" dir="rtl"></td>
 
                                                             </tr>
                                                         </table>

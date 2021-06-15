@@ -9,6 +9,9 @@
 <!-- page content -->
 
 <!-- Active Awards -->
+@if ($message = Session::get('error'))
+<div class="alert alert-danger" role="alert" align="center"> {{ $message }}</div>
+@endif
 <div class="" style="min-height:614px;">
     <div class="clearfix"></div>
     <div class="row">

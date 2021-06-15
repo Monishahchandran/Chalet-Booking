@@ -118,6 +118,13 @@
                                         <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" type="file" required="required" name="civilid" id="civilid" class="form-control"></td>
                                     </tr>
                                 </table>
+                                <br />
+                                @if(!empty($ownerdetails->civil_id))
+                                <?php $fname = base64_encode($ownerdetails->civil_id);
+                                $page = base64_encode('civilid') ?>
+                                <a href="{{ url('/File-Preview') }}/<?php echo $fname; ?>/<?php echo $page; ?>" target="_blank"> <img src="<?php echo  url('uploads/chalet_uploads/civilid/') . '/' . $ownerdetails->civil_id; ?>" alt="civilid" style="width: 135px;
+    height: 139px;;cursor:pointer"></a>
+                                @endif
                             </div>
                         </div>
                         <div class="form-group">
@@ -131,6 +138,13 @@
                                         <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" required="required" type="file" name="ownership" id="ownership" class="form-control"></td>
                                     </tr>
                                 </table>
+                                <br />
+                                @if(!empty($ownerdetails->chalet_ownership))
+                                <?php $co_fname = base64_encode($ownerdetails->chalet_ownership);
+                                $page = base64_encode('chalet_ownership') ?>
+                                <a href="{{ url('/File-Preview') }}/<?php echo $co_fname; ?>/<?php echo $page; ?>" target="_blank"> <img src="<?php echo  url('uploads/chalet_uploads/ownership/') . '/' . $ownerdetails->chalet_ownership; ?>" alt="civilid" style="width: 135px;
+    height: 139px;;cursor:pointer"></a>
+                                @endif
                             </div>
                         </div>
                         <div class="form-group">
@@ -144,6 +158,13 @@
                                         <td align="center" width="100%" colspan="2" cellpadding="5"><input class="col-md-12 col-sm-12 col-xs-12" type="file" required="required" name="agreement" id="agreement" class="form-control"></td>
                                     </tr>
                                 </table>
+                                <br />
+                                @if(!empty($ownerdetails->agreement))
+                                <?php $co_fname = base64_encode($ownerdetails->agreement);
+                                $page = base64_encode('agreement') ?>
+                                <a href="{{ url('/File-Preview') }}/<?php echo $co_fname; ?>/<?php echo $page; ?>" target="_blank"> <img src="<?php echo  url('uploads/chalet_uploads/agreement/') . '/' . $ownerdetails->agreement; ?>" alt="civilid" style="width: 135px;
+    height: 139px;;cursor:pointer"></a>
+                                @endif
                             </div>
                         </div>
                         <h3>Bank Detail</h3>
@@ -231,12 +252,12 @@
                             <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
                                 <button id="submit-data" type="button" class="btn btn-success" disabled="" onclick="myFunction()">Save</button>
                                 <span id="changebutton">
-                                @if($ownerdetails->block_status=='0')
-                                <button id="blockbutton" type="button" onclick="blockowner('1');" class="btn btn-danger">Block</button>
-                                @else
-                                <button id="blockbutton" type="button" onclick="blockowner('0');" class="btn btn-info">UnBlock</button>
-                                @endif
-</span>
+                                    @if($ownerdetails->block_status=='0')
+                                    <button id="blockbutton" type="button" onclick="blockowner('1');" class="btn btn-danger">Block</button>
+                                    @else
+                                    <button id="blockbutton" type="button" onclick="blockowner('0');" class="btn btn-info">UnBlock</button>
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </form>
@@ -332,13 +353,14 @@
         // // this.getField("txtIBAN").setFocus();
         // // exit();
         // }
+        // alert(IBAN.length);
         if (IBAN != "") {
 
-            if (IBAN.length != 23) {
+            if (IBAN.length > 34) {
                 // alert("IBAN Validation Error!! IBAN should contain 23 Characters");
                 // this.getField("txtIBAN").setFocus();
                 // exit();
-                $('#errormessage').html('IBAN Validation Error!! IBAN should contain 23 Characters').css('color', 'red');
+                $('#errormessage').html('IBAN Validation Error!! IBAN should not exceed 34 Characters').css('color', 'red');
                 $('#error_message').val('1');
             } else {
 
@@ -466,6 +488,7 @@
 
         // });
     }
+
     function blockowner($status) {
         $ownerid = $('#ownerid').val();
         $.ajaxSetup({
@@ -488,12 +511,12 @@
             },
             success: function(data) {
                 //   alert(data.success);
-                if($status==1)
-                {$('#changebutton').html('<button id="blockbutton" type="button" onclick="blockowner('+0+');" class="btn btn-info">UnBlock</button>');
-                }else{
-                    $('#changebutton').html(' <button id="blockbutton" type="button" onclick="blockowner('+1+');" class="btn btn-danger">Block</button>');  
+                if ($status == 1) {
+                    $('#changebutton').html('<button id="blockbutton" type="button" onclick="blockowner(' + 0 + ');" class="btn btn-info">UnBlock</button>');
+                } else {
+                    $('#changebutton').html(' <button id="blockbutton" type="button" onclick="blockowner(' + 1 + ');" class="btn btn-danger">Block</button>');
                 }
-                },
+            },
             complete: function(data) {
                 // Hide image container
                 // $("#loader1").hide();
@@ -503,4 +526,5 @@
         // });
     }
 </script>
+
 @endsection

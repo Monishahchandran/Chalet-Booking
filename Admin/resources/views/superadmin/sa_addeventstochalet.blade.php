@@ -54,6 +54,9 @@
 		}
 	}
 </style>
+@if ($message = Session::get('error'))
+<div class="alert alert-danger" role="alert" align="center"> {{ $message }}</div>
+@endif
 <div>
 	<!-- /User Blocked -->
 	<div class="x_panel">
@@ -92,7 +95,7 @@
 							<input type="hidden" name="event_id" id="event_id" value="@if(!empty($event)){{$event->id}}@endif" />
 							<h3>:<input type="datetime-local" style="border: transparent;" name="event_checkin" id="event_checkin" value="@if(!empty($event)){{ date('Y-m-d\TH:i', strtotime($event->check_in)) }}@endif" placeholder="01/05/2021" /></h3>
 							<h3>:<input type="datetime-local" name="event_checkout" id="event_checkout" style="border: transparent;" value="@if(!empty($event)){{ date('Y-m-d\TH:i', strtotime($event->check_out)) }}@endif" placeholder="30/09/2021" /> </h3>
-							<button id="send" type="button" onclick="myFunction()" class="btn btn-success">Edit Date</button>
+							<button id="send" type="button" onclick="checkdate()" class="btn btn-success">Edit Date</button>
 							<br>
 
 							<br>
@@ -113,9 +116,10 @@
 						<th width="1%">Photo</th>
 						<th width="30%">Owner Details</th>
 						<th width="30%">Chalet Details</th>
-						<th width="10%">Week</th>
+						<th width="10%">Rent</th>
+						<!-- <th width="10%">Week</th>
 						<th width="10%">Weekend</th>
-						<th width="10%">Weekdays</th>
+						<th width="10%">Weekdays</th> -->
 						<th width="10%">Status</th>
 					</tr>
 				</thead>
@@ -143,6 +147,9 @@
 							Week : <strong>{{$cdetails->week_rent}}</strong> KD
 						</td>
 						<td>
+							<input type="text" id="rent<?php echo $loop->iteration; ?>" value="@if(!empty($chaletevent)){{$chaletevent->rent}}@endif" style="height: 30px;" size="6" onchange="rentFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','rent<?php echo $loop->iteration; ?>');" maxlength="4"> KD
+						</td>
+						<!-- <td>
 							<input type="text" id="week_price<?php echo $loop->iteration; ?>" value="@if(!empty($chaletevent)){{$chaletevent->week_price}}@endif" style="height: 30px;" size="6" onchange="weekFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','week_price<?php echo $loop->iteration; ?>');" maxlength="4"> KD
 						</td>
 						<td>
@@ -150,21 +157,21 @@
 						</td>
 						<td>
 							<input type="text" id="weekdays_eventprice<?php echo $loop->iteration; ?>" value="@if(!empty($chaletevent)){{$chaletevent->weekdays_price}}@endif" style="height: 30px;" onchange="weekdaysFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','weekdays_eventprice<?php echo $loop->iteration; ?>');" size="6" maxlength="4"> KD
-						</td>
+						</td> -->
 						<td align="center">
 							@if(!empty($chaletevent))
 							@if($chaletevent->chaletevent_status==1)
-							<label><input type="checkbox" id="myCheck<?php echo $loop->iteration; ?>" onclick="mystatusFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','mycheck<?php echo $loop->iteration; ?>')" class="js-switch" name="seasonal_status" checked> </label>
+							<label><input checked type="checkbox" id="myCheck<?php echo $loop->iteration; ?>" onclick="mystatusFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','myCheck<?php echo $loop->iteration; ?>')" class="js-switch" name="seasonal_status" > </label>
 							@endif
 
 							@if($chaletevent->chaletevent_status==0)
-							<label><input type="checkbox" id="myCheck<?php echo $loop->iteration; ?>" onclick="mystatusFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','mycheck<?php echo $loop->iteration; ?>')" class="js-switch" name="seasonal_status"> </label>
+							<label><input type="checkbox" id="myCheck<?php echo $loop->iteration; ?>" onclick="mystatusFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','myCheck<?php echo $loop->iteration; ?>')" class="js-switch" name="seasonal_status"> </label>
 							@endif
 
 							@endif
 
 							@if(empty($chaletevent))
-							<label><input type="checkbox" id="mycheck<?php echo $loop->iteration; ?>" onclick="mystatuscheckFunction('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','mycheck<?php echo $loop->iteration; ?>')" name="seasonal_status" class="js-switch"> </label>
+							<label><input type="checkbox" id="mycheck<?php echo $loop->iteration; ?>" onclick="checkrent('<?php echo $cdetails->cid; ?>','<?php echo $event->id; ?>','mycheck<?php echo $loop->iteration; ?>','rent<?php echo $loop->iteration; ?>')" name="seasonal_status" class="js-switch"> </label>
 							@endif
 						</td>
 					</tr>
@@ -174,7 +181,19 @@
 		</div>
 	</div>
 </div>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
+	function checkdate() {
+		$event_checkin = $("#event_checkin").val();
+		$event_checkout = $("#event_checkout").val();
+		if ($event_checkout<$event_checkin) {
+			swal("", "Check Out date should be Greater than Check in date", "info");
+		} else {
+			myFunction();
+		}
+	}
 	function myFunction() {
 		$event_id = $("#event_id").val();
 		$event_checkin = $("#event_checkin").val();
@@ -200,7 +219,7 @@
 			},
 			success: function(data) {
 				//   alert(data.success);
-
+			
 			},
 			complete: function(data) {
 				// Hide image container
@@ -216,13 +235,15 @@
 		$tid = "#" + $field;
 		if ($($tid).prop('checked') == true) {
 			$($tid).prop('checked', true);
-			// alert("now checked");
+			// alert("checked");
 			var check = 1;
 		} else {
-			// alert("now un-checked");
+			// alert("not checked");
 			$($tid).prop('checked', false);
 			var check = 0;
 		}
+
+
 		$.ajaxSetup({
 			headers: {
 				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -256,6 +277,21 @@
 		});
 
 		// });
+	}
+
+	function checkrent($cid, $eid, $field, $rent) {
+		var rid = "#" + $rent;
+		var rent = $(rid).val();
+		$tid = "#" + $field;
+		// alert(rent);
+		if (!$(rid).val()) {
+			// alert("Rent is Empty");
+			swal("Rent is Empty!", "Status can't be changed if rent is not added!", "info");
+			$($tid).prop('checked', false);
+		} else {
+			// alert("not empty");
+			mystatuscheckFunction($cid, $eid, $field);
+		}
 	}
 
 	function mystatuscheckFunction($cid, $eid, $field) {
@@ -392,6 +428,41 @@
 			url: "{{ route('update_weekdayser') }}",
 			data: {
 				weekdays_price: $weekdays_price,
+				chaletid: $chaletid,
+				eventid: $eventid
+			},
+			beforeSend: function() {
+				// Show image container
+				// $("#loader1").show();
+			},
+			success: function(data) {
+				//   alert(data.success);
+
+			},
+			complete: function(data) {
+				// Hide image container
+				// $("#loader1").hide();
+			}
+		});
+	}
+
+	function rentFunction($cid, $eid, $field) {
+		$tid = "#" + $field;
+		$rent = $($tid).val();
+		$chaletid = $cid;
+		$eventid = $eid;
+		// alert($chaletid);
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			}
+		});
+		// data:{status:name, password:password, email:email},
+		$.ajax({
+			type: 'POST',
+			url: "{{ route('update_rent') }}",
+			data: {
+				rent: $rent,
 				chaletid: $chaletid,
 				eventid: $eventid
 			},

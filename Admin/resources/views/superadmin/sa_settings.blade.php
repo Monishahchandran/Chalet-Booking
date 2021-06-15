@@ -197,30 +197,30 @@
                                 <input required="required" type="text" name="insta_url" id="insta_url" value="{{$admindata->insta_url}}" class="form-control" placeholder="http//www.instagram.com/aby.chalet">
                             </div>
                         </div>
-                        <div class="item form-group">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12">URL : Terms
+                        <!-- <div class="item form-group"> -->
+                            <!-- <label class="control-label col-md-3 col-sm-3 col-xs-12">URL : Terms -->
                             <!-- <i class="fa fa-asterisk" aria-hidden="true" id="farequired" style="color: red;font-size: 10px;"></i> -->
-    </label>
-                            <div class="col-md-5 col-sm-9 col-xs-12">
+    <!-- </label> -->
+                            <!-- <div class="col-md-5 col-sm-9 col-xs-12">
                                 <input required="required" type="text" name="terms_url" id="terms_url" value="{{$admindata->terms_url}}" class="form-control" placeholder="http//www.domain.com/Terms">
                             </div>
-                        </div>
+                        </div> -->
                         <div class="item form-group">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12">URL : Legal & Privacy
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">URL : Terms - Legal & Privacy
                             <!-- <i class="fa fa-asterisk" aria-hidden="true" id="farequired" style="color: red;font-size: 10px;"></i> -->
                             </label>
                             <div class="col-md-5 col-sm-9 col-xs-12">
                                 <input required="required" name="landp_url" id="landp_url" value="{{$admindata->l_and_p_url}}" type="text" class="form-control" placeholder="http//www.domain.com/Legal">
                             </div>
                         </div>
-                        <div class="item form-group">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12">URL : Share App
+                        <!-- <div class="item form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">URL : Share App -->
                             <!-- <i class="fa fa-asterisk" aria-hidden="true" id="farequired" style="color: red;font-size: 10px;"></i> -->
-    </label>
-                            <div class="col-md-5 col-sm-9 col-xs-12">
-                                <input required="required" name="shareapp_url" id="shareapp_url" value="{{$admindata->shareapp_url}}" type="text" class="form-control" placeholder="http//www.domain.com/Share">
+    <!-- </label> -->
+                            <!-- <div class="col-md-5 col-sm-9 col-xs-12">
+                                <input  name="shareapp_url" id="shareapp_url" value="{{$admindata->shareapp_url}}" type="text" class="form-control" placeholder="http//www.domain.com/Share">
                             </div>
-                        </div>
+                        </div> -->
                         <div class="item form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Invite friend</label>
                             <div class="col-md-5 col-sm-9 col-xs-12">

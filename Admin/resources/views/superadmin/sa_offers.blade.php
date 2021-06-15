@@ -63,6 +63,11 @@
 			{{ $message }}
 		</div>
 		@endif
+		@if ($message = Session::get('error'))
+		<div class="alert alert-danger" role="alert" align="center">
+			{{ $message }}
+		</div>
+		@endif
 		 <!-- Image loader -->
 		 <div id='loader1' class="lds-hourglass" style="display:none;"></div>
         <!-- Image loader -->
@@ -110,7 +115,7 @@
 							//Print it out in a human-readable format.
 							// echo date("M d,Y H:i:s", $time);
 							$end_date = date("Y-m-d H:i:s", $etime);
-							// echo $enddate;
+							// echo $end_date;
 							// die();
 							$current_date= date('Y-m-d H:i:s');
 							?>
@@ -173,11 +178,12 @@
 							// $datetime='2021-05-19 05:23:00';
 							$offer_expiry = $admindata->offer_expiry;
 							$datetime = date("Y-m-d H:i:s", strtotime($cdetails->offer_checkin));
+							// echo $datetime;
 							$timestamp = strtotime($datetime);
 							$time = $timestamp - ($offer_expiry * 60 * 60);
 							// echo date("Y-m-d H:i:s", $time);
 							//Print it out in a human-readable format.
-							// echo date("M d,Y H:i:s", $time);
+							// echo  date("Y-m-d H:i:s", $time);
 							$enddate = date("M d, Y H:i:s", $time);
 							// echo $enddate;
 							// die();

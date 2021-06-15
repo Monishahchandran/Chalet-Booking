@@ -155,7 +155,8 @@ Total Reservations : <a class="btn btn-info  btn-xs" href="{{ url('/User-Reserva
                             <td>
                             <?php $id = base64_encode($rdetails->rid); ?>
                                 @if($rdetails->status=='Remaining')
-                                <a class="btn btn-warning btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid ( Remaining )</a @endif @if($rdetails->status=='Paid')
+                                <a class="btn btn-warning btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid ( Remaining )</a>
+                                 @endif @if($rdetails->status=='Paid')
                                 <a class="btn btn-success btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid</a>
                                 @endif
                                 @if(empty($rdetails->status))

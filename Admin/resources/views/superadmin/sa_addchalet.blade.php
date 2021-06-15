@@ -332,10 +332,10 @@
                                     <div class="fa fa-arrows"></div>
                                   </h3>
                                 </td>
-                                <td align="right" width="50%"><a href="#" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red">Delete</a> </td>
+                                <td align="right" width="50%"><a onclick="document.getElementById('chaletdetail1').value = '';" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red">Delete</a> </td>
                               </tr>
                               <tr>
-                                <td align="center" width="100%" colspan="2"  cellpadding="5"><input type="text" id="first-name" name="chalet_detail[]" class="form-control" ></td>
+                                <td align="center" width="100%" colspan="2"  cellpadding="5"><input type="text" id="chaletdetail1" name="chalet_detail[]" class="form-control" ></td>
                               </tr>
                               <tr>
                                 <td align="center" width="50%" style="padding-right: 80px">
@@ -343,11 +343,11 @@
                                     <div class="fa fa-arrows"></div>
                                   </h3>
                                 </td>
-                                <td align="right" width="50%"><a href="#" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red" >Delete</a> </td>
+                                <td align="right" width="50%"><a onclick="document.getElementById('chaletdetail2').value = '';" style="padding: 2px 5px 2px 5px" class="btn btn-primary bg-red" >Delete</a> </td>
                               </tr>
                               <tr>
                               <!-- dir="rtl"dir="rtl"dir="rtl"dir="rtl" -->
-                                <td align="center" width="100%" colspan="2"  cellpadding="5"><input type="text" id="first-name" name="chalet_detail[]" class="form-control" ></td>
+                                <td align="center" width="100%" colspan="2"  cellpadding="5"><input type="text" id="chaletdetail2" name="chalet_detail[]" class="form-control" ></td>
                               </tr>
                             </table>
                           </td>

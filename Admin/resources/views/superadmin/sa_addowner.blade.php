@@ -313,11 +313,11 @@
         // }
         if (IBAN != "") {
 
-            if (IBAN.length != 23) {
+            if (IBAN.length > 34) {
                 // alert("IBAN Validation Error!! IBAN should contain 23 Characters");
                 // this.getField("txtIBAN").setFocus();
                 // exit();
-                $('#errormessage').html('IBAN Validation Error!! IBAN should contain 23 Characters').css('color', 'red');
+                $('#errormessage').html('IBAN Validation Error!! IBAN should not exceed 34 Characters').css('color', 'red');
                 $('#error_message').val('1');
             } else {
 

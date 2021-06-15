@@ -165,11 +165,11 @@
         </section>
       </div>
     </div>
-    <div class="row no-print">
-      <div class="col-xs-12">
-        <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print bg-xs"></i> Print</button>
+    < <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print bg-xs"></i> Print</button>
       </div>
-    </div>
+    </div>div class="row no-print">
+      <div class="col-xs-12">
+       
   </div>
   <!-- jQuery -->
   <script src="{{url('vendors/jquery/dist/jquery.min.js')}}"></script>
