@@ -22,6 +22,7 @@ use App\Models\Offers;
 use App\Models\Agreement;
 use App\Models\Reservation;
 use App\Models\SystemNotification;
+use App\Models\ContactUs;
 
 use Validator, Redirect, Response;
 use Image;
@@ -84,9 +85,8 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        // $user_id = base64_decode(Session::get('adminid'));
-        // print_r(Session::get('adminlog'));
-        return view('superadmin/sa_chaletcontactus');
+        $data['contactdata'] = ContactUs::select('*')->get();
+        return view('superadmin/sa_chaletcontactus', $data);
     }
     public function settings()
     {
@@ -109,7 +109,7 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $data['userdetails'] = Users::select('*')->get();
+        $data['userdetails'] = Users::select('*')->where('email_verification', '1')->get();
         return view('superadmin/sa_users', $data);
     }
     public function usersblocked()
@@ -117,8 +117,8 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $data['userdetails'] = Users::select('*')->where('block_status','1')->get();
-        return view('superadmin/sa_usersblocked',$data);
+        $data['userdetails'] = Users::select('*')->where('block_status', '1')->get();
+        return view('superadmin/sa_usersblocked', $data);
     }
     public function notifications()
     {
@@ -680,9 +680,12 @@ class SuperAdmin_Controller extends Controller
     }
     public function addholidayandevent(Request $request)
     {
-
-        HolidayAndEvents::insert([['event_name' => $request->event_name, 'check_in' => $request->event_checkin, 'check_out' => $request->event_checkout]]);
-        return redirect('/Holidays-and-events')->with('success', 'Successfully Created Holiday And Events');
+        if ($request->event_checkin < $request->event_checkout) {
+            HolidayAndEvents::insert([['event_name' => $request->event_name, 'check_in' => $request->event_checkin, 'check_out' => $request->event_checkout]]);
+            return redirect('/Holidays-and-events')->with('success', 'Successfully Created Holiday And Events');
+        } else {
+            return back()->with('error', 'Check Out date should be Greater than Check in date');
+        }
     }
     public function updateholidayandevent_view($id)
     {
@@ -736,7 +739,7 @@ class SuperAdmin_Controller extends Controller
         if ($count == 0) {
             ChaletEvent::insert([['event_id' => $eid, 'chalet_id' => $cid, 'week_price' => $week_eventprice]]);
         } else {
-            print_r(array('week_price' => $week_eventprice));
+            // print_r(array('week_price' => $week_eventprice));
             ChaletEvent::where('event_id', $eid)->where('chalet_id', $cid)->update(array('week_price' => $week_eventprice));
         }
 
@@ -769,6 +772,21 @@ class SuperAdmin_Controller extends Controller
         }
         return response()->json(['success' => 'Successfully Changed Status.']);
     }
+    public function update_rent(Request $request)
+    {
+        $rent = $request->rent;
+        $cid = $request->chaletid;
+        $eid = $request->eventid;
+        $count = ChaletEvent::where('event_id', $eid)->where('chalet_id', $cid)->count();
+        // print_r($eid);
+        if ($count == 0) {
+            ChaletEvent::insert([['event_id' => $eid, 'chalet_id' => $cid, 'rent' => $rent]]);
+        } else {
+            ChaletEvent::where('event_id', $eid)->where('chalet_id', $cid)->update(array('rent' => $rent));
+        }
+
+        return response()->json(['success' => 'Successfully Changed Status.']);
+    }
     public function edit_eventdate(Request $request)
     {
         HolidayAndEvents::where('id', $request->event_id)->update(array('check_in' => $request->event_checkin, 'check_out' => $request->event_checkout));
@@ -787,14 +805,39 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $chalet_id = explode(',', $request->chalet_id);
-        foreach ($chalet_id as $id) {
-            // print_r($id);
-            if (!empty($id)) {
-                Offers::insert([['discount_amt' => $request->discount_amt, 'offer_checkin' => $request->offer_checkin, 'offer_checkout' => $request->offer_checkout, 'chaletid' => $id]]);
-            }
+        $checkin_timestamp = strtotime($request->offer_checkin);
+        $checkin = date('D', $checkin_timestamp);
+        $checkout_timestamp = strtotime($request->offer_checkout);
+        $checkout = date('D', $checkout_timestamp);
+        // echo 'start=>'.$checkin;echo '  ';echo 'end=>'.$checkout;
+        // die();
+        if (($checkin == 'Sun' &&  $checkout == 'Wed')) {
+            $package = 'weekdays';
+        } elseif (($checkin == 'Thu' &&  $checkout == 'Sat')) {
+            $package = 'weekend';
+        } elseif (($checkin == 'Sun' &&  $checkout == 'Sat')) {
+            $package = 'weekA';
+        } else {
+            $package = 'weekB';
         }
-        return redirect('/Offers')->with('success', 'Successfully Added Offers Chalet');
+
+        if ($request->offer_checkin < $request->offer_checkout) {
+            if (($checkin == 'Sun' &&  $checkout == 'Wed') || ($checkin == 'Thu' &&  $checkout == 'Sat') || ($checkin == 'Sun' &&  $checkout == 'Sat') || ($checkin == 'Thu' &&  $checkout == 'Wed')) {
+                //    echo "inside";die();
+                $chalet_id = explode(',', $request->chalet_id);
+                foreach ($chalet_id as $id) {
+                    // print_r($id);die();
+                    if (!empty($id)) {
+                        Offers::insert([['package' => $package, 'discount_amt' => $request->discount_amt, 'offer_checkin' => $request->offer_checkin, 'offer_checkout' => $request->offer_checkout, 'chaletid' => $id]]);
+                    }
+                }
+                return redirect('/Offers')->with('success', 'Successfully Added Offers Chalet');
+            } else {
+                return redirect('/Offers')->with('error', "Offer checkin, checkout date's are not included in any if the packages");
+            }
+        } else {
+            return redirect('/Offers')->with('error', "Check Out date should be Greater than Check in date");
+        }
     }
     public function addagreement(Request $request)
     {
@@ -983,10 +1026,10 @@ class SuperAdmin_Controller extends Controller
             'gender' => $request->gender,
             'password' => $request->password
         );
-        Mail::send('ownermail', $data, function ($message) use ($email) {
-            $message->to($email)->subject('Message');
-            // $message->from('varshag.srishti@gmail.com', 'The Stock');
-        });
+        // Mail::send('ownermail', $data, function ($message) use ($email) {
+        //     $message->to($email)->subject('Message');
+        //     // $message->from('varshag.srishti@gmail.com', 'The Stock');
+        // });
         return back()->with('success', 'Successfully Updated Details');
     }
     public function owner_chaletlist($id)
@@ -1026,17 +1069,17 @@ class SuperAdmin_Controller extends Controller
                 //    print_r($ownerdetails);die();
                 $data['owner_name'] = $ownerdetails->first_name . ' ' . $ownerdetails->last_name;
                 if (!empty($ownerdetails->civil_id)) {
-                    $civilid = "- CIVIL ID:" . url('uploads/chalet_uploads/civilid/') . '/' . $ownerdetails->civil_id;
+                    $civilid =  url('uploads/chalet_uploads/civilid/') . '/' . $ownerdetails->civil_id;
                 } else {
                     $civilid = "";
                 }
                 if (!empty($ownerdetails->chalet_ownership)) {
-                    $chalet_ownership = "- Chalet ownership:" . url('uploads/chalet_uploads/ownership/') . '/' . $ownerdetails->chalet_ownership;
+                    $chalet_ownership = url('uploads/chalet_uploads/ownership/') . '/' . $ownerdetails->chalet_ownership;
                 } else {
                     $chalet_ownership = "";
                 }
                 if (!empty($ownerdetails->agreement)) {
-                    $agreement = "- Agreement:" . url('uploads/chalet_uploads/agreement/') . '/' . $ownerdetails->chalet_ownership;
+                    $agreement = url('uploads/chalet_uploads/agreement/') . '/' . $ownerdetails->agreement;
                 } else {
                     $agreement = "";
                 }
@@ -1049,8 +1092,9 @@ class SuperAdmin_Controller extends Controller
                     'chalet_ownership' => $chalet_ownership,
                     'agreement' => $agreement
                 );
-                Mail::send('bankmail', $data, function ($message) use ($email) {
-                    $message->to($email)->subject('Message');
+                $title = 'Owner Information :' . $ownerdetails->first_name . ' ' . $ownerdetails->last_name;;
+                Mail::send('bankmail', $data, function ($message) use ($email, $title) {
+                    $message->to($email)->subject($title);
                     // $message->from('varshag.srishti@gmail.com', 'The Stock');
                 });
                 if (Mail::failures()) {
@@ -1215,15 +1259,15 @@ class SuperAdmin_Controller extends Controller
         return response()->json(['success' => 'Successfully Blocked.']);
     }
     public function unblockuser($id)
-    { 
+    {
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $id=base64_decode($id);
+        $id = base64_decode($id);
         $userdetails = (new \App\Helper)->get_user_details($id);
         // print_r( $userdetails);die();
         Users::where('id', $id)->update(array('block_status' => '0'));
-        return redirect('/users-blocked')->with('success', $userdetails->first_name.' '.$userdetails->last_name.', Has been UnBlock');
+        return redirect('/users-blocked')->with('success', $userdetails->first_name . ' ' . $userdetails->last_name . ', Has been UnBlock');
     }
     public function cancelreservation($id, $page)
     {
@@ -1244,7 +1288,7 @@ class SuperAdmin_Controller extends Controller
         } else if ($page == 'depositinvoice') {
             return redirect('/Chalet-Invoices-Total-Deposits')->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
             For Chalet ( " . $reservation->chalet_name . " )");
-        }else if($page == 'userreservation') {
+        } else if ($page == 'userreservation') {
             $id = base64_encode($reservation->userid);
             // echo $id;die();
             return redirect('/User-Reservations/' . $id)->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
@@ -1265,26 +1309,33 @@ class SuperAdmin_Controller extends Controller
         $user_id = base64_decode($id);
         $data['userdetails'] = Users::select('*')->where('id', $user_id)->first();
         $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->get();
-    //    print_r($data['reservationlist']);die();
+        //    print_r($data['reservationlist']);die();
         return view('superadmin/sa_userreservation', $data);
     }
-    public function userinvoice($id,$page)
+    public function userinvoice($id, $page)
     {
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
         $user_id = base64_decode($id);
         $page = base64_decode($page);
-        $data['pages'] =  $page ;
+        $data['pages'] =  $page;
         $data['userdetails'] = Users::select('*')->where('id', $user_id)->first();
-        if($page=='paid')
-        {$data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'paid')->get();
-        }elseif($page=='unpaid'){
+        if ($page == 'paid') {
+            $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'paid')->get();
+        } elseif ($page == 'unpaid') {
             $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
-        }else{
+        } else {
             $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->where('tb_reservation.userid', $user_id)->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
         }
-            //    print_r($data['reservationlist']);die();
+        //    print_r($data['reservationlist']);die();
         return view('superadmin/sa_userinvoices', $data);
+    }
+    public function preview($filename, $page)
+    {
+        $data['filename'] = base64_decode($filename);
+        $data['page'] = base64_decode($page);
+        // print_r($data['page']);die();
+        return view('superadmin/sa_filepreview', $data);
     }
 }
