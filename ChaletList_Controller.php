@@ -14,6 +14,7 @@ class ChaletList_Controller extends Controller
   {
     $chalet = DB::table('tb_owner')
       ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
+       ->where('tb_chalet.is_activestatus','=',1)
       ->get();
     //print_r($chalet);
     $cha = array();
@@ -97,28 +98,15 @@ class ChaletList_Controller extends Controller
     $data['package'] = $request->package;
 
     $chaid = "";
-   $season = DB::table('tb_seasondates')->where('season_start','<=', $request->from_date)->where('season_end','>=', $request->to_date)->count();
-if($season>0){
-  if ($data['package'] == 'weekdays') {
-      $rent = 'weekdays_seasonprice';
-    } else if ($data['package'] == 'weekend') {
-      $rent = 'weekend_seasonprice';
-    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
-      $rent = 'week_seasonprice';
-    }
+  //date_default_timezone_set('Asia/Kolkata');
+$fromYear=date("Y", strtotime($request->from_date));
 
-}
+$fromdate1=date("d/m", strtotime($request->from_date));
 
-else{
+$todate1=date("d/m", strtotime($request->to_date));
+$currentYear= date('Y');
 
-    if ($data['package'] == 'weekdays') {
-      $rent = 'weekday_rent';
-    } else if ($data['package'] == 'weekend') {
-      $rent = 'weekend_rent';
-    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
-      $rent = 'week_rent';
-    }
-  }
+
 
 
     $chalet2 = DB::table('tb_reservation')->where('check_in', $request->from_date)->where('check_out', $request->to_date)->get();
@@ -150,6 +138,99 @@ else{
       $id = $chaletlist->id;
 
       $owner = $chaletlist->ownerid;
+      $season_status=$chaletlist->season_status;
+
+
+$season1 = DB::table('tb_seasondates')->count();
+if($fromYear==$currentYear){
+if($season1>0){
+$season = DB::table('tb_seasondates')->first();
+$season_start=$season->season_start;
+$season_end=$season->season_end;
+
+
+
+$date=$season_start.'/'.$currentYear;
+
+$orderdate = explode('/', $date);
+ $month  = $orderdate[1];
+ $day= $orderdate[0];
+$year  = $orderdate[2];
+$date1=$season_end.'/'.$currentYear;
+
+$orderdate1 = explode('/', $date1);
+ $month1  = $orderdate1[1];
+ $day1= $orderdate1[0];
+$year1  = $orderdate1[2];
+
+
+$start=date("Y/m/d", strtotime($year.'/'.$month.'/'.$day));
+//echo $start;
+
+$from=date("Y/m/d", strtotime($request->from_date));
+$end=date("Y/m/d", strtotime($year1.'/'.$month1.'/'.$day1));
+$to=date("Y/m/d", strtotime($request->to_date));
+
+
+if(($start <=$from)&&($end>=$to)&&($season_status==1)){
+  if ($data['package'] == 'weekdays') {
+     
+if($chaletlist->weekdays_seasonprice == null) {
+$rent = 'weekday_rent';
+}
+else{
+   $rent = 'weekdays_seasonprice';
+}
+
+    } else if ($data['package'] == 'weekend') {
+      if($chaletlist->weekend_seasonprice == null) {
+$rent = 'weekend_rent';
+}
+else{
+   $rent = 'weekend_seasonprice';
+}
+
+
+     
+    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
+
+       if($chaletlist->week_seasonprice == null) {
+$rent = 'week_rent';
+}
+else{
+   $rent = 'week_seasonprice';
+}
+     
+    }
+
+}}
+else{
+
+    if ($data['package'] == 'weekdays') {
+      $rent = 'weekday_rent';
+    } else if ($data['package'] == 'weekend') {
+      $rent = 'weekend_rent';
+    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
+      $rent = 'week_rent';
+    }
+  }
+}
+
+else{
+
+    if ($data['package'] == 'weekdays') {
+      $rent = 'weekday_rent';
+    } else if ($data['package'] == 'weekend') {
+      $rent = 'weekend_rent';
+    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
+      $rent = 'week_rent';
+    }
+  }
+
+
+
+
+      
 
       $result1 = DB::table('tb_chaletdetails')->where('chaletid', $id)->where('ownerid', $chaletlist->ownerid)->get();
       $cha = array();
@@ -243,8 +324,8 @@ else{
 
 
     $result1 = DB::table('tb_holidayandevents')
-      ->Join('tb_chaletevents', 'tb_holidayandevents.id', '=', 'tb_chaletevents.event_id')
-      ->where('tb_chaletevents.chaletevent_status', 1)
+      ->leftJoin('tb_chaletevents', 'tb_holidayandevents.id', '=', 'tb_chaletevents.event_id')
+      ->select('*','tb_holidayandevents.id as hid')
       ->where('tb_holidayandevents.holiday_status', 1)
      ->groupBy('tb_holidayandevents.event_name')
       ->get();
@@ -276,6 +357,7 @@ $holi=array();
        
          foreach ($sqlholiday as $holidayresult) {
           $chaletid = $holidayresult->chalet_id;
+          $eventrent=$holidayresult->rent;
 
            $chalet = DB::table('tb_owner')
           ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
@@ -327,7 +409,7 @@ $holi=array();
             'check_in' => ($holiday->check_in == null) ? "" : date("Y-m-d", strtotime($holiday->check_in)),
             'check_out' => ($holiday->check_out == null) ? "" : date("Y-m-d", strtotime($holiday->check_out)),
 
-            'rent' => ($chaletlist->weekday_rent == null) ? "" :  $chaletlist->weekday_rent,
+            'rent' => ($eventrent == null) ?  $chaletlist->weekday_rent :  $eventrent,
             'admincheck_in' => $check_in,
             'admincheck_out' => $check_out,
             'owner_id' => ($chaletlist->ownerid == null) ? "" : $chaletlist->ownerid,
@@ -356,11 +438,11 @@ $holi=array();
          }
        }
          // $holi=array();
-         $holi[] = array(
-            'id' => $holidayresult->id,
-            'event_name' => ($holidayresult->event_name == null) ? "" : $holidayresult->event_name,
-            'events_checkin' => ($holidayresult->check_in == null) ? "" : date("Y-m-d", strtotime($holidayresult->check_in)),
-            'events_checkout' => ($holidayresult->check_out == null) ? "" : date("Y-m-d", strtotime($holidayresult->check_out)),
+            $holi[] = array(
+            'id' => $holiday->hid,
+            'event_name' => ($holiday->event_name == null) ? "" : $holiday->event_name,
+            'events_checkin' => ($holiday->check_in == null) ? "" : date("Y-m-d", strtotime($holiday->check_in)),
+            'events_checkout' => ($holiday->check_out == null) ? "" : date("Y-m-d", strtotime($holiday->check_out)),
             'user_details' => $chalet_list
 
           );
