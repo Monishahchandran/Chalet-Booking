@@ -110,7 +110,7 @@
 
             if (x < max_fields) {
                 x++;
-                $(wrapper).append('<div><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" name="myImage" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />User Name <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" placeholder="Moho" required="required" class="form-control"><br>Phone <input  style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"><br>whatsapp <input  style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"><br><a href="#" class="delete">Delete</a><div class="ln_solid"></div></div>'); //add input box
+                $(wrapper).append('<div><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" name="uploadphoto[]" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />User Name <input name="contacts[][uname]" style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" placeholder="Moho" required="required" class="form-control"><br>whatsapp <input name="contacts[][watsapp]" style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"><br><a href="#" class="delete">Delete</a><div class="ln_solid"></div></div>'); //add input box
             } else {
                 alert('You Reached the limits')
             }
@@ -136,95 +136,201 @@
                 </div>
                 <div class="x_content">
                     <!-- Photo of Chalet -->
-                    <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td align="right" width="100%" valign="top">
-                                    <table border="0" width="100%">
-                                        <tr>
+                    @if($contactdata->isEmpty())
+                    <form class="form-horizontal form-label-left" method="POST" action="{{ url('addcontacts') }}" enctype="multipart/form-data" id="myform">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
-                                            <td align="center" width="50%">
-                                                <h3 style="margin: 5px">
-                                                    <div class="fa fa-arrows"></div>
-                                                </h3>
-                                            </td>
-                                            <td align="right" width="50%"><a style="margin: 0px; width: 60px" href="Chalet-edit.php" class="btn btn-primary bg-red">Delete</a></td>
+                        <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr id="block1">
+                                    <td align="right" width="100%" valign="top">
+                                        <table border="0" width="100%">
+                                            <tr>
+                                                <td align="center" width="50%">
+                                                    <h3 style="margin: 5px">
+                                                        <div class="fa fa-arrows"></div>
+                                                    </h3>
+                                                </td>
+                                                <td align="right" width="50%"><a onclick="delete_block('<?php echo 'block1'; ?>');" style="margin: 0px; width: 60px" class="btn btn-primary bg-red">Delete</a></td>
+                                            </tr>
 
-                                        </tr>
+                                            <tr>
 
-                                        <tr>
+                                                <td align="center" width="100%" colspan="2" dir="rtl"><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" id="upload_photo1" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" name="upload_photo[]" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" /></td>
 
-                                            <td align="center" width="100%" colspan="2" dir="rtl"><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" name="myImage" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" /></td>
+                                            </tr>
+                                            <tr>
 
-                                        </tr>
-                                        <tr>
+                                                <td align="right" width="100%" colspan="2" dir="rtl">User Name <input style="padding: 5px; margin: 0px 10px 10px 0px;" name="contact[1][username]" id="username1" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" placeholder="Moho" required="required" class="form-control"></td>
 
-                                            <td align="right" width="100%" colspan="2" dir="rtl">User Name <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" placeholder="Moho" required="required" class="form-control"></td>
+                                            </tr>
+                                            <tr>
 
-                                        </tr>
-                                        <tr>
+                                                <td align="right" width="100%" colspan="2" dir="rtl">whatsapp <input style="padding: 5px; margin: 0px 10px 10px 0px;" id="watsapp_num1" name="contact[1][watsapp_num]" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"></td>
 
-                                            <td align="right" width="100%" colspan="2" dir="rtl">whatsapp <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="0" valign="top"><img border="0" src="{{url('images/img.jpg')}}" width="60"></td>
+                                </tr>
+                                <tr id="block2">
+                                    <td align="right" width="100%" valign="top">
 
-                                        </tr>
-                                    </table>
-                                </td>
-                                <td width="0" valign="top"><img border="0" src="images/img.jpg" width="60"></td>
-                            <tr>
-                                <td align="right" width="100%" valign="top">
+                                        <table border="0" width="100%">
+                                            <tr>
+                                                <td align="center" width="50%">
+                                                    <h3 style="margin: 5px">
+                                                        <div class="fa fa-arrows"></div>
+                                                    </h3>
+                                                </td>
 
-                                    <table border="0" width="100%">
-                                        <tr>
-                                            <td align="center" width="50%">
-                                                <h3 style="margin: 5px">
-                                                    <div class="fa fa-arrows"></div>
-                                                </h3>
-                                            </td>
+                                                <td align="right" width="50%"><a onclick="delete_block('<?php echo 'block2'; ?>');" style="margin: 0px; width: 60px" class="btn btn-primary bg-red">Delete</a></td>
 
-                                            <td align="right" width="50%"><a style="margin: 0px; width: 60px" href="Chalet-edit.php" class="btn btn-primary bg-red">Delete</a></td>
+                                            </tr>
 
-                                        </tr>
+                                            <tr>
 
-                                        <tr>
+                                                <td align="center" width="100%" colspan="2" dir="rtl"><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" id="upload_photo2" name="upload_photo[]" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" width="100%" colspan="2" dir="rtl">User Name <input style="padding: 5px; margin: 0px 10px 10px 0px;" name="contact[2][username]" id="username2" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" placeholder="Moho" required="required" class="form-control"></td>
 
-                                            <td align="center" width="100%" colspan="2" dir="rtl"><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" name="myImage" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td align="right" width="100%" colspan="2" dir="rtl">User Name <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" placeholder="Moho" required="required" class="form-control"></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" width="100%" colspan="2" dir="rtl">whatsapp <input style="padding: 5px; margin: 0px 10px 10px 0px;" id="watsapp_num2" name="contact[2][watsapp_num]" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"></td>
 
-                                        </tr>
-                                        <tr>
-                                            <td align="right" width="100%" colspan="2" dir="rtl">whatsapp <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" placeholder="+96597912345" class="form-control"></td>
-
-                                        </tr>
-
+                                            </tr>
 
 
-                                    </table>
 
-                                </td>
+                                        </table>
 
-                                <td width="0" valign="top"><img border="0" src="images/img.jpg" width="60"></td>
+                                    </td>
 
-                            </tr>
-                            <!-- all -->
-                        </tbody>
-                    </table>
-                    <div class="container_Photo" dir="rtl">
-                        <a href="#" class="btn btn-primary add_form_field_Photo" style="margin-bottom: 5px" dir="ltr"> + Add New User </a>
-                    </div>
-                    <div class="ln_solid">
-                        <br>
-                        <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-4">
-                            <button id="send" type="submit" class="btn btn-success" style="padding: 10px 120px 10px 120px">Save</button>
+                                    <td width="0" valign="top"><img border="0" src="{{url('images/img.jpg')}}" width="60"></td>
 
+                                </tr>
+                                <!-- all -->
+                            </tbody>
+                        </table>
+                        <div class="container_Photo" dir="rtl">
+                            <a href="#" class="btn btn-primary add_form_field_Photo" style="margin-bottom: 5px" dir="ltr"> + Add New User </a>
                         </div>
-                        <!-- Photo of Chalet -->
-                    </div>
+                        <div class="ln_solid">
+                            <br>
+                            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-4">
+                                <button id="send" type="submit" class="btn btn-success" style="padding: 10px 120px 10px 120px">Save</button>
+
+                            </div>
+                            <!-- Photo of Chalet -->
+                        </div>
+                    </form>
+                    @else
+                    <form class="form-horizontal form-label-left" method="POST" action="{{ url('updatecontacts') }}" enctype="multipart/form-data" id="myform">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="imagechange_id" id="imagechange_id">
+                        <input type="hidden" name="delete_id" id="delete_id">
+                        @foreach($contactdata as $contact)
+                        <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr id="block<?php echo $loop->iteration; ?>">
+                                    <td align="right" width="100%" valign="top">
+                                        <table border="0" width="100%">
+                                            <tr>
+
+                                                <td align="center" width="50%">
+                                                    <h3 style="margin: 5px">
+                                                        <div class="fa fa-arrows"></div>
+                                                    </h3>
+                                                </td>
+                                                <td align="right" width="50%"><a style="margin: 0px; width: 60px" onclick="delete_function('<?php echo $contact->id; ?>','block<?php echo $loop->iteration; ?>');" class="btn btn-primary bg-red">Delete</a></td>
+
+                                            </tr>
+                                            <input type="hidden" name="contact[<?php echo $loop->iteration; ?>][updated_id]" id="updated_id" value="{{$contact->id}}">
+                                            <tr>
+
+                                                <td align="center" width="100%" colspan="2" dir="rtl"><input style="padding: 5px; margin: 10px 10px 10px 0px; background: #ffffff" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="file" name="upload_image[]" onchange="mychangefunction('<?php echo $contact->id; ?>');" accept="image/*" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" /></td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <td align="right" width="100%" colspan="2" dir="rtl">User Name <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="rtl" type="text" name="contact[<?php echo $loop->iteration; ?>][username]" value="{{$contact->name}}" placeholder="Moho" required="required" class="form-control"></td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <td align="right" width="100%" colspan="2" dir="rtl">whatsapp <input style="padding: 5px; margin: 0px 10px 10px 0px;" class="col-md-12 col-sm-12 col-xs-12" dir="ltr" type="number" name="contact[<?php echo $loop->iteration; ?>][watsapp_num]" value="{{$contact->phone}}" placeholder="+96597912345" class="form-control"></td>
+
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="0" valign="top">
+                                        @if(!empty($contact->profile_pic))
+                                        <?php $image = $contact->profile_pic; ?>
+                                        <img border="0" src="{{url('uploads/contacts/')}}/<?php echo $image; ?>" width="60">
+                                        @else
+                                        <img border="0" src="{{url('images/img.jpg')}}" width="60">
+                                        @endif
+                                    </td>
+                                    <!-- all -->
+                            </tbody>
+                        </table>
+                        @endforeach
+                        <div class="container_Photo" dir="rtl">
+                            <a href="#" class="btn btn-primary add_form_field_Photo" style="margin-bottom: 5px" dir="ltr"> + Add New User </a>
+                        </div>
+                        <div class="ln_solid">
+                            <br>
+                            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-4">
+                                <button id="send" type="submit" class="btn btn-success" style="padding: 10px 120px 10px 120px">Save</button>
+
+                            </div>
+                            <!-- Photo of Chalet -->
+                        </div>
+                    </form>
+                    @endif
+
 
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function mychangefunction($cid) {
+        // alert($cid);
+        $val = $("#imagechange_id").val();
+        var nn = $cid;
+        if ($val == "") {
+            // alert("empty");
+            $('#imagechange_id').val($('#imagechange_id').val() + nn);
+        } else {
+            // alert("not empty");
+            $('#imagechange_id').val($('#imagechange_id').val() + ',' + nn);
+        }
+    }
+
+    function delete_function($id, $tagid) {
+        // alert($tagid);
+        $val = $("#delete_id").val();
+        // alert($val);
+        $tid = "#" + $tagid;
+        $($tid).remove();
+        var nn = $id;
+        if ($val == "") {
+            // alert("empty");
+            $('#delete_id').val($('#delete_id').val() + nn);
+        } else {
+            // alert("not empty");
+            $('#delete_id').val($('#delete_id').val() + ',' + nn);
+        }
+    }
+
+    function delete_block($tagid) {
+        // alert($tagid);
+        $tid = "#" + $tagid;
+        $($tid).remove();
+
+    }
+</script>
 @endsection
