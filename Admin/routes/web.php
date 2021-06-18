@@ -94,6 +94,10 @@ Route::post('/owner_deposit', 'SuperAdmin_Controller@owner_deposit')->name('owne
 Route::get('/User-Reservations/{id}', 'SuperAdmin_Controller@userreservation')->name('userreservation');
 Route::get('/User-Invoices/{id}/{page}', 'SuperAdmin_Controller@userinvoice')->name('userinvoice');
 Route::get('/unblockuser/{id}', 'SuperAdmin_Controller@unblockuser')->name('unblockuser');
+Route::get('/File-Preview/{id}/{page}', 'SuperAdmin_Controller@preview')->name('preview');
+Route::post('/update_rent', 'SuperAdmin_Controller@update_rent')->name('update_rent');
+Route::post('/addcontacts', 'SuperAdmin_Controller@addcontacts');
+Route::post('/updatecontacts', 'SuperAdmin_Controller@updatecontacts');
 
 //web admin create chalet mail request
 Route::get('/adminmail', function () {return view('mailWeb/index');})->name('adminmail');
