@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Hash;
 use Alert;
 use Illuminate\Support\Facades\File;
@@ -334,10 +335,10 @@ class SuperAdmin_Controller extends Controller
                     'gender' => $request->gender,
                     'password' => $request->password
                 );
-                Mail::send('ownermail', $data, function ($message) use ($email) {
-                    $message->to($email)->subject('Message');
-                    // $message->from('varshag.srishti@gmail.com', 'The Stock');
-                });
+                // Mail::send('ownermail', $data, function ($message) use ($email) {
+                //     $message->to($email)->subject('Message');
+                //     // $message->from('varshag.srishti@gmail.com', 'The Stock');
+                // });
                 return redirect('/Owner')->with('success', 'Successfully Created Owner');
             } else {
                 return back()->withInput()->with('error', 'Please enter matching Passwords');;
@@ -1337,5 +1338,170 @@ class SuperAdmin_Controller extends Controller
         $data['page'] = base64_decode($page);
         // print_r($data['page']);die();
         return view('superadmin/sa_filepreview', $data);
+    }
+    public function addcontacts(Request $request)
+    {
+        // print_r($request->contacts);
+        // echo "next";
+        // print_r(array_chunk($request->contacts, 2));
+
+        if (!empty($request->contacts)) {
+            $contactnew = array_chunk($request->contacts, 2);
+            foreach ($contactnew as $contacts) {
+                $uname = $contacts[0]['uname'];
+                $wat_sapp = $contacts[1]['watsapp'];
+                // print_r( $uname);
+                ContactUs::insert([['name' => $uname, 'phone' => $wat_sapp]]);
+                $id = DB::getPdo()->lastInsertId();
+                //    echo $id;
+                $contact_id[] = $id;
+            }
+        }
+        // print_r($contact_id);
+        if ($request->hasFile('uploadphoto')) {
+            // $aprofile_pic = array();
+            foreach ($request->uploadphoto as $ap_fileimg) {
+                $ap_extension = $ap_fileimg->getClientOriginalExtension();
+                $apname = time() . rand(11111, 99999) . '.' . $ap_extension;
+                $ap_fileimg->move('uploads/contacts', $apname);
+                // echo $apname;
+                $aprofile_pic[] = $apname;
+            }
+            $result_pic = array();
+            // print_r($aprofile_pic);die();
+            foreach ($aprofile_pic as $key => $value) {
+                $val = $contact_id[$key];
+                $result_pic[$key] = array($value, $val);
+            }
+            // print_r($result);die();
+            foreach ($result_pic as $contactphoto) {
+                $f_name = $contactphoto['0'];
+                $upload_id = $contactphoto['1'];
+                ContactUs::where('id', $upload_id)->update(array('profile_pic' => $f_name));
+            }
+            // die();
+        }
+        // die();
+        $contactid = array();
+        foreach ($request->contact as $contact) {
+            $username = $contact['username'];
+            $watsapp = $contact['watsapp_num'];
+            ContactUs::insert([['name' => $username, 'phone' => $watsapp]]);
+            $id = DB::getPdo()->lastInsertId();
+            //    echo $id;
+            $contactid[] = $id;
+            // die();
+        }
+        // print_r($contactid);
+        // die();
+        if ($request->hasFile('upload_photo')) {
+            foreach ($request->upload_photo as $p_fileimg) {
+                $p_extension = $p_fileimg->getClientOriginalExtension();
+                $pname = time() . rand(11111, 99999) . '.' . $p_extension;
+                $p_fileimg->move('uploads/contacts', $pname);
+                $profile_pic[] = $pname;
+            }
+            $result = array();
+            // print_r($profile_pic);
+            foreach ($profile_pic as $key => $value) {
+                $val = $contactid[$key];
+                $result[$key] = array($value, $val);
+            }
+            // print_r($result);die();
+            foreach ($result as $contact_photo) {
+                $file_name = $contact_photo['0'];
+                $uploaded_id = $contact_photo['1'];
+                ContactUs::where('id', $uploaded_id)->update(array('profile_pic' => $file_name));
+            }
+            // die();
+        }
+        // echo "comepleted";die();
+        return redirect('/Chalet-Contact-Us')->with('success', 'Successfully Created Contact');
+    }
+    public function updatecontacts(Request $request)
+    {
+         if (!empty($request->contacts)) {
+            $contactnew = array_chunk($request->contacts, 2);
+            foreach ($contactnew as $contacts) {
+                $uname = $contacts[0]['uname'];
+                $wat_sapp = $contacts[1]['watsapp'];
+                // print_r( $uname);
+                ContactUs::insert([['name' => $uname, 'phone' => $wat_sapp]]);
+                $id = DB::getPdo()->lastInsertId();
+                //    echo $id;
+                $contact_id[] = $id;
+            }
+        }
+        if ($request->hasFile('uploadphoto')) {
+            foreach ($request->uploadphoto as $ap_fileimg) {
+                $ap_extension = $ap_fileimg->getClientOriginalExtension();
+                $apname = time() . rand(11111, 99999) . '.' . $ap_extension;
+                $ap_fileimg->move('uploads/contacts', $apname);
+                $aprofile_pic[] = $apname;
+            }
+            $result_pic = array();
+            // print_r($profile_pic);
+            foreach ($aprofile_pic as $key => $value) {
+                $val = $contact_id[$key];
+                $result_pic[$key] = array($value, $val);
+            }
+            // print_r($result);die();
+            foreach ($result_pic as $contactphoto) {
+                $f_name = $contactphoto['0'];
+                $upload_id = $contactphoto['1'];
+                ContactUs::where('id', $upload_id)->update(array('profile_pic' => $f_name));
+            }
+            // die();
+        }
+        // print_r($request->contact);die();
+        if (!empty($request->contact)) {
+            foreach ($request->contact as $contact) {
+                $contactid = $contact['updated_id'];
+                $username = $contact['username'];
+                $watsapp = $contact['watsapp_num'];
+                ContactUs::where('id', $contactid)->update(array('name' => $username, 'phone' => $watsapp));
+            }
+        }
+        $contact_delete = $request->delete_id;
+        if (!empty($contact_delete)) {
+            $deleted_id = explode(",", $contact_delete);
+            foreach ($deleted_id as $dcid) {
+                ContactUs::where('id', $dcid)->delete();
+            }
+        }
+        if ($request->hasFile('upload_image')) {
+            foreach ($request->upload_image as $pfileimg) {
+                $pextension = $pfileimg->getClientOriginalExtension();
+                $pname = time() . rand(11111, 99999) . '.' . $pextension;
+                $pfileimg->move('uploads/contacts', $pname);
+                $profile_pic[] = $pname;
+            }
+            $uploadid = $request->imagechange_id;
+            $result = array();
+            $resultid = explode(",", $uploadid);
+            // print_r($resultid);die();
+            foreach ($profile_pic as $key => $value) {
+                $val = $resultid[$key];
+                $result[$key] = array($value, $val);
+            }
+            // print_r($result);die();
+            foreach ($result as $pic) {
+                $file_name = $pic['0'];
+                $uploaded_id = $pic['1'];
+                //deleting the existing file from folder
+                $contactresult = ContactUs::where('id', $uploaded_id)->first();
+                $oldfile_name = $contactresult->profile_pic;
+                // echo $oldfile_name;die();
+                $photo_path = 'uploads/contacts/' . $oldfile_name;
+                // echo $photo_path;die();
+                if (File::exists($photo_path)) {
+                    File::delete($photo_path);
+                    // $dd =dd($dd);
+                }
+                ContactUs::where('id', $uploaded_id)->update(array('profile_pic' => $file_name));
+            }
+            // die();
+        }
+        return redirect('/Chalet-Contact-Us')->with('success', 'Successfully Updated Contact');
     }
 }
