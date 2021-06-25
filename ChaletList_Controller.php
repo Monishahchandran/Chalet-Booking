@@ -24,7 +24,7 @@ class ChaletList_Controller extends Controller
       $cha = array();
       foreach ($result1 as $chaletlist1) {
         $cha[] = array(
-          'id' => ($chaletlist1->id == null) ? "" : $chaletlist1->id,
+          'id' => ($chaletlist1->id == null) ? 0 : (int)$chaletlist1->id,
           'chalet_details' => ($chaletlist1->chalet_detail == null) ? "" : $chaletlist1->chalet_detail
         );
       }
@@ -35,15 +35,15 @@ class ChaletList_Controller extends Controller
       foreach ($result2 as $chaletlist2) {
         if ($chaletlist2->file_name == "") {
           $cha1[] = array(
-            'id' => ($chaletlist2->id == null) ? "" : $chaletlist2->id,
-            'chalet_id' => ($chaletlist2->chaletid == null) ? "" : $chaletlist2->chaletid,
+            'id' => ($chaletlist2->id == null) ? 0 : (int)$chaletlist2->id,
+            'chalet_id' => ($chaletlist2->chaletid == null) ? 0 : (int)$chaletlist2->chaletid,
             'file_name' => ''
           );
         } else {
           $cha1[] = array(
-            'id' => ($chaletlist2->id == null) ? "" : $chaletlist2->id,
-            'chalet_id' => ($chaletlist2->chaletid == null) ? "" : $chaletlist2->chaletid,
-            'file_name' => 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
+            'id' => ($chaletlist2->id == null) ? 0 : (int)$chaletlist2->id,
+            'chalet_id' => ($chaletlist2->chaletid == null) ? 0 : (int)$chaletlist2->chaletid,
+            'file_name' => 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
           );
         }
       }
@@ -57,8 +57,8 @@ class ChaletList_Controller extends Controller
 
 
       $result[] = array(
-        'chalet_id' => ($chaletlist->id == null) ? "" : $chaletlist->id,
-        'owner_id' => ($chaletlist->ownerid == null) ? "" : $chaletlist->ownerid,
+        'chalet_id' => ($chaletlist->id == null) ? 0 : (int)$chaletlist->id,
+        'owner_id' => ($chaletlist->ownerid == null) ? 0 : (int)$chaletlist->ownerid,
         'firstname' => ($chaletlist->first_name == null) ? "" : $chaletlist->first_name,
         'lastname' => ($chaletlist->last_name == null) ? "" : $chaletlist->last_name,
         'email' => ($chaletlist->email == null) ? "" : $chaletlist->email,
@@ -66,7 +66,7 @@ class ChaletList_Controller extends Controller
         'country' => ($chaletlist->country == null) ? "" : $chaletlist->country,
         'phone' => ($chaletlist->phone == null) ? "" : $chaletlist->phone,
         'gender' => ($chaletlist->gender == null) ? "" : $chaletlist->gender,
-        'profile_pic' => ($chaletlist->profile_pic == null) ? "" : "https://web.sicsglobal.com/aby_chalet/uploads/profile_pic/" . $chaletlist->profile_pic,
+        'profile_pic' => ($chaletlist->profile_pic == null) ? "" : "https://sicsapp.com/Aby_chalet/uploads/profile_pic/" . $chaletlist->profile_pic,
         'civil_id' => ($chaletlist->civil_id == null) ? "" : $chaletlist->civil_id,
         'chalet_ownership' => ($chaletlist->chalet_ownership == null) ? "" : $chaletlist->chalet_ownership,
         'bank_holder_name' => ($chaletlist->bank_holder_name == null) ? "" : $chaletlist->bank_holder_name,
@@ -90,14 +90,15 @@ class ChaletList_Controller extends Controller
   }
 
 
-
-  public function searchChaletList(Request $request)
+ public function searchChaletList(Request $request)
   {
     $data['from_date'] = $request->from_date;
     $data['to_date'] = $request->to_date;
     $data['package'] = $request->package;
+     $data['userid']=$request->userid;
 
     $chaid = "";
+    $result=array();
   //date_default_timezone_set('Asia/Kolkata');
 $fromYear=date("Y", strtotime($request->from_date));
 
@@ -109,17 +110,34 @@ $currentYear= date('Y');
 
 
 
-    $chalet2 = DB::table('tb_reservation')->where('check_in', $request->from_date)->where('check_out', $request->to_date)->get();
+
     // print_r($chalet2);die();
     $cha = array();
     $cha1 = array();
 
-    foreach ($chalet2 as $value) {
-      $chaid = $value->chaletid;
+    
+$reward_amt=0;
+    $rewardcount= DB::table('tb_rewards')->where('userid', $request->userid)->count();
+    if($rewardcount!=0){
+   $reward= DB::table('tb_rewards')->where('userid', $request->userid)->first();
+$reward_amt=$reward->rewarded_amt;
+if($reward_amt==""){
+  $reward_amt=0;
+}
+else{
+  $reward_amt=$reward_amt;
+}
     }
+$chaletCount=DB::table('tb_owner')
+      ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
+      
+      ->where('tb_chalet.is_activestatus','=',1)
+      ->count();
+      if($chaletCount!=0){
+
     $chalet = DB::table('tb_owner')
       ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
-      ->where('tb_chalet.id', '!=', $chaid)
+      
       ->where('tb_chalet.is_activestatus','=',1)
       ->get();
     //print_r($chalet);die();
@@ -203,7 +221,19 @@ else{
      
     }
 
-}}
+}
+else{
+
+    if ($data['package'] == 'weekdays') {
+      $rent = 'weekday_rent';
+    } else if ($data['package'] == 'weekend') {
+      $rent = 'weekend_rent';
+    } else if ($data['package'] == 'weekA' || $data['package'] == 'weekB') {
+      $rent = 'week_rent';
+    }
+  }
+
+}
 else{
 
     if ($data['package'] == 'weekdays') {
@@ -237,7 +267,7 @@ else{
       // print_r($result1);die();
       foreach ($result1 as $chaletlist1) {
         $cha[] = array(
-          'id' => $chaletlist1->id,
+          'id' => (int)$chaletlist1->id,
           'chalet_details' => $chaletlist1->chalet_detail
         );
       }
@@ -248,14 +278,14 @@ else{
       foreach ($result2 as $chaletlist2) {
         if ($chaletlist2->file_name == "") {
           $cha1[] = array(
-            'id' => $chaletlist2->id,
+            'id' => (int)$chaletlist2->id,
             'file_name' => ''
           );
         } else {
           $cha1[] = array(
-            'id' => $chaletlist2->id,
-            'chalet_id' => $chaletlist2->chaletid,
-            'file_name' => 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
+            'id' => (int)$chaletlist2->id,
+            'chalet_id' => (int)$chaletlist2->chaletid,
+            'file_name' => 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
           );
         }
       }
@@ -267,14 +297,18 @@ else{
       $cover = $result3->file_name;
       
       // echo "coverphoto=>".$result3->file_name;
-      $cover_photo = 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
+      $cover_photo = 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
      
 
+$chalet2Count = DB::table('tb_reservation')->where('check_in', $request->from_date)->where('check_out', $request->to_date)->where('chaletid',$chaletlist->id)->count();
 
+if($chalet2Count==0){
+
+   //echo 'Hai';
 
       $result[] = array(
         'slno' => $i++,
-        'chalet_id' => $chaletlist->id,
+        'chalet_id' => (int)$chaletlist->id,
         'chalet_name' => ($chaletlist->chalet_name == null) ? "" : $chaletlist->chalet_name,
         'cover_photo' => $cover_photo,
         'check_in' => $request->from_date,
@@ -282,7 +316,7 @@ else{
         'rent' => ($chaletlist->$rent == null) ? "" : $chaletlist->$rent,
         'admincheck_in' => $check_in,
         'admincheck_out' => $check_out,
-        'owner_id' => ($chaletlist->ownerid == null) ? "" : $chaletlist->ownerid,
+        'owner_id' => ($chaletlist->ownerid == null) ? "" : (int)$chaletlist->ownerid,
         'firstname' => ($chaletlist->first_name == null) ? "" : $chaletlist->first_name,
         'lastname' => ($chaletlist->last_name == null) ? "" : $chaletlist->last_name,
         'email' => ($chaletlist->email == null) ? "" : $chaletlist->email,
@@ -300,28 +334,49 @@ else{
         'available_deposit' => $available_deposit,
         'remaining_amt_pay' => $remaining_amt_pay,
         'offer_expiry' => $offer_expiry,
+        'rewarded_amt'=>(int)$reward_amt,
         'chalet_details' => $cha,
         'chalet_upload' => $cha1,
         'created_at' => ($chaletlist->created_at == null) ? "" : $chaletlist->created_at,
         'updated_at' => ($chaletlist->updated_at == null) ? "" : $chaletlist->updated_at
 
       );
-    }
-    $post = array(
+    
+  
+
+}
+
+
+
+    
+  }
+  $post = array(
       'status' => true,
       'message' => 'Chalet List', 'user_details' => $result
     );
+}
+  
+    
     return json_encode($post);
   }
-
-
-
 
 
 
   public function searchHolidays(Request $request)
   {
 
+$result1Count = DB::table('tb_holidayandevents')
+
+      ->leftJoin('tb_chaletevents', 'tb_holidayandevents.id', '=', 'tb_chaletevents.event_id')
+
+      ->select('*','tb_holidayandevents.id as hid')
+
+      ->where('tb_holidayandevents.holiday_status', 1)
+
+     ->groupBy('tb_holidayandevents.event_name')
+
+      ->count();
+      if($result1Count!=0){
 
     $result1 = DB::table('tb_holidayandevents')
       ->leftJoin('tb_chaletevents', 'tb_holidayandevents.id', '=', 'tb_chaletevents.event_id')
@@ -341,7 +396,7 @@ else{
         $offer_expiry = ($chalet1->offer_expiry == null) ? "" : $chalet1->offer_expiry;
        
 $holi=array();
- if($result1!=""){
+ //if($result1!=""){
   foreach ($result1 as $holiday) {
         
         $eventname=$holiday->event_name;
@@ -372,7 +427,7 @@ $holi=array();
           $cha = array();
           foreach ($result1 as $chaletlist1) {
             $cha[] = array(
-              'id' => $chaletlist1->id,
+              'id' => (int)$chaletlist1->id,
               'chalet_details' => $chaletlist1->chalet_detail
             );
           }
@@ -382,14 +437,14 @@ $holi=array();
           foreach ($result2 as $chaletlist2) {
             if ($chaletlist2->file_name == "") {
               $cha1[] = array(
-                'id' => $chaletlist2->id,
+                'id' => (int)$chaletlist2->id,
                 'file_name' => ''
               );
             } else {
               $cha1[] = array(
-                'id' => $chaletlist2->id,
-                'chalet_id' => $chaletlist2->chaletid,
-                'file_name' => 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
+                'id' => (int)$chaletlist2->id,
+                'chalet_id' => (int)$chaletlist2->chaletid,
+                'file_name' => 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
               );
             }
           }
@@ -400,10 +455,10 @@ $holi=array();
           $result3 = DB::table('tb_chaletupload')->where('chaletid', $chaletlist->id)->where('file_type', 'image')->orderBy('id', 'ASC')->first();
 
           $cover = $result3->file_name;
-          $cover_photo = 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
+          $cover_photo = 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
 
            $chalet_list[] = array(
-            'chalet_id' => $chaletlist->id,
+            'chalet_id' => (int)$chaletlist->id,
             'chalet_name' => ($chaletlist->chalet_name == null) ? "" : $chaletlist->chalet_name,
             'cover_photo' => $cover_photo,
             'check_in' => ($holiday->check_in == null) ? "" : date("Y-m-d", strtotime($holiday->check_in)),
@@ -412,7 +467,7 @@ $holi=array();
             'rent' => ($eventrent == null) ?  $chaletlist->weekday_rent :  $eventrent,
             'admincheck_in' => $check_in,
             'admincheck_out' => $check_out,
-            'owner_id' => ($chaletlist->ownerid == null) ? "" : $chaletlist->ownerid,
+            'owner_id' => ($chaletlist->ownerid == null) ? "" :  (int)$chaletlist->ownerid,
             'firstname' => ($chaletlist->first_name == null) ? "" : $chaletlist->first_name,
             'lastname' => ($chaletlist->last_name == null) ? "" : $chaletlist->last_name,
             'email' => ($chaletlist->email == null) ? "" : $chaletlist->email,
@@ -420,7 +475,7 @@ $holi=array();
             'country' => ($chaletlist->country == null) ? "" : $chaletlist->country,
             'phone' => ($chaletlist->phone == null) ? "" : $chaletlist->phone,
             'gender' => ($chaletlist->gender == null) ? "" : $chaletlist->gender,
-            'profile_pic' => ($chaletlist->profile_pic == null) ? "" : "https://web.sicsglobal.com/aby_chalet/uploads/profile_pic/" . $chaletlist->profile_pic,
+            'profile_pic' => ($chaletlist->profile_pic == null) ? "" : "https://sicsapp.com/Aby_chalet/uploads/profile_pic/" . $chaletlist->profile_pic,
             'civil_id' => ($chaletlist->civil_id == null) ? "" : $chaletlist->civil_id,
             'chalet_ownership' => ($chaletlist->chalet_ownership == null) ? "" : $chaletlist->chalet_ownership,
             'bank_holder_name' => ($chaletlist->bank_holder_name == null) ? "" : $chaletlist->bank_holder_name,
@@ -439,10 +494,13 @@ $holi=array();
        }
          // $holi=array();
             $holi[] = array(
-            'id' => $holiday->hid,
+            'id' => (int)$holiday->hid,
             'event_name' => ($holiday->event_name == null) ? "" : $holiday->event_name,
             'events_checkin' => ($holiday->check_in == null) ? "" : date("Y-m-d", strtotime($holiday->check_in)),
-            'events_checkout' => ($holiday->check_out == null) ? "" : date("Y-m-d", strtotime($holiday->check_out)),
+            'events_checkout' => ($holiday->check_out == null) ? "" : date("Y-m-d", strtotime($holiday->check_out)
+              ),
+             'admin_check_in' => $check_in,
+            'admin_check_out' => $check_out,
             'user_details' => $chalet_list
 
           );
@@ -508,14 +566,17 @@ $holi=array();
         
         $chalet_array = array();
         foreach ($sql_chalets as $chalets) {
+        // print_r($chalets->chaletid);die();
           $chaletid = $chalets->chaletid;
+         //echo $chaletid;die();
           $chalet = DB::table('tb_owner')
           ->select('*','tb_chalet.id as cid')
             ->Join('tb_chalet', 'tb_owner.id', '=', 'tb_chalet.ownerid')
             ->where('tb_chalet.id', '=', $chaletid)
+           
 
             ->first();
-            // print_r($chalet);die();
+          // print_r($chalet);die();
           $checkin = strtotime($offers->offer_checkin);
           $checkout = strtotime($offers->offer_checkout);
           $diff = abs($checkout - $checkin);
@@ -526,19 +587,24 @@ $holi=array();
           $days = floor(($diff - $years * 365 * 60 * 60 * 24 -
             $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
 
-
+//echo $days;die();
           if ($days == 3) {
             $re = (int)$chalet->weekday_rent;
+            //echo $chalet->weekday_rent;die();
             $rent = $chalet->weekday_rent - $offers->discount_amt;
           }
-          if ($days == 2) {
-            $re = (int)$chalet->weekend_rent;
+          else if ($days == 2) {
+            $re = $chalet->weekend_rent;
+//echo $chalet->weekend_rent.' '.$offers->discount_amt;
             $rent = (int)$chalet->weekend_rent - $offers->discount_amt;
           }
-         if ($days == 6) {
+
+         else if ($days == 6) {
             $re = (int)$chalet->week_rent;
             $rent = (int)$chalet->week_rent - $offers->discount_amt;
-          } else {
+          } 
+
+          else {
             $re = 0;
             $rent = 0;
           }
@@ -547,24 +613,24 @@ $holi=array();
           $cha = array();
           foreach ($result1 as $chaletlist1) {
             $cha[] = array(
-              'id' => $chaletlist1->id,
+              'id' => (int)$chaletlist1->id,
               'chalet_details' => $chaletlist1->chalet_detail
             );
           }
           // print_r($cha);die();
-          $result2 = DB::table('tb_chaletupload')->where('chaletid', $chalets->id)->get();
+          $result2 = DB::table('tb_chaletupload')->where('chaletid', $chaletid)->get();
           $cha1 = array();
           foreach ($result2 as $chaletlist2) {
             if ($chaletlist2->file_name == "") {
               $cha1[] = array(
-                'id' => $chaletlist2->id,
+                'id' => (int)$chaletlist2->id,
                 'file_name' => ''
               );
             } else {
               $cha1[] = array(
-                'id' => $chaletlist2->id,
-                'chalet_id' => $chaletlist2->chaletid,
-                'file_name' => 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
+                'id' => (int)$chaletlist2->id,
+                'chalet_id' => (int)$chaletlist2->chaletid,
+                'file_name' => 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $chaletlist2->file_name
               );
             }
           }
@@ -576,23 +642,24 @@ $holi=array();
 
 
 
-    $result3 = DB::table('tb_chaletupload')->where('chaletid', $chalets->id)->where('file_type', 'image')->orderBy('id', 'ASC')->first();
+    $result3 = DB::table('tb_chaletupload')->where('chaletid', $chaletid)->where('file_type', 'image')->orderBy('id', 'ASC')->first();
 
 
       $cover = $result3->file_name;
       
-      // echo "coverphoto=>".$result3->file_name;
-      $cover_photo = 'https://web.sicsglobal.com/aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
+       //echo $chalet->id.$result3->file_name;
+      $cover_photo = 'https://sicsapp.com/Aby_chalet/uploads/chalet_uploads/chalet_images/' . $cover;
+       //$cover_photo="";
 
           $chalet_array[] = array(
-            'chalet_id' => $chalet->id,
+            'chalet_id' => (int)$chalet->id,
             'chalet_name' => ($chalet->chalet_name == null) ? "" : $chalet->chalet_name,
             'cover_photo' => $cover_photo,
             'admincheck_in' => $check_in,
             'admincheck_out' => $check_out,
             'check_in'=>($chalets->offer_checkin==null)? "" : $checkdate,
             'check_out'=>($chalets->offer_checkout==null) ? ""  : $check_out_date,
-            'owner_id' => ($chalet->ownerid == null) ? "" : $chalet->ownerid,
+            'owner_id' => ($chalet->ownerid == null) ? "" : (int)$chalet->ownerid,
             'firstname' => ($chalet->first_name == null) ? "" : $chalet->first_name,
             'lastname' => ($chalet->last_name == null) ? "" : $chalet->last_name,
             'email' => ($chalet->email == null) ? "" : $chalet->email,
@@ -600,15 +667,15 @@ $holi=array();
             'country' => ($chalet->country == null) ? "" : $chalet->country,
             'phone' => ($chalet->phone == null) ? "" : $chalet->phone,
             'gender' => ($chalet->gender == null) ? "" : $chalet->gender,
-            'profile_pic' => ($chalet->profile_pic == null) ? "" : "https://web.sicsglobal.com/aby_chalet/uploads/profile_pic/" . $chalet->profile_pic,
+            'profile_pic' => ($chalet->profile_pic == null) ? "" : "https://sicsapp.com/Aby_chalet/uploads/profile_pic/" . $chalet->profile_pic,
             'civil_id' => ($chalet->civil_id == null) ? "" : $chalet->civil_id,
             'chalet_ownership' => ($chalet->chalet_ownership == null) ? "" : $chalet->chalet_ownership,
             'bank_holder_name' => ($chalet->bank_holder_name == null) ? "" : $chalet->bank_holder_name,
             'bank_name' => ($chalet->bank_name == null) ? "" : $chalet->bank_name,
             'iban_num' => ($chalet->iban_num == null) ? "" : $chalet->iban_num,
-            'original_price' => ($re==null)? 0 : $re,
+            'original_price' => ($re==null)? 0 : (int)$re,
             'rent' => $rent,
-            'discount_amt' => ($offers->discount_amt == null) ? 0 : $offers->discount_amt,
+            'discount_amt' => ($offers->discount_amt == null) ? 0 : (int)$offers->discount_amt,
             'min_deposit' => $min_deposit,
         'available_deposit' => $available_deposit,
         'remaining_amt_pay' => $remaining_amt,
@@ -622,13 +689,23 @@ $holi=array();
          
           // print_r($chalet_list);die();
         }
+
+
+         $orgDate1 = $offers->offer_checkin;  
+    $checkdate1 = date("Y-m-d", strtotime($orgDate1));
+     $orgdate1 = $offers->offer_checkout;  
+    $check_out_date1 = date("Y-m-d", strtotime($orgdate1));
+        $revCount=DB::table('tb_reservation')->where('check_in', $checkdate1)->where('check_out', $check_out_date1)->count();
+        //echo $revCount;
+          if($revCount==0){
         $chalet_list[] = array(
-            'offer_id' => $chalets->id,
+            'offer_id' => (int)$chalets->id,
             'created_at'=>$chalets->created_at,
             'offer_checkin' => $chalets->offer_checkin,
             'offer_checkout' => $chalets->offer_checkout,
             'user_details' => $chalet_array
           ); 
+      }
       }
       // else {
       //   echo "expired=>";
@@ -643,4 +720,37 @@ $holi=array();
     );
     return json_encode($post);
   }
+
+
+
+
+
+  public function view_contact(Request $request){
+  $resultCount = DB::table('tb_contacts')->count();
+  if($resultCount!=0){
+  $result = DB::table('tb_contacts')->get();
+  foreach($result as $resultVal){
+    $contactArray[]=array("id"=>(int)$resultVal->id,
+                          "name"=>($resultVal->name==null)? "" :$resultVal->name,
+                          "phone"=>($resultVal->phone==null)?"":$resultVal->phone,
+                          "profile_pic"=>($resultVal->profile_pic==null)? "" : "https://sicsapp.com/Aby_chalet/uploads/contacts/" . $resultVal->profile_pic,
+                          "created_at"=>($resultVal->created_at==null)?"" : $resultVal->created_at,
+                          "updated_at"=>($resultVal->updated_at==null)? "" :$resultVal->updated_at);
+
+  }
+ 
+  $post = array( 'status' => true,
+  'message' => 'Contats',
+  'contact_list' =>  $contactArray
+);
+  }
+  else{
+    $post = array( 'status' => false,
+  'message' => 'No Contact',
+  'contact_list' =>  $contactArray
+);
+  }
+  return json_encode($post);
+
+}
 }
