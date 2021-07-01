@@ -98,6 +98,8 @@ Route::get('/File-Preview/{id}/{page}', 'SuperAdmin_Controller@preview')->name('
 Route::post('/update_rent', 'SuperAdmin_Controller@update_rent')->name('update_rent');
 Route::post('/addcontacts', 'SuperAdmin_Controller@addcontacts');
 Route::post('/updatecontacts', 'SuperAdmin_Controller@updatecontacts');
+Route::get('/accept_reject_booking/{id}/{status}', 'SuperAdmin_Controller@accept_reject_booking');
+Route::get('/send_reminder/{rid}/{cname}/{edate}/{uid}', 'SuperAdmin_Controller@send_reminder');
 
 //web admin create chalet mail request
 Route::get('/adminmail', function () {return view('mailWeb/index');})->name('adminmail');
