@@ -1,13 +1,15 @@
 <?php
 
 namespace App;
-
+use Illuminate\Support\Facades\DB;
+use Str;
 use App\Models\Chalet;
 use App\Models\Reservation;
 use App\Models\ChaletUpload;
 use App\Models\HolidayAndEvents;
 use App\Models\ChaletEvent;
 use App\Models\Offers;
+use App\Models\Owner;
 use App\Models\Users;
 use App\Models\Rewards;
 
@@ -93,6 +95,11 @@ class Helper
     public static function get_user_details($id)
     {
         $result = Users::select('*')->where('id', $id)->first();
+        return $result;
+    }
+    public static function get_owner_details($id)
+    {
+        $result = Owner::select('*')->where('id', $id)->first();
         return $result;
     }
     public static function get_totalpaid()
@@ -182,14 +189,29 @@ class Helper
     }
     public static function get_totalcommission()
     {
-        $result = Reservation::select('*')->where('status', '=', 'Paid')->sum('owner_commission');
+        $result = Reservation::select('*')->where('status', '=', 'Paid')->get();
+        $sum = 0;
+        foreach($result as $rdetails)
+        {
+            $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) );
+            // echo  $commission;
+            $sum=$sum + $commission;
+
+        }
+        return $sum;
+    }
+    public static function total_depositdone()
+    {
+        // $totalp = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('total_paid');
+        $totalcommission = Reservation::select('*')->where('owner_moneydeposit','=','1')->where('status', '=', 'Paid')->sum('owner_commission');
+        $result=$totalcommission;
         return $result;
     }
     public static function total_deposittobedone()
     {
-        $totalp = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('total_paid');
+        // $totalp = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('total_paid');
         $totalcommission = Reservation::select('*')->where('owner_moneydeposit','=','0')->where('status', '=', 'Paid')->sum('owner_commission');
-        $result=$totalp-$totalcommission;
+        $result=$totalcommission;
         return $result;
     }
     public static function get_count_userchaletreservation($id)
@@ -216,5 +238,260 @@ class Helper
     {
         $result = Rewards::select('*')->where('id', $id)->sum('rewarded_amt');
         return $result;
+    }
+    public static function total_regi_users()
+    {
+        $count = Users::select('*')->where('reg_status','1')->count();
+        return $count;
+    }
+    public static function total_visitors()
+    {
+        $count = Users::select('*')->where('reg_status','0')->count();
+        return $count;
+    }
+    public static function total_reservation()
+    {
+        $count = Reservation::select('*')->count();
+        return $count;
+    }
+    public static function total_regi_users_month()
+    {
+        // $currentMonth = date('m');
+        $currentMonth =  date('m', strtotime(date('Y-m')." -1 month"));
+        // echo $currentMonth;
+        $count = Users::select('*')->whereRaw('MONTH(created_at) = ?',[$currentMonth])->where('reg_status','1')->count();
+        return $count;
+    }
+    public static function total_regi_users_3month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -3 month"));
+        $query =Users::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('reg_status',1); 
+        $sql = Str::replaceArray('?', $query->getBindings(), $query->toSql());
+        //  dd($sql);
+        // $count = Users::select('*')->whereBetween('created_at', [$lastMonth,$currentMonth])->get();
+         $count= Users::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('reg_status',1)->count();
+        // print_r($count);
+        return $count;
+        
+    }
+    public static function total_regi_users_6month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')."-6 month"));
+        // echo $currentMonth;
+        $count= Users::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('reg_status',1)->count();
+        // print_r($count);
+        return $count;
+    }
+    public static function total_regi_users_year()
+    {
+        $currentYear = date('Y');
+        $count = Users::select('*')->whereRaw('Year(created_at) = ?',[$currentYear])->where('reg_status','1')->count();
+        return $count;
+    }
+    public static function total_regi_users_week()
+    {
+        $previous_week = strtotime("-1 week +1 day");
+        $start_week = strtotime("last sunday midnight",$previous_week);
+        $end_week = strtotime("next saturday",$start_week);
+        $start_week = date("Y-m-d",$start_week);
+        $end_week = date("Y-m-d",$end_week);
+        $count =   Users::whereBetween('created_at', [$start_week, $end_week])->where('reg_status','1')->count();
+        return $count;
+    }
+    public static function total_visitors_month()
+    {
+        // $currentMonth = date('m');
+        $currentMonth =  date('m', strtotime(date('Y-m')." -1 month"));
+        // echo $currentMonth;
+        $count = Users::select('*')->whereRaw('MONTH(created_at) = ?',[$currentMonth])->where('reg_status','0')->count();
+        return $count;
+    }
+    public static function total_visitors_3month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -3 month"));
+         $count= Users::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('reg_status',0)->count();
+        // print_r($count);
+        return $count;
+    }
+    public static function total_visitors_6month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')."-6 month"));
+        // echo $currentMonth;
+        $count= Users::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('reg_status',0)->count();
+        // print_r($count);
+        return $count;
+    }
+    public static function total_visitors_year()
+    {
+        $currentYear = date('Y');
+        $count = Users::select('*')->whereRaw('Year(created_at) = ?',[$currentYear])->where('reg_status','0')->count();
+        return $count;
+    }
+    public static function total_visitors_week()
+    {
+        $previous_week = strtotime("-1 week +1 day");
+        $start_week = strtotime("last sunday midnight",$previous_week);
+        $end_week = strtotime("next saturday",$start_week);
+        $start_week = date("Y-m-d",$start_week);
+        $end_week = date("Y-m-d",$end_week);
+        $count =   Users::whereBetween('created_at', [$start_week, $end_week])->where('reg_status','0')->count();
+        return $count;
+    }
+    public static function total_reservation_month()
+    {
+        // $currentMonth = date('m');
+        $currentMonth =  date('m', strtotime(date('Y-m')." -1 month"));
+        // echo $currentMonth;
+        $count = Reservation::select('*')->whereRaw('MONTH(created_at) = ?',[$currentMonth])->count();
+        return $count;
+    }
+    public static function total_reservation_3month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -3 month"));
+         $count= Reservation::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->count();
+        // print_r($count);
+        return $count;
+    }
+    public static function total_reservation_6month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')."-6 month"));
+        // echo $currentMonth;
+        $count= Reservation::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->count();
+        // print_r($count);
+        return $count;
+    }
+    public static function total_reservation_year()
+    {
+        $currentYear = date('Y');
+        $count = Reservation::select('*')->whereRaw('Year(created_at) = ?',[$currentYear])->count();
+        return $count;
+    }
+    public static function total_reservation_week()
+    {
+        $previous_week = strtotime("-1 week +1 day");
+        $start_week = strtotime("last sunday midnight",$previous_week);
+        $end_week = strtotime("next saturday",$start_week);
+        $start_week = date("Y-m-d",$start_week);
+        $end_week = date("Y-m-d",$end_week);
+        $count =   Reservation::whereBetween('created_at', [$start_week, $end_week])->count();
+        return $count;
+    }
+    public static function get_totalpaidweek()
+    {
+        $previous_week = strtotime("-1 week +1 day");
+        $start_week = strtotime("last sunday midnight",$previous_week);
+        $end_week = strtotime("next saturday",$start_week);
+        $start_week = date("Y-m-d",$start_week);
+        $end_week = date("Y-m-d",$end_week);
+        $result = Reservation::select('*')->whereBetween('created_at', [$start_week, $end_week])->where('status', '=', 'Paid')->sum('total_paid');
+        return $result;
+    }
+    public static function get_totalpaidmonth()
+    {
+        $currentMonth =  date('m', strtotime(date('Y-m')." -1 month"));
+        $result = Reservation::select('*')->whereRaw('MONTH(created_at) = ?',[$currentMonth])->where('status', '=', 'Paid')->sum('total_paid');
+        return $result;
+    }
+    public static function get_totalpaid3month()
+    { 
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -3 month"));
+        $result = Reservation::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('status', '=', 'Paid')->sum('total_paid');
+        return $result;
+    }
+    public static function get_totalpaid6month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -6 month"));
+        $result = Reservation::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('status', '=', 'Paid')->sum('total_paid');
+        return $result;
+    }
+    public static function get_totalpaidyear()
+    {
+        $currentYear = date('Y');
+        $result = Reservation::select('*')->whereRaw('Year(created_at) = ?',[$currentYear])->where('status', '=', 'Paid')->sum('total_paid');
+        return $result;
+    }
+    public static function get_totalcommissionmonth()
+    {
+        $currentMonth =  date('m', strtotime(date('Y-m')." -1 month"));
+        $result = Reservation::select('*')->whereRaw('MONTH(created_at) = ?',[$currentMonth])->where('status', '=', 'Paid')->get();
+        $sum = 0;
+        foreach($result as $rdetails)
+        {
+            $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) );
+            // echo  $commission;
+            $sum=$sum + $commission;
+
+        }
+        return $sum;
+    }
+    public static function get_totalcommissionweek()
+    {
+        $previous_week = strtotime("-1 week +1 day");
+        $start_week = strtotime("last sunday midnight",$previous_week);
+        $end_week = strtotime("next saturday",$start_week);
+        $start_week = date("Y-m-d",$start_week);
+        $end_week = date("Y-m-d",$end_week);
+        $result = Reservation::select('*')->whereBetween('created_at', [$start_week, $end_week])->where('status', '=', 'Paid')->get();
+        $sum = 0;
+        foreach($result as $rdetails)
+        {
+            $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) );
+            // echo  $commission;
+            $sum=$sum + $commission;
+
+        }
+        return $sum;
+    }
+    public static function get_totalcommission3month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -3 month"));
+        $result = Reservation::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('status', '=', 'Paid')->get();
+        $sum = 0;
+        foreach($result as $rdetails)
+        {
+            $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) );
+            // echo  $commission;
+            $sum=$sum + $commission;
+
+        }
+        return $sum;
+    }
+    public static function get_totalcommission6month()
+    {
+        $currentMonth = date('Y-m-d');
+        $lastMonth =  date('Y-m-d', strtotime(date('Y-m-d')." -6 month"));
+        $result = Reservation::select('*')->whereBetween('created_at', array($lastMonth, $currentMonth))->where('status', '=', 'Paid')->get();
+        $sum = 0;
+        foreach($result as $rdetails)
+        {
+            $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) );
+            // echo  $commission;
+            $sum=$sum + $commission;
+
+        }
+        return $sum;
+    }
+    public static function get_totalcommissionyear()
+    {
+        $currentYear = date('Y');
+        $result = Reservation::select('*')->whereRaw('Year(created_at) = ?',[$currentYear])->where('status', '=', 'Paid')->get();
+        $sum = 0;
+        foreach($result as $rdetails)
+        {
+            $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) );
+            // echo  $commission;
+            $sum=$sum + $commission;
+
+        }
+        return $sum;
     }
 }
