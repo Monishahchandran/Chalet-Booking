@@ -24,6 +24,8 @@ use App\Models\Agreement;
 use App\Models\Reservation;
 use App\Models\SystemNotification;
 use App\Models\ContactUs;
+use App\Models\Rewards;
+use App\Models\UserNotification;
 
 use Validator, Redirect, Response;
 use Image;
@@ -34,6 +36,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SuperAdmin_Controller extends Controller
 {
+    
     public function doLogin(Request $request)
     {
         $count = Admin::select('*')->where('email', $request->username)->where('password', '=', base64_encode($request->password))->count();
@@ -55,9 +58,10 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        // $user_id = base64_decode(Session::get('adminid'));
-        // print_r(Session::get('adminlog'));
-        return view('superadmin/sa_dashboard');
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid', 'tb_reservation.created_at as createdat')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'paid')->where('owner_status', '0')->get();
+        $data['remaining_list'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.status', '=', 'remaining')->get();
+        $data['admindata'] = Admin::select('*')->first();
+        return view('superadmin/sa_dashboard', $data);
     }
     public function doLogout()
     {
@@ -69,9 +73,9 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        // $user_id = base64_decode(Session::get('adminid'));
-        // print_r(Session::get('adminlog'));
-        return view('superadmin/sa_rejectedlist');
+        $data['rejectlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid', 'tb_reservation.created_at as createdat')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('booking_status', '1')->get();
+        // print_r($data['rejectlist']);die();
+        return view('superadmin/sa_rejectedlist',$data);
     }
     public function chaletagreement()
     {
@@ -224,7 +228,7 @@ class SuperAdmin_Controller extends Controller
         if (session('adminlog') == false) {
             return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
         }
-        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.deposit', '!=', '0')->where('tb_reservation.status', '=', 'remaining')->get();
+        $data['reservationlist'] = Reservation::select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->where('tb_reservation.booking_status', '!=', '1')->where('tb_reservation.deposit', '!=', '0')->where('tb_reservation.status', '=', 'remaining')->get();
         return view('superadmin/sa_chaletinvoicestotaldeposits', $data);
     }
     public function chaletinvoicestotalrefundmoney()
@@ -339,6 +343,9 @@ class SuperAdmin_Controller extends Controller
                 //     $message->to($email)->subject('Message');
                 //     // $message->from('varshag.srishti@gmail.com', 'The Stock');
                 // });
+
+                Users::insert([['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'country' => $request->country, 'phone' => $request->phone, 'gender' => $request->gender, 'profile_pic' => $profile_pic, 'password' => base64_encode($request->password), 'owner_status' => '1', 'email_verification	' => '1', 'reg_status	' => '1']]);
+
                 return redirect('/Owner')->with('success', 'Successfully Created Owner');
             } else {
                 return back()->withInput()->with('error', 'Please enter matching Passwords');;
@@ -1227,7 +1234,8 @@ class SuperAdmin_Controller extends Controller
     {
         $refund_date = $request->refund_date;
         $id = $request->reserv_id;
-        Reservation::where('id', $id)->update(array('refund_status' => '1', 'refund_date' => $refund_date));
+        $time = date("H:i:sa");
+        Reservation::where('id', $id)->update(array('refund_status' => '1', 'refund_date' => $refund_date,'refund_time'=>$time));
         return response()->json(['success' => 'Successfully Updated']);
     }
     public function blockowner(Request $request)
@@ -1237,19 +1245,29 @@ class SuperAdmin_Controller extends Controller
         Owner::where('id', $id)->update(array('block_status' => $status));
         $ownerdetails = Owner::select('*')->where('id', $id)->first();
         $email = $ownerdetails->email;
+        Users::where('email', $email)->where('owner_status', '1')->update(array('block_status' => $status));
+
+        $device_token = $ownerdetails->device_token;
         if ($status == 1) {
             $adminmessage = "Aby Chalet Blocked You";
+            // echo $device_token;
+            if (!empty($device_token)) {
+                $this->push($device_token, $adminmessage);
+            }
         } else {
             $adminmessage = "Aby Chalet UnBlocked You";
         }
+        // $data['title']= 'Hi! ' . $ownerdetails->first_name . ' ' . $ownerdetails->last_name;
+        // $data['adminmessage']=  $adminmessage;
         $data = array(
             'title' => 'Hi! ' . $ownerdetails->first_name . ' ' . $ownerdetails->last_name,
-            'message' => $adminmessage
+            'adminmessage' => $adminmessage
         );
         Mail::send('blockmail', $data, function ($message) use ($email) {
             $message->to($email)->subject('Message');
             // $message->from('varshag.srishti@gmail.com', 'The Stock');
         });
+
         return response()->json(['success' => 'Successfully Blocked.']);
     }
     public function blockuser(Request $request)
@@ -1257,6 +1275,17 @@ class SuperAdmin_Controller extends Controller
         $status = $request->status;
         $id = $request->userid;
         Users::where('id', $id)->update(array('block_status' => $status));
+        $userdetails = Users::select('*')->where('id', $id)->first();
+        $device_token = $userdetails->device_token;
+        // print_r($device_token );die();
+        if ($status == 1) {
+            $adminmessage = "Aby Chalet Blocked You";
+            if (!empty($device_token)) {
+                $this->push($device_token, $adminmessage);
+            }
+        } else {
+            $adminmessage = "Aby Chalet UnBlocked You";
+        }
         return response()->json(['success' => 'Successfully Blocked.']);
     }
     public function unblockuser($id)
@@ -1278,8 +1307,54 @@ class SuperAdmin_Controller extends Controller
         // $id = base64_decode($id);
         $reservation = Reservation::where('tb_reservation.id', $id)->select('*', 'tb_chalet.id as cid', 'tb_reservation.id as rid')->join('tb_chalet', 'tb_chalet.id', '=', 'tb_reservation.chaletid')->first();
         $userdetails = (new \App\Helper)->get_user_details($reservation->userid);
+        $device_token = $userdetails->device_token;
+        $username = $userdetails->first_name . ' ' . $userdetails->last_name;
+        $country = $userdetails->country;
+        $date = date('Y-m-d');
+        $time = date("H:i:sa");
+        date_default_timezone_set('Asia/Kolkata');
+        $current_timestamp=date('Y-m-d H:i:s');
+        $balance = $reservation->package_price - $reservation->total_paid;
+        $count = Rewards::select('*')->where('userid', $reservation->userid)->count();
+        // echo $count;die();
+        if ($count == 1) {
+            $rewarddetails = Rewards::select('*')->where('userid', $reservation->userid)->first();
+            $rewards = $rewarddetails->rewarded_amt;
+        } else {
+            $rewards = 0;
+        }
+        $notification = SystemNotification::select('*')->where('function', 'Reservation Canceled')->first();
         // echo $reservation->userid;die();
-        Reservation::where('id', $id)->update(array('booking_status' => '1'));
+        Reservation::where('id', $id)->update(array('booking_status' => '1', 'canceled_by' => '0','rejected_at'=>$current_timestamp));
+        $str = $notification->message;
+        if (strpos($str, '{UserName}') !== false) {
+            // echo 'true';
+            $str = str_replace("{UserName}", $username, $str);
+        }
+        if (strpos($str, '{Time}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Time}", $time, $str);
+        }
+        if (strpos($str, '{Date}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Date}", $date, $str);
+        }
+        if (strpos($str, '{Country}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Country}", $country, $str);
+        }
+        if (strpos($str, '{Rewards}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Rewards}", $rewards, $str);
+        }
+        if (strpos($str, '{Balance}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Balance}", $balance, $str);
+        }
+        if (!empty($device_token)) {
+            $this->push($device_token, $str);
+        }
+        $insert = UserNotification::insert([['userid' => $reservation->userid, 'notification_title' => 'reservation', 'notification_message' => $str, 'reservation_id' => $id]]);
         if ($page == 'totalinvoice') {
             return redirect('/Chalet-Invoices-Total')->with("error", "The reservation was canceled, and the amount of (KD " . $reservation->total_paid . ") and Refund to " . $userdetails->first_name . " " . $userdetails->last_name    . ", 
         For Chalet ( " . $reservation->chalet_name . " )");
@@ -1420,7 +1495,7 @@ class SuperAdmin_Controller extends Controller
     }
     public function updatecontacts(Request $request)
     {
-         if (!empty($request->contacts)) {
+        if (!empty($request->contacts)) {
             $contactnew = array_chunk($request->contacts, 2);
             foreach ($contactnew as $contacts) {
                 $uname = $contacts[0]['uname'];
@@ -1503,5 +1578,168 @@ class SuperAdmin_Controller extends Controller
             // die();
         }
         return redirect('/Chalet-Contact-Us')->with('success', 'Successfully Updated Contact');
+    }
+
+    public function accept_reject_booking($rid, $status)
+    {
+        if (session('adminlog') == false) {
+            return redirect('/admin')->with('error', 'Your current session was timed-out and you have been logged out.Please login again to continue.');
+        }
+        $r_id = base64_decode($rid);
+        $reservation_details = Reservation::select('*')->where('id', $r_id)->first();
+        $user_id = $reservation_details->userid;
+        $userdetails = Users::select('*')->where('id', $user_id)->first();
+        $device_token = $userdetails->device_token;
+        $username = $userdetails->first_name . ' ' . $userdetails->last_name;
+        $country = $userdetails->country;
+        $date = date('Y-m-d');
+        $time = date("H:i:sa");
+        $balance = $reservation_details->package_price - $reservation_details->total_paid;
+        $count = Rewards::select('*')->where('userid', $user_id)->count();
+        // echo $count;die();
+        if ($count == 1) {
+            $rewarddetails = Rewards::select('*')->where('userid', $user_id)->first();
+            $rewards = $rewarddetails->rewarded_amt;
+        } else {
+            $rewards = 0;
+        }
+
+        $cancelnotification = SystemNotification::select('*')->where('function', 'Reservation Canceled')->first();
+        // print_r($notification->message);
+        $str = $cancelnotification->message;
+        if (strpos($str, '{UserName}') !== false) {
+            // echo 'true';
+            $str = str_replace("{UserName}", $username, $str);
+        }
+        if (strpos($str, '{Time}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Time}", $time, $str);
+        }
+        if (strpos($str, '{Date}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Date}", $date, $str);
+        }
+        if (strpos($str, '{Country}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Country}", $country, $str);
+        }
+        if (strpos($str, '{Rewards}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Rewards}", $rewards, $str);
+        }
+        if (strpos($str, '{Balance}') !== false) {
+            // echo 'true';
+            $str = str_replace("{Balance}", $balance, $str);
+        }
+        // print_r($str);
+
+        // die();
+        $acceptnotification = SystemNotification::select('*')->where('function', 'Booking Confirmed')->first();
+        // print_r($notification->message);
+        $accept_str = $acceptnotification->message;
+        if (strpos($accept_str, '{UserName}') !== false) {
+            // echo 'true';
+            $accept_str = str_replace("{UserName}", $username, $accept_str);
+        }
+        if (strpos($accept_str, '{Time}') !== false) {
+            // echo 'true';
+            $accept_str = str_replace("{Time}", $time, $accept_str);
+        }
+        if (strpos($accept_str, '{Date}') !== false) {
+            // echo 'true';
+            $accept_str = str_replace("{Date}", $date, $accept_str);
+        }
+        if (strpos($accept_str, '{Country}') !== false) {
+            // echo 'true';
+            $accept_str = str_replace("{Country}", $country, $accept_str);
+        }
+        if (strpos($accept_str, '{Rewards}') !== false) {
+            // echo 'true';
+            $accept_str = str_replace("{Rewards}", $rewards, $accept_str);
+        }
+        if (strpos($accept_str, '{Balance}') !== false) {
+            // echo 'true';
+            $accept_str = str_replace("{Balance}", $balance, $accept_str);
+        }
+        date_default_timezone_set('Asia/Kolkata');
+        $current_timestamp=date('Y-m-d H:i:s');
+        if ($status == '1') {
+            Reservation::where('id', $r_id)->update(array('owner_status' => '2', 'booking_status' => '1', 'canceled_by' => '0','rejected_at'=>$current_timestamp));
+            if (!empty($device_token)) {
+                $this->push($device_token, $str);
+            }
+            $insert = UserNotification::insert([['userid' => $user_id, 'notification_title' => 'reservation', 'notification_message' => $str, 'reservation_id' => $r_id]]);
+
+            return redirect('/Dashboard')->with('success', 'Successfully Rejected Booking');
+        } else {
+            Reservation::where('id', $r_id)->update(array('owner_status' => '1', 'booking_status' => '0','rejected_at'=>$current_timestamp));
+            if (!empty($device_token)) {
+                $this->push($device_token, $accept_str);
+            }
+            $insert = UserNotification::insert([['userid' => $user_id, 'notification_title' => 'reservation', 'notification_message' => $accept_str, 'reservation_id' => $r_id]]);
+
+            return redirect('/Dashboard')->with('success', 'Successfully Accepted Booking');
+        }
+    }
+    public function send_reminder($rid, $cname, $edate, $uid)
+    {
+        $rid = base64_decode($rid);
+        $cname = base64_decode($cname);
+        $edate = base64_decode($edate);
+        $uid = base64_decode($uid);
+        // echo $uid;die();
+        $userdetails = Users::select('*')->where('id', $uid)->first();
+        $device_token = $userdetails->device_token;
+        $message = "Please Pay the remaining amount of your booking " . $rid . " at " . $cname . " before " . $edate;
+        if (!empty($device_token)) {
+            $this->push($device_token, $message);
+        }
+        return redirect('/Dashboard')->with('success', 'Successfully Send Reminder');
+    }
+    public function push($device_token, $message)
+    {
+        if (defined('CURL_HTTP_VERSION_2_0')) {
+            // echo $message;
+            // $device_token   = '3646941b9530f48af477c2a0379e2f9b335be0aeaeac046cf99008c9442d64bb';
+            $pem_file       = 'PushChalet.pem';
+            $pem_secret     = 'sics';
+            $apns_topic     = 'com.srishti.AbyChaletApp';
+            $message = array(
+                'alert' => array(
+                    'title' => "$message",
+                    // 'body' => "Body of Test Push",
+                ),
+                'badge' => 1,
+                'sound' => 'default',
+            ); // Create the payload body
+
+            $body['aps'] = $message;
+
+            $payload = json_encode($body);
+            //             HostDevelopment = "https://api.development.push.apple.com:443/3/device/$device_token"
+            // HostProduction  = "https://api.push.apple.com:443/3/device/$device_token"
+            $url   = "https://api.push.apple.com:443/3/device/$device_token";
+            // $url = "https://api.development.push.apple.com:443/3/device/$device_token";
+            // print_r($url);die();
+            $ch = curl_init($url);
+            // print_r($ch);die();
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array("apns-topic: $apns_topic"));
+            curl_setopt($ch, CURLOPT_SSLCERT, $pem_file);
+            curl_setopt($ch, CURLOPT_SSLCERTPASSWD, $pem_secret);
+            $response = curl_exec($ch);
+            // print_r($response);die();
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($response) {
+                // echo "Push Success";
+            } else {
+                // echo "Push Failed";
+            }
+        } else {
+
+            // echo "CURL_HTTP_VERSION_2_0 Not Supported";
+        }
     }
 }
