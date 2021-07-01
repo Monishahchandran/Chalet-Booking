@@ -121,7 +121,7 @@
                             <td>
                             <?php $id = base64_encode($rdetails->rid); ?>
                                 @if($rdetails->status=='Remaining')
-                                <a class="btn btn-warning btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid ( Remaining )</a
+                                <a class="btn btn-warning btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid ( Remaining )</a>
                                 @endif
                                 @if($rdetails->status=='Paid')
                                 <a class="btn btn-success btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid</a>
@@ -141,6 +141,10 @@
                     <a class="btn btn-danger btn-xs" href="{{ url('/cancelreservation') }}/<?php echo $rdetails->rid; ?>/<?php echo 'totalinvoice'; ?>">Cancel Reservation</a>
                                        
                                 <!-- <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target=".bs-example-modal-lgx">Cancel Reservation</button> -->
+                            <?php } ?>
+                            <?php if(($rdetails->booking_status=='1') && ($rdetails->refund_status=='0')){?>
+        <a class="btn btn-danger btn-xs" href="{{ url('/Chalet-Invoices-Total-Refund-Money') }}">Refund Money</a>
+                                   
                             <?php } ?>
                             </td>
                         </tr>

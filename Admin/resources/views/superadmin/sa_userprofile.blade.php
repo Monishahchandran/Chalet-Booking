@@ -33,7 +33,7 @@
                         <div class="col-md-9 col-sm-9 col-xs-12">
                             <div>
                                 @if(!empty($userdetails->profile_pic))
-                                <a href="{{url('uploads/chalet_uploads/chalet_images/')}}/<?php echo $userdetails->profile_pic; ?>" target="_blank"><img border="0" src="{{url('uploads/chalet_uploads/chalet_images/')}}/<?php echo $userdetails->profile_pic; ?>" width="100" height="100"></a>
+                                <a href="{{url('uploads/profile_pic')}}/<?php echo $userdetails->profile_pic; ?>" target="_blank"><img border="0" src="{{url('uploads/profile_pic')}}/<?php echo $userdetails->profile_pic; ?>" width="100" height="100"></a>
                                 @else
                                 <a href="{{url('images/img.jpg')}}" target="_blank"><img border="0" src="{{url('images/img.jpg')}}" width="100" height="100"></a>
                                 @endif

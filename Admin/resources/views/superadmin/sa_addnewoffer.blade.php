@@ -30,7 +30,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Discount ( KD )</label>
                         <div class="col-md-3 col-sm-9 col-xs-12">
-                            <input type="text" id="discount_amt" name="discount_amt" required="required" class="form-control col-md-7 col-xs-12">
+                            <input type="text" id="discount_amt" name="discount_amt" required="required" class="form-control col-md-7 col-xs-12" >
                         </div>
                     </div>
                     <br>
@@ -168,12 +168,17 @@
         }
     }
     function myFunction() {
-       
+    //    alert($('#discount_amt').val());
+    //    if (){
+    //        alert("empty");
+    //    }else{
+    //        alert("not");
+    //    }
             if ((!$('#chalet_id').val())) {
                 $('#dangermsg').html('Please Select Chalets').css('display', 'block');
                 $(window).scrollTop(0);
             } else {
-                if ((!$('#discount_amt').val()),(!$('#offer_checkin').val()),(!$('#offer_checkout').val())) {
+                if ((!$('#offer_checkin').val()),(!$('#offer_checkout').val()),(!$('#discount_amt').val())) {
                 $('#dangermsg').html('Please Enter All Fields').css('display', 'block');
                 $(window).scrollTop(0);
             } else {

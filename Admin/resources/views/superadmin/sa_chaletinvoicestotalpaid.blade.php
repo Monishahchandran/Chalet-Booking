@@ -143,6 +143,7 @@
                                        
                                 <!-- <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target=".bs-example-modal-lgx">Cancel Reservation</button> -->
                             <?php } ?>
+                           
                             </td>
                         </tr>
                         @endforeach

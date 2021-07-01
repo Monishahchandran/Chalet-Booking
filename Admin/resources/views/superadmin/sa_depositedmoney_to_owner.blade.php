@@ -59,13 +59,14 @@
             <div class="col-md-6 col-sm-12 col-xs-6">
                 <h3>Reservations information</h3>
                 <?php $total_paid = (new \App\Helper)->get_totalpaid();
+$total_deposit = (new \App\Helper)->get_totaldeposit();
         $total_commission= (new \App\Helper)->get_totalcommission();
+$total_depositdone = (new \App\Helper)->total_depositdone();
         $total_deposittobedone = (new \App\Helper)->total_deposittobedone();
         ?>
                 <br>Total Amount of <b>Reservation </b>: <button>{{$total_paid }}</button> KD
                 <br>Total Amount of <b>Commission </b>: <button>{{$total_commission}}</button> KD
-                <br>Total Amount after <b>Commission</b> : <button>{{$total_paid-$total_commission }}</button> KD
-
+                <br>Total Amount after <b>Commission</b> : <button>{{$total_depositdone}}</button> KD
                 <br>Total amounts to be <b>Deposited</b> : <button>{{$total_deposittobedone}}</button> KD
                 <br>
             </div>
@@ -93,7 +94,7 @@
                     </thead>
                     <tbody>
                         @foreach($reservationlist as $rdetails)
-                        <?php $userdetails = (new \App\Helper)->get_user_details($rdetails->userid); ?>
+                        <?php $userdetails = (new \App\Helper)->get_owner_details($rdetails->ownerid); ?>
                         <tr>
                             <td>{{$rdetails->reservation_id}}</td>
                             <td>
@@ -130,16 +131,17 @@
                                         </td>
                                         <td width="60%" valign="top">
                                             : <strong>{{$rdetails->package_price}} KD </strong><br>
-                                            : <b style="color: #FF9933">( {{$rdetails->commision}}% ) -{{$rdetails->owner_commission}} KD</b><br><br>
-                                            : <b style="color: limegreen">{{$rdetails->package_price-$rdetails->commision}} KD</b><br>
+                                            <?php $commission=($rdetails->package_price * ($rdetails->comission_percentage/100) )?>
+                                            : <b style="color: #FF9933">( {{$rdetails->comission_percentage}}% ) - {{$commission}} KD</b><br><br>
+                                            : <b style="color: limegreen">{{$rdetails->owner_commission}} KD</b><br>
                                         </td>
                                     </tr>
                                 </table>
                             </td>
                             <td align="center">
-                                <div id="deposit">
+                                <div id="deposit<?php echo $loop->iteration; ?>">
                                     @if($rdetails->owner_moneydeposit==0)
-                                    <button class="btn btn-warning btn-xs" id="deposit_status<?php echo $loop->iteration; ?>" onclick="changestatus('<?php echo $rdetails->rid ?>');">Processing</button>
+                                    <button class="btn btn-warning btn-xs" id="deposit_status<?php echo $loop->iteration; ?>" onclick="changestatus('<?php echo $rdetails->rid ?>','deposit<?php echo $loop->iteration; ?>');">Processing</button>
                                     @else
                                     <button class="btn btn-success btn-xs">Deposited</button>
                                     @endif
@@ -163,8 +165,9 @@
 </div>
 <!-- /User Blocked -->
 <script>
-    function changestatus($rid) {
+    function changestatus($rid,$field) {
         // alert($season_start)
+        $tid = "#" + $field;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -183,7 +186,9 @@
             },
             success: function(data) {
                 //   alert(data.success);
-                $('#deposit').html('<button class="btn btn-success btn-xs">Deposited</button>');
+            //   alert("success");
+                   $($tid).html('<button class="btn btn-success btn-xs">Deposited</button>');
+                 
             },
             complete: function(data) {
                 // Hide image container

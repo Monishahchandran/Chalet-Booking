@@ -83,7 +83,7 @@
                         <tr>
                         <td>{{$rdetails->reservation_id}}</td>
                             <td>
-                                <b>{{$userdetails->first_name}}&nbsp;{{$userdetails->last_name}}LoLo Ali</b>
+                                <b>{{$userdetails->first_name}}&nbsp;{{$userdetails->last_name}}</b>
                                 <br>{{$userdetails->gender}}
                                     <br>{{$userdetails->country}}
                                     <br>Email:{{$userdetails->email}}
@@ -133,9 +133,9 @@
                             <td>
                                 <b>{{$rdetails->total_paid}}KD</b>
                                 <br>
-                                <div id="result_message">
+                                <div id="result_message<?php echo $loop->iteration;?>">
                                 @if(empty($rdetails->refund_date))
-                                <input type="date" id="refund_date<?php echo $loop->iteration;?>" id="refund_date" onchange="updaterefund('<?php echo $rdetails->rid;?>','refund_date<?php echo $loop->iteration;?>');" >
+                                <input type="date" id="refund_date<?php echo $loop->iteration;?>" id="refund_date" onchange="updaterefund('<?php echo $rdetails->rid;?>','refund_date<?php echo $loop->iteration;?>','result_message<?php echo $loop->iteration;?>');" >
                                 @else
                                 {{$rdetails->refund_date}}
                                 @endif
@@ -158,8 +158,9 @@
 </div>
 <!-- /User Blocked -->
 <script>
- function updaterefund($rid,$field) {
+ function updaterefund($rid,$field,$mfield) {
     $tid = "#" + $field;
+    $message_tag= "#" + $mfield;
 		$refund_date = $($tid).val();
         // alert($season_start)
         $.ajaxSetup({
@@ -181,7 +182,7 @@
             },
             success: function(data) {
                 //   alert(data.success);
-                $('#result_message').html($refund_date);
+                $($message_tag).html($refund_date);
             },
             complete: function(data) {
                 // Hide image container

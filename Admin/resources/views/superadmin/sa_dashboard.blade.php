@@ -4,9 +4,9 @@
 <!-- Dashboard-->
 <div>
     <div class="x_panel">
-    @if ($message = Session::get('success'))
+        @if ($message = Session::get('success'))
         <div class="alert alert-success" role="alert" align="center">
-        {{ $message }}
+            {{ $message }}
         </div>
         @endif
         <div class="x_title">
@@ -35,27 +35,34 @@
                                     <div align="center" class="icon"><i class="fa fa-user" style="padding-bottom: 10px"></i></div>
                                 </h4>
                             </td>
+                            <?php  $total_regi_users = (new \App\Helper)->total_regi_users();
+                              $total_regi_users_month = (new \App\Helper)->total_regi_users_month();
+                            $total_regi_users_3month = (new \App\Helper)->total_regi_users_3month();
+                            $total_regi_users_6month = (new \App\Helper)->total_regi_users_6month();
+                            $total_regi_users_year = (new \App\Helper)->total_regi_users_year();
+                            $total_regi_users_week= (new \App\Helper)->total_regi_users_week();
+                            ?>
                             <td>
                                 <h4>Registered users</h4>
                             </td>
                             <td>
-                                <h4>100</h4>
+                                <h4>{{$total_regi_users_week}}</h4>
                             </td>
                             <td>
-                                <h4>425</h4>
+                                <h4>{{$total_regi_users_month}}</h4>
                             </td>
                             <td>
-                                <h4>813</h4>
+                                <h4>{{$total_regi_users_3month}}</h4>
                             </td>
                             <td>
-                                <h4>8596</h4>
+                                <h4>{{$total_regi_users_6month}}</h4>
                             </td>
                             <td>
-                                <h4>45252</h4>
+                                <h4>{{$total_regi_users_year}}</h4>
                             </td>
 
                             <td>
-                                <h4>354287</h4>
+                                <h4>{{$total_regi_users}}</h4>
                             </td>
 
                         </tr>
@@ -65,26 +72,33 @@
                                     <div align="center" class="icon"><i class="fa fa-users" style="padding-bottom: 10px"></i></div>
                                 </h4>
                             </td>
+                            <?php  $total_visitors = (new \App\Helper)->total_visitors(); 
+                             $total_visitors_month = (new \App\Helper)->total_visitors_month();
+                             $total_visitors_3month = (new \App\Helper)->total_visitors_3month();
+                             $total_visitors_6month = (new \App\Helper)->total_visitors_6month();
+                             $total_visitors_year = (new \App\Helper)->total_visitors_year();
+                             $total_visitors_week= (new \App\Helper)->total_visitors_week();
+                            ?>
                             <td>
                                 <h4>Total Visitors</h4>
                             </td>
                             <td>
-                                <h4>7</h4>
+                                <h4>{{$total_visitors_week}}</h4>
                             </td>
                             <td>
-                                <h4>30</h4>
+                                <h4>{{$total_visitors_month}}</h4>
                             </td>
                             <td>
-                                <h4>90</h4>
+                                <h4>{{$total_visitors_3month}}</h4>
                             </td>
                             <td>
-                                <h4>180</h4>
+                                <h4>{{$total_visitors_6month}}</h4>
                             </td>
                             <td>
-                                <h4>365</h4>
+                                <h4>{{$total_visitors_year}}</h4>
                             </td>
                             <td>
-                                <h4>124589</h4>
+                                <h4>{{$total_visitors}}</h4>
                             </td>
 
                         </tr>
@@ -94,32 +108,39 @@
                                     <div align="center" class="icon"><i class="fa fa-users" style="padding-bottom: 10px"></i></div>
                                 </h4>
                             </td>
+                            <?php  $total_reservation = (new \App\Helper)->total_reservation();
+                             $total_reservation_month = (new \App\Helper)->total_reservation_month();
+                             $total_reservation_3month = (new \App\Helper)->total_reservation_3month();
+                             $total_reservation_6month = (new \App\Helper)->total_reservation_6month();
+                             $total_reservation_year = (new \App\Helper)->total_reservation_year();
+                             $total_reservation_week= (new \App\Helper)->total_reservation_week();
+                            ?>
                             <td>
                                 <h4>Total Reservations</h4>
                             </td>
 
                             <td>
-                                <h4>5</h4>
+                                <h4>{{$total_reservation_week}}</h4>
                             </td>
 
                             <td>
-                                <h4>12</h4>
+                                <h4>{{$total_reservation_month}}</h4>
                             </td>
 
                             <td>
-                                <h4>44</h4>
+                                <h4>{{$total_reservation_3month}}</h4>
                             </td>
 
                             <td>
-                                <h4>76</h4>
+                                <h4>{{$total_reservation_6month}}</h4>
                             </td>
 
                             <td>
-                                <h4>127</h4>
+                                <h4>{{ $total_reservation_year}}</h4>
                             </td>
 
                             <td>
-                                <h4>21087</h4>
+                                <h4>{{$total_reservation}}</h4>
                             </td>
 
                         </tr>
@@ -129,30 +150,37 @@
                                     <div align="center" class="icon"><i class="glyphicon glyphicon-shopping-cart" style="padding-bottom: 10px"></i></div>
                                 </h4>
                             </td>
+                            <?php $total_paid = (new \App\Helper)->get_totalpaid(); 
+                            $get_totalpaidweek = (new \App\Helper)->get_totalpaidweek(); 
+                            $get_totalpaidmonth= (new \App\Helper)->get_totalpaidmonth(); 
+                            $get_totalpaid3month= (new \App\Helper)->get_totalpaid3month(); 
+                            $get_totalpaid6month= (new \App\Helper)->get_totalpaid6month();
+                            $get_totalpaidyear= (new \App\Helper)->get_totalpaidyear();  
+                            ?>
                             <td>
                                 <h4>Total Amount Reservations ( KD )</h4>
                             </td>
                             <td>
-                                <h4>1.000</h4>
+                                <h4>{{$get_totalpaidweek}}</h4>
                             </td>
                             <td>
-                                <h4>7.000</h4>
-                            </td>
-
-                            <td>
-                                <h4>20.000</h4>
+                                <h4>{{$get_totalpaidmonth}}</h4>
                             </td>
 
                             <td>
-                                <h4>40.000</h4>
+                                <h4>{{$get_totalpaid3month}}</h4>
                             </td>
 
                             <td>
-                                <h4>60.000</h4>
+                                <h4>{{$get_totalpaid6month}}</h4>
                             </td>
 
                             <td>
-                                <h4>90.000</h4>
+                                <h4>{{$get_totalpaidyear}}</h4>
+                            </td>
+
+                            <td>
+                                <h4>{{$total_paid}}</h4>
                             </td>
 
                         </tr>
@@ -162,32 +190,39 @@
                                     <div align="center" class="icon"><i class="fa fa-dollar" style="padding-bottom: 10px"></i></div>
                                 </h4>
                             </td>
+                            <?php $total_commission= (new \App\Helper)->get_totalcommission(); 
+                             $total_commissionmonth= (new \App\Helper)->get_totalcommissionmonth(); 
+                             $total_commissionweek= (new \App\Helper)->get_totalcommissionweek(); 
+                             $total_commission3month= (new \App\Helper)->get_totalcommission3month(); 
+                             $total_commission6month= (new \App\Helper)->get_totalcommission6month(); 
+                             $total_commissionyear= (new \App\Helper)->get_totalcommissionyear(); 
+                            ?>
                             <td>
                                 <h4>Total Commission income ( KD ) </h4>
                             </td>
 
                             <td>
-                                <h4>100</h4>
+                                <h4>{{$total_commissionweek}}</h4>
                             </td>
 
                             <td>
-                                <h4>700</h4>
+                                <h4>{{$total_commissionmonth}}</h4>
                             </td>
 
                             <td>
-                                <h4>2.000</h4>
+                                <h4>{{$total_commission3month}}</h4>
                             </td>
 
                             <td>
-                                <h4>4.000</h4>
+                                <h4>{{$total_commission6month}}</h4>
                             </td>
 
                             <td>
-                                <h4>6.000</h4>
+                                <h4>{{$total_commissionyear}}</h4>
                             </td>
 
                             <td>
-                                <h4>9.000</h4>
+                                <h4>{{$total_commission}}</h4>
                             </td>
 
                         </tr>
@@ -201,27 +236,63 @@
                                 <h2>Total Amount after Commission ( KD ) </h2>
                             </td>
                             <td>
-                                <h4>900</h4>
+                            <h4>
+                                @if($get_totalpaidweek>$total_commissionweek) 
+                               {{$get_totalpaidweek-$total_commissionweek}}
+                               @else
+                               {{$total_commissionweek-$get_totalpaidweek}}
+                               @endif
+                                </h4>
                             </td>
 
                             <td>
-                                <h4>6.300</h4>
+                            <h4>
+                                @if($get_totalpaidmonth>$total_commissionmonth) 
+                               {{$get_totalpaidmonth-$total_commissionmonth}}
+                               @else
+                               {{$total_commissionmonth-$get_totalpaidmonth}}
+                               @endif
+                                </h4>
                             </td>
 
                             <td>
-                                <h4>18.000</h4>
+                                <h4>
+                                @if($get_totalpaid3month>$total_commission3month) 
+                               {{$get_totalpaid3month-$total_commission3month}}
+                               @else
+                               {{$total_commission3month-$get_totalpaid3month}}
+                               @endif
+                                </h4>
                             </td>
 
                             <td>
-                                <h4>36.000</h4>
+                                <h4>
+                                @if($get_totalpaid6month>$total_commission6month) 
+                               {{$get_totalpaid6month-$total_commission6month}}
+                               @else
+                               {{$total_commission6month-$get_totalpaid6month}}
+                               @endif
+                                </h4>
                             </td>
 
                             <td>
-                                <h4>54.000</h4>
+                                <h4>
+                                @if($total_paid>$total_commissionyear) 
+                               {{$total_paid-$total_commissionyear}}
+                               @else
+                               {{$total_commissionyear-$total_paid}}
+                               @endif
+                                </h4>
                             </td>
 
                             <td>
-                                <h4>81.000</h4>
+                                <h4>
+                               @if($get_totalpaidyear>$total_commission) 
+                               {{$get_totalpaidyear-$total_commission}}
+                               @else
+                               {{$total_commission-$get_totalpaidyear}}
+                               @endif
+                                </h4>
                             </td>
 
                         </tr>
@@ -233,7 +304,8 @@
                             </td>
 
                             <td colspan="7">
-                                <h3>Total amounts to be Deposited To Owner ( KD ) : <button class="btn btn-danger btn" onclick="window.location.href='Deposited-Money-To-Owner.php';">5.500 KD</button> </h3>
+                            <?php  $total_deposittobedone = (new \App\Helper)->total_deposittobedone(); ?>
+                                <h3>Total amounts to be Deposited To Owner ( KD ) : <a class="btn btn-danger btn" href="{{ url('/Deposited-Money-To-Owner') }}">{{$total_deposittobedone}} KD</a> </h3>
                             </td>
                         </tr>
                     </tbody>
@@ -258,23 +330,26 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach($reservationlist as $rdetails)
+                            <?php $userdetails = (new \App\Helper)->get_user_details($rdetails->userid); ?>
+                            <?php $ownerdetails = (new \App\Helper)->get_owner_details($rdetails->ownerid); ?>
                             <tr>
-                                <td>Inv000001</td>
+                                <td>{{$rdetails->reservation_id}}</td>
                                 <td>
                                     <address>
-                                        <b>khalifa Yousef ALqenaei</b>
-                                        <br>Male
-                                        <br>Kuwait
-                                        <br>Email: admin@6rb.net
-                                        <br>Mobile: +965-99791234
+                                        <b>{{$userdetails->first_name}}&nbsp;{{$userdetails->last_name}}</b>
+                                        <br>{{$userdetails->gender}}
+                                        <br>{{$userdetails->country}}
+                                        <br>Email:{{$userdetails->email}}
+                                        <br>Mobile:{{$userdetails->country_code}}{{$userdetails->phone}}
                                     </address>
                                 </td>
                                 <td>
-                                    <strong>Chalet Name</strong>
+                                    <strong>{{$rdetails->chalet_name}}</strong>
                                     <br><br>
-                                    <b style="color: limegreen">Check-in</b>: 21/03/2021
+                                    <b style="color: limegreen">Check-in</b>: {{$rdetails->check_in}}
                                     <br>
-                                    <b style="color: red">Check-Out</b>: 24/03/2021
+                                    <b style="color: red">Check-Out</b>: {{$rdetails->check_out}}
                                 </td>
                                 <td>
                                     <table border="0" width="100%" cellpadding="5" cellspacing="0">
@@ -289,52 +364,73 @@
                                                     <li>Remaining:</li>
                                                 </ul>
                                             </td>
-                                            <td width="40%" valign="top">
-
-                                                : <strong>600 KD </strong><br>
-
-                                                : <b style="color: #FF9933">200 KD </b><br><br>
-
-                                                : -100 KD<br>
-
-                                                : -0 KD<br><br>
-
-                                                : <b style="color: limegreen">200 KD </b><br>
-
-                                                : <b style="color: orangered">300 KD </b><br>
-
-
-
+                                            <td width="100%" valign="top">
+                                                : <strong>{{$rdetails->package_price}} KD </strong><br>
+                                                : <b style="color: #FF9933">{{$rdetails->deposit}} KD </b><br><br>
+                                                : -@if(!empty($rdetails->reward_discount)){{$rdetails->reward_discount}}@else {{0}} @endif KD<br>
+                                                : -@if(!empty($rdetails->offer_discount)){{$rdetails->offer_discount}}@else {{0}} @endif KD<br><br>
+                                                : <b style="color: limegreen">{{$rdetails->total_paid}} KD </b><br>
+                                                <?php //echo $rdetails->package_price-$rdetails->total_paid; 
+                                                ?>
+                                                : <b style="color: orangered">{{$rdetails->package_price-$rdetails->total_paid}} KD </b><br>
                                             </td>
-
-
-
                                         </tr>
-
                                     </table>
-
                                 </td>
                                 <td>
                                     <address>
-                                        <b>Owner Name</b>
-                                        <br>Male
-                                        <br>Kuwait
-                                        <br>Email: admin@6rb.net
-                                        <br>Mobile: +965-99791234
+                                        <b>{{$ownerdetails->first_name}}&nbsp;{{$ownerdetails->last_name}}</b>
+                                        <br>{{$ownerdetails->gender}}
+                                        <br>{{$ownerdetails->country}}
+                                        <br>Email:{{$ownerdetails->email}}
+                                        <br>Mobile:{{$ownerdetails->country_code}}{{$ownerdetails->phone}}
                                     </address>
                                 </td>
                                 <td>
-                                    <button style="width: 100%">03:44 Ago</button>
+                                    <?php
+                                    if ($rdetails->createdat > date('Y-m-d H:i:s')) {
+                                        $seconds  =  strtotime($rdetails->createdat) - strtotime(date('Y-m-d H:i:s'));
+                                    } else {
+                                        $seconds  =  strtotime(date('Y-m-d H:i:s')) - strtotime($rdetails->createdat);
+                                    }
+
+                                    $months = floor($seconds / (3600 * 24 * 30));
+                                    $day = floor($seconds / (3600 * 24));
+                                    $hours = floor($seconds / 3600);
+                                    $mins = floor(($seconds - ($hours * 3600)) / 60);
+                                    $secs = floor($seconds % 60);
+
+                                    if ($seconds < 60)
+                                        $time = $secs . " seconds ago";
+                                    else if ($seconds < 60 * 60)
+                                        $time = $mins . " min ago";
+                                    else if ($seconds < 24 * 60 * 60)
+                                        $time = $hours . " hours ago";
+                                    else if ($seconds < 24 * 60 * 60)
+                                        $time = $day . " day ago";
+                                    else
+                                        $time = $months . " month ago";
+                                    // echo $time;
+                                    // echo $hours.'hr '.$mins.'m ';
+                                    ?>
+                                    <button style="width: 100%"><?php echo $hours . ':' . $mins . ' '; ?> Ago</button>
                                     <br><br>
-                                    <button class="btn btn-success btn" onclick="window.location.href='#';" style="width: 100%"><i class="fa fa-check-circle"></i> Accept</button>
+                                    <?php $rid = base64_encode($rdetails->rid); ?>
+                                    <!-- style= "width: 100px;font-size: 15px; height: 30px;" -->
+                                    <!-- <button class="btn btn-success btn" onclick="window.location.href='#';" ><i class="fa fa-check-circle"></i> Accept</button> -->
+                                    <a class="btn btn-success btn" href="{{ url('/accept_reject_booking') }}/<?php echo $rid; ?>/<?php echo '0'; ?>" style="width: 100%"><i class="fa fa-check-circle"></i> Accept</a>
                                     <br><br>
-                                    <button class="btn btn-danger btn" onclick="window.location.href='#';" style="width: 100%"><i class="fa fa-times-circle"></i> Reject </button>
+                                    <!-- <button class="btn btn-danger btn" onclick="window.location.href='#';" style="width: 100%"><i class="fa fa-times-circle"></i> Reject </button> -->
+                                    <a class="btn btn-danger btn" href="{{ url('/accept_reject_booking') }}/<?php echo $rid; ?>/<?php echo '1'; ?>" style="width: 100%"><i class="fa fa-times-circle"></i> Reject</a>
+
                                 </td>
                                 <td align="center">
+                                    <?php $userid = base64_encode($userdetails->id); ?>
                                     <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
-                                    <br><br><button class="btn btn-success btn-xs" onclick="window.location.href='user-profile.php';">User Profile</button>
+                                    <br><a class="btn btn-primary btn-xs" href="{{ url('/user-profile') }}/<?php echo $userid; ?>">User Profile</a>
                                 </td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -357,23 +453,25 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($remaining_list as $rdetails)
+                                <?php $userdetails = (new \App\Helper)->get_user_details($rdetails->userid); ?>
                                 <tr>
-                                    <td>Inv000001</td>
+                                    <td>{{$rdetails->reservation_id}}</td>
                                     <td>
                                         <address>
-                                            <b>khalifa Yousef ALqenaei</b>
-                                            <br>Male
-                                            <br>Kuwait
-                                            <br>Email: admin@6rb.net
-                                            <br>Mobile: +965-99791234
+                                            <b>{{$userdetails->first_name}}&nbsp;{{$userdetails->last_name}}</b>
+                                            <br>{{$userdetails->gender}}
+                                            <br>{{$userdetails->country}}
+                                            <br>Email:{{$userdetails->email}}
+                                            <br>Mobile:{{$userdetails->country_code}}{{$userdetails->phone}}
                                         </address>
                                     </td>
                                     <td>
-                                        <strong>Chalet Name</strong>
+                                        <strong>{{$rdetails->chalet_name}}</strong>
                                         <br><br>
-                                        <b style="color: limegreen">Check-in</b>: 21/03/2021
+                                        <b style="color: limegreen">Check-in</b>: {{$rdetails->check_in}}
                                         <br>
-                                        <b style="color: red">Check-Out</b>: 24/03/2021
+                                        <b style="color: red">Check-Out</b>: {{$rdetails->check_out}}
                                     </td>
                                     <td>
                                         <table border="0" width="100%" cellpadding="5" cellspacing="0">
@@ -388,159 +486,90 @@
                                                         <li>Remaining:</li>
                                                     </ul>
                                                 </td>
-                                                <td width="40%" valign="top">
-                                                    : <strong>600 KD </strong><br>
-                                                    : <b style="color: #FF9933">200 KD </b><br><br>
-                                                    : -100 KD<br>
-                                                    : -0 KD<br><br>
-                                                    : <b style="color: limegreen">200 KD </b><br>
-                                                    : <b style="color: orangered">300 KD </b><br>
+                                                <td width="100%" valign="top">
+                                                    : <strong>{{$rdetails->package_price}} KD </strong><br>
+                                                    : <b style="color: #FF9933">{{$rdetails->deposit}} KD </b><br><br>
+                                                    : -@if(!empty($rdetails->reward_discount)){{$rdetails->reward_discount}}@else {{0}} @endif KD<br>
+                                                    : -@if(!empty($rdetails->offer_discount)){{$rdetails->offer_discount}}@else {{0}} @endif KD<br><br>
+                                                    : <b style="color: limegreen">{{$rdetails->total_paid}} KD </b><br>
+                                                    <?php //echo $rdetails->package_price-$rdetails->total_paid; 
+                                                    ?>
+                                                    : <b style="color: orangered">{{$rdetails->package_price-$rdetails->total_paid}} KD </b><br>
                                                 </td>
                                             </tr>
                                         </table>
                                     </td>
                                     <td align="center">
-                                        <button class="btn btn-danger btn" style="width: 100%">18/03/2021 - 00:44:20</button>
+                                        <?php
+                                        // $datetime='2021-05-19 05:23:00';
+                                        $expiry = $admindata->remaining_amt_pay;
+                                        // echo  date('H:i:s', strtotime($rdetails->checkin_time));
+                                        $date_time = date("Y-m-d H:i:s", strtotime($rdetails->check_in . ' ' . $rdetails->checkin_time));
+                                        // echo $date_time;
+                                        $timestamp = strtotime($date_time);
+                                        $etime = $timestamp - ($expiry * 60 * 60);
+                                        // echo date("Y-m-d H:i:s", $time);
+                                        //Print it out in a human-readable format.
+                                        // echo date("M d,Y H:i:s", $time);
+                                        $end_date = date("Y/m/d - H:i:s", $etime);
+                                        $enddate = date("Y-m-d H:i:s", $etime);
+                                        // echo $enddate;
+                                        // die();
+                                        // $current_date= date('Y-m-d H:i:s');
+                                        if ($enddate > date('Y-m-d H:i:s')) {
+                                            $seconds  =  strtotime($enddate) - strtotime(date('Y-m-d H:i:s'));
+                                        } else {
+                                            $seconds  =  strtotime(date('Y-m-d H:i:s')) - strtotime($enddate);
+                                        }
+
+                                        $months = floor($seconds / (3600 * 24 * 30));
+                                        $day = floor($seconds / (3600 * 24));
+                                        $hours = floor($seconds / 3600);
+                                        $mins = floor(($seconds - ($hours * 3600)) / 60);
+                                        $secs = floor($seconds % 60);
+
+                                        if ($seconds < 60)
+                                            $time = $secs . " seconds ago";
+                                        else if ($seconds < 60 * 60)
+                                            $time = $mins . " min ago";
+                                        else if ($seconds < 24 * 60 * 60)
+                                            $time = $hours . " hours ago";
+                                        else if ($seconds < 24 * 60 * 60)
+                                            $time = $day . " day ago";
+                                        else
+                                            $time = $months . " month ago";
+                                        // echo $hours;
+                                        ?>
+                                        @if($hours>5)
+                                        <button style="width: 100%"><?php echo $end_date; ?></button>
+                                        @else
+                                        <button class="btn btn-danger btn" style="width: 100%"><?php echo $end_date; ?></button>
+
+                                        @endif
+
                                         <br>
                                         <br>
-                                        <a class="btn btn-primary btn" href="#" style="width: 100%">Send Reminders</a>
+                                        <?php $r_id = base64_encode($rdetails->reservation_id); 
+                                        $cname = base64_encode($rdetails->chalet_name); 
+                                        $edate=base64_encode($end_date);
+                                        $uid=base64_encode($rdetails->userid);
+                                        ?>
+      <a class="btn btn-primary btn" href="{{ url('/send_reminder') }}/<?php echo $r_id; ?>/<?php echo $cname; ?>/<?php echo $edate; ?>/<?php echo $uid; ?>" style="width: 100%">Send Reminders</a>
                                     </td>
                                     <td>
-                                        <button class="btn btn-warning btn-xs" onclick="window.location.href='Invoic-Paid-Remaining.php';">Paid ( Remaining )</button>
+                                        <?php $id = base64_encode($rdetails->rid); ?>
+                                        <a class="btn btn-warning btn-xs" href="{{ url('/Invoice') }}/<?php echo $id; ?>">Paid ( Remaining )</a>
                                     </td>
                                     <td align="center">
-
+                                        <?php $userid = base64_encode($userdetails->id); ?>
                                         <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
-
-                                        <br><br><button class="btn btn-success btn-xs" onclick="window.location.href='user-profile.php';">User Profile</button>
-
+                                        <br><a class="btn btn-primary btn-xs" href="{{ url('/user-profile') }}/<?php echo $userid; ?>">User Profile</a>
                                     </td>
 
                                 </tr>
-                                <tr>
-                                    <td>Inv000002</td>
-                                    <td>
-                                        <address>
-                                            <b>LoLo Ali</b>
-
-                                            <br>Female
-
-                                            <br>Kuwait
-
-                                            <br>Email: admin@6rb.net
-
-                                            <br>Mobile: +965-99791234
 
 
-
-                                        </address>
-
-                                    </td>
-                                    <td>
-                                        <strong>Chalet Name</strong>
-                                        <br><br>
-                                        <b style="color: limegreen">Check-in</b>: 28/03/2021
-                                        <br>
-                                        <b style="color: red">Check-Out</b>: 31/03/2021
-                                    </td>
-                                    <td>
-                                        <table border="0" width="100%" cellpadding="5" cellspacing="0">
-                                            <tr>
-                                                <td width="60%">
-                                                    <ul>
-                                                        <li>Rental price</li>
-                                                        <li>Deposit</li><br>
-                                                        <li>Rewards ( Discount )</li>
-                                                        <li>Offers ( Discount )</li><br>
-                                                        <li>Total Paid</li>
-                                                        <li>Remaining:</li>
-                                                    </ul>
-                                                </td>
-                                                <td width="40%" valign="top">
-                                                    : <strong>1000 KD </strong><br>
-                                                    : <b style="color: #FF9933">200 KD </b><br><br>
-                                                    : -0 KD<br>
-                                                    : -100 KD<br><br>
-                                                    : <b style="color: limegreen">200 KD </b><br>
-                                                    : <b style="color: orangered">700 KD </b><br>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td align="center">
-                                        <button style="width: 100%">14/06/2021 - 27:44:20</button>
-                                        <br>
-                                        <br>
-                                        <a class="btn btn-primary btn" href="#" style="width: 100%">Send Reminders</a>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-warning btn-xs" onclick="window.location.href='Invoic-Paid-Remaining.php';">Paid ( Remaining )</button>
-                                    </td>
-                                    <td align="center">
-                                        <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
-                                        <br><br><button class="btn btn-success btn-xs" onclick="window.location.href='user-profile.php';">User Profile</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Inv000003</td>
-                                    <td>
-                                        <address>
-                                            <b>khalifa Yousef ALqenaei</b>
-                                            <br>Male
-                                            <br>Kuwait
-                                            <br>Email: admin@6rb.net
-                                            <br>Mobile: +965-99791234
-                                        </address>
-                                    </td>
-                                    <td>
-                                        <strong>Chalet Name</strong>
-                                        <br><br>
-                                        <strong>Weekdays</strong>
-                                        <br>
-                                        <b style="color: limegreen">Check-in</b>: 01/04/2021
-                                        <br>
-                                        <b style="color: red">Check-Out</b>: 03/04/2021
-                                    </td>
-                                    <td>
-                                        <table border="0" width="100%" cellpadding="5" cellspacing="0">
-                                            <tr>
-                                                <td width="60%">
-                                                    <ul>
-                                                        <li>Rental price</li>
-                                                        <li>Deposit</li><br>
-                                                        <li>Rewards ( Discount )</li>
-                                                        <li>Offers ( Discount )</li><br>
-                                                        <li>Total Paid</li>
-                                                        <li>Remaining:</li>
-                                                    </ul>
-                                                </td>
-                                                <td width="40%" valign="top">
-                                                    : <strong>600 KD </strong><br>
-                                                    : <b style="color: #FF9933">200 KD </b><br><br>
-                                                    : -0 KD<br>
-                                                    : -0 KD<br><br>
-                                                    : <b style="color: limegreen">200 KD </b><br>
-                                                    : <b style="color: orangered">400 KD </b><br>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td align="center">
-                                        <button style="width: 100%">04/08/2021 - 00:44:20</button>
-                                        <br>
-                                        <br>
-                                        <a class="btn btn-primary btn" href="#" style="width: 100%">Send Reminders</a>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-warning btn-xs" onclick="window.location.href='Invoic-Paid-Remaining.php';">Paid ( Remaining )</button>
-                                    </td>
-                                    <td align="center">
-                                        <a class="btn btn-success btn-xs" href="http://www.aby-chalet.com/chalet/1" target="_blank">View Chalet</a>
-
-                                        <br><br><button class="btn btn-success btn-xs" onclick="window.location.href='user-profile.php';">User Profile</button>
-
-                                    </td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
