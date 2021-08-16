@@ -40,11 +40,11 @@ class NewPasswordViewController: UIViewController {
             }
         }
         txtNewPasswrd.placeholder = "New Password".localized()
-        txtConfirmPasswrd.placeholder = "Re-enter new password".localized()
+        txtConfirmPasswrd.placeholder = "Re-Enter New Password".localized()
         txtNewPasswrd.selectedTitle = "New Password".localized()
-        txtConfirmPasswrd.selectedTitle = "Re-enter new password".localized()
-        lblResetPassword.text = "Enter a new password below".localized()
-        btnReset.setTitle("Reset".localized(), for: .normal)
+        txtConfirmPasswrd.selectedTitle = "Re-Enter New Password".localized()
+        lblResetPassword.text = "Enter a new password below.".localized()
+        btnReset.setTitle("SUBMIT".localized(), for: .normal)
 
     }
     
@@ -108,22 +108,29 @@ extension NewPasswordViewController {
     func resetPassword(emailID:String,password:String)  {
         openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: true)
         ServiceManager.sharedInstance.postMethodAlamofire("api/resetpassword", dictionary: ["email":emailID,"new_password":password], withHud: false) { (success, response, error) in
-            openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: false)
             if success {
                 if response!["status"] as! Bool == true {
-                    
-                    //
-                    let nextVC = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(identifier: "VerifiedResetViewController") as! VerifiedResetViewController
-                    nextVC.verificationFrom = VerificationSuccessFrom.forgotPassword
-                    self.navigationController?.pushViewController(nextVC, animated: true)
-                    
+                    DispatchQueue.main.async {
+                        self.moveToSuccess()
+                    }
                 }else{
+                    openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: false)
                     let responseMsg = ((response as! NSDictionary)["message"] as! String)
                     showDefaultAlert(viewController: self, title: "Error", msg: responseMsg)
                 }
             }else{
-                //self.showAlertWithOkButton(message: "Failed")
+                openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: false)
+                showDefaultAlert(viewController: self, title: "", msg: error!.localizedDescription)
             }
+        }
+    }
+    
+    func moveToSuccess(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: false)
+            let nextVC = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(identifier: "VerifiedResetViewController") as! VerifiedResetViewController
+            nextVC.verificationFrom = VerificationSuccessFrom.forgotPassword
+            self.navigationController?.pushViewController(nextVC, animated: true)
         }
     }
 }

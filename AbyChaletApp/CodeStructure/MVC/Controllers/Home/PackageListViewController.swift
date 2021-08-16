@@ -16,11 +16,11 @@ class PackageListViewController: UIViewController {
     @IBOutlet weak var tblView: UITableView!
     
     lazy var packageBookingChartArray: [PackageBookingChartStruct] = [
-        PackageBookingChartStruct(type: "Weekdays", days: "Sunday - Monday - Tuesday - Wednesday"),
-        PackageBookingChartStruct(type: "Weekend", days: "Thursday - Friday - Saturday"),
-        PackageBookingChartStruct(type: "Week (A)", days: "Sunday to Saturday"),
-        PackageBookingChartStruct(type: "Week (B)", days: "Thursday to Wednesday"),
-        PackageBookingChartStruct(type: "Holidays and Events", days: "Prices vary in these periods")
+        PackageBookingChartStruct(type: "Weekdays".localized(), days: "Sunday - Monday - Tuesday - Wednesday".localized()),
+        PackageBookingChartStruct(type: "Weekend".localized(), days: "Thursday - Friday - Saturday".localized()),
+        PackageBookingChartStruct(type: "Week (A)".localized(), days: "Sunday to Saturday".localized()),
+        PackageBookingChartStruct(type: "Week (B)".localized(), days: "Thursday to Wednesday".localized()),
+        PackageBookingChartStruct(type: "Holidays and Events".localized(), days: "Prices vary in these periods".localized())
     ]
     
     override func viewDidLoad() {
@@ -28,7 +28,15 @@ class PackageListViewController: UIViewController {
         setupForCustomNavigationTitle(self: self)
         navigationController?.navigationBar.barTintColor = kAppHeaderColor
         navigationController?.navigationBar.isTranslucent = false
-
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
+    }
+    
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
  
 }

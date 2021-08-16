@@ -27,6 +27,9 @@ class SignUpProfileDetailsTableViewCell1: UITableViewCell  {
     @IBOutlet weak var txtBirthDay: UITextField!
     @IBOutlet weak var txtBirthYear: UITextField!
     
+    
+    var datePicker =  UIDatePicker()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -36,10 +39,22 @@ class SignUpProfileDetailsTableViewCell1: UITableViewCell  {
         txtLastName.autocapitalizationType = .words
         [txtFirstName,txtLastName,txtDateOfBirth].forEach { (skyFloatingTextField) in
             skyFloatingTextField?.lineView.isHidden = true
-            skyFloatingTextField?.titleFont = UIFont(name: "Roboto-Medium", size: 15)!
-            skyFloatingTextField?.placeholderFont = UIFont(name: "Roboto-Medium", size: 15)!
-            skyFloatingTextField?.font = UIFont(name: "Roboto-Medium", size: 15)!
+            if kCurrentLanguageCode == "ar"{
+                skyFloatingTextField?.titleFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.textAlignment = .right
+                skyFloatingTextField?.isLTRLanguage = true
+                
+            }else{
+                skyFloatingTextField?.titleFont = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.placeholderFont = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.font = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.textAlignment = .left
+                skyFloatingTextField?.isLTRLanguage = true
+            }
             skyFloatingTextField?.titleFormatter = { (text: String) -> String in
+                
                 return text
             }
         }
@@ -48,8 +63,13 @@ class SignUpProfileDetailsTableViewCell1: UITableViewCell  {
         txtBirthYear.keyboardType = .numberPad
         txtFirstName.placeholder = "First Name".localized()
         txtLastName.placeholder = "Last Name".localized()
-        txtDateOfBirth.placeholder = "Date of Birth".localized()
-        txtDateOfBirth.selectedTitle = "Date of Birth".localized()
+        if kCurrentLanguageCode == "ar"{
+            txtDateOfBirth.textAlignment = .right
+        }else{
+            txtDateOfBirth.textAlignment = .left
+        }
+        txtDateOfBirth.placeholder = "Date Of Birth".localized()
+        txtDateOfBirth.selectedTitle = "Date Of Birth".localized()
         txtBirthDay.placeholder = "Day".localized()
         txtBirthMonth.placeholder = "Month".localized()
         txtBirthYear.placeholder = "Year".localized()
@@ -69,6 +89,19 @@ class SignUpProfileDetailsTableViewCell1: UITableViewCell  {
         viewForMaleButton.addShadowForView()
         viewForButtonSelectedGreenView.addCornerForView()
         viewForMalebuttonSelectedGreenview.addCornerForView()
+    }
+    
+    
+    @IBAction func txtYearAction(_ sender: UITextField) {
+        
+        
+    }
+    
+    @objc func donedatePicker(){
+        
+    }
+    @objc func cancelDatePicker(){
+        
     }
     
 }

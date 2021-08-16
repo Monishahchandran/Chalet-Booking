@@ -42,6 +42,10 @@
 	<string>Allow to use photo to add image</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Almarai-Bold.ttf</string>
+		<string>Almarai-ExtraBold.ttf</string>
+		<string>Almarai-Regular.ttf</string>
+		<string>Almarai-Light.ttf</string>
 		<string>Roboto-Black.ttf</string>
 		<string>Roboto-BlackItalic.ttf</string>
 		<string>Roboto-Bold.ttf</string>

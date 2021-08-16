@@ -25,16 +25,20 @@ class BookingsVC: UIViewController {
     var selectedIndex = 0
     let productList = NSMutableArray()
     var isLoad = false
+    var isUSerIsBlocked = false
+    var dictRewardDetails = NSDictionary()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setUpNavigationBar()
+        appDelegate.checkBlockStatus()
         
     }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if CAUser.currentUser.id != nil{
             self.getMyBookigData()
+        }else{
+            self.isLoad = true
         }
         initiatePayment()
     }
@@ -84,32 +88,40 @@ class BookingsVC: UIViewController {
     }
     @IBAction func buttonPaymentNowAction(_ sender: UIButton) {
         
-        self.selectedIndex = sender.tag
-        if CAUser.currentUser.id != nil {
-            self.intialisePaymentWithType()
+        if isUSerIsBlocked == false {
+            self.selectedIndex = sender.tag
+            if CAUser.currentUser.id != nil {
+                self.intialisePaymentWithType()
+            }else{
+                let alert = UIAlertController(title: "Message", message: "Please Login for booking. Do you want to continue?", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+                    let loginSignUpViewController = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(identifier: "LoginSignUpViewController") as! LoginSignUpViewController
+                    loginSignUpViewController.isFromNoLogin = true
+                    self.navigationController?.pushViewController(loginSignUpViewController, animated: true)
+                }))
+                alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
+                    
+                }))
+                self.present(alert, animated: true, completion: nil)
+            }
         }else{
-            let alert = UIAlertController(title: "Message", message: "Please Login for booking. Do you want to continue?", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
-                let loginSignUpViewController = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(identifier: "LoginSignUpViewController") as! LoginSignUpViewController
-                loginSignUpViewController.isFromNoLogin = true
-                self.navigationController?.pushViewController(loginSignUpViewController, animated: true)
-            }))
-            alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
-                
-            }))
-            self.present(alert, animated: true, completion: nil)
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Your Account has been Blocked. Please contact Administrator.")
+            appDelegate.checkBlockStatus()
         }
         
     }
     @IBAction func btnClickMapAction(_ sender: UIButton) {
         let dict = self.arrayMyBooking[sender.tag]
         let arrayBookingDetails = dict.myBookingChalet_details?.first
+        let long = Double(arrayBookingDetails!.latitude!)
+        let round = long?.rounded(toPlaces: 6)
+        
         if (UIApplication.shared.canOpenURL(URL(string:"comgooglemaps://")!)) {
-                UIApplication.shared.open(URL(string:"comgooglemaps://?center=\(arrayBookingDetails!.latitude!),\(arrayBookingDetails!.longitude!)&zoom=14&views=traffic&q=\(arrayBookingDetails!.latitude!),\(arrayBookingDetails!.longitude!)")!, options: [:], completionHandler: nil)
-            } else {
-                print("Can't use comgooglemaps://")
-            }
+            UIApplication.shared.open(URL(string:"comgooglemaps://?center=\(arrayBookingDetails!.longitude!),\(arrayBookingDetails!.latitude!)&zoom=14&views=traffic&q=\(arrayBookingDetails!.longitude!),\(arrayBookingDetails!.latitude!)")!, options: [:], completionHandler: nil)
+        } else {
+            print("Can't use comgooglemaps://")
         }
+    }
         
     
     
@@ -134,7 +146,7 @@ extension BookingsVC : UITableViewDelegate, UITableViewDataSource {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "BookingRewardsTVCell", for: indexPath) as! BookingRewardsTVCell
             cell.setValuesToFields(dictReward: arrayRewards[indexPath.row])
-            cell.setupProgressBar()
+            cell.setupProgressBar(dictReward: arrayRewards[indexPath.row])
             return cell
         }else{
             if arrayMyBooking.count > 0 {
@@ -158,10 +170,17 @@ extension BookingsVC : UITableViewDelegate, UITableViewDataSource {
                     return cell
                     
                 }else if dict.active_status == "awaiting_payment"{
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "AwaitingBookingTVCell", for: indexPath) as! AwaitingBookingTVCell
-                    cell.btnPay.tag = indexPath.row
-                    cell.setValuesToFields(dict: self.arrayMyBooking[indexPath.row])
-                    return cell
+                    
+                    if dict.booking_status == "booked"{
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "AwaitingBookingTVCell", for: indexPath) as! AwaitingBookingTVCell
+                        cell.btnPay.tag = indexPath.row
+                        cell.setValuesToFields(dict: self.arrayMyBooking[indexPath.row])
+                        return cell
+                    }else{
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "CancelledBookingTVCell", for: indexPath) as! CancelledBookingTVCell
+                        cell.setValuesToFields(dict: self.arrayMyBooking[indexPath.row])
+                        return cell
+                    }
                     
                 }else{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "NoBookingTVCell", for: indexPath) as! NoBookingTVCell
@@ -175,9 +194,18 @@ extension BookingsVC : UITableViewDelegate, UITableViewDataSource {
         }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let bookingDetailTVC = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(identifier: "BookingDetailTVC") as! BookingDetailTVC
-        bookingDetailTVC.dictMyBooking = self.arrayMyBooking[indexPath.row]
-         self.navigationController?.pushViewController(bookingDetailTVC, animated: true)
+        if indexPath.section == 1{
+            if self.arrayMyBooking.count > 0 {
+                let dict = self.arrayMyBooking[indexPath.row]
+                if dict.active_status == "not_available"{
+                    showDefaultAlert(viewController: self, title: "", msg: "This chalet is not currently available in the application")
+                }else{
+                    let bookingDetailTVC = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(identifier: "BookingDetailTVC") as! BookingDetailTVC
+                    bookingDetailTVC.dictMyBooking = self.arrayMyBooking[indexPath.row]
+                    self.navigationController?.pushViewController(bookingDetailTVC, animated: true)
+                }
+            }
+        }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
@@ -193,7 +221,13 @@ extension BookingsVC : UITableViewDelegate, UITableViewDataSource {
                 }else if dict.active_status == "active"{
                     return 286
                 }else if dict.active_status == "awaiting_payment"{
-                    return 311
+                    if dict.booking_status == "booked"{
+                        return 311
+                    }else{
+                        return 171
+                    }
+                }else if dict.active_status == ""{
+                    return 0
                 }else{
                     return 174
                 }
@@ -212,6 +246,10 @@ extension BookingsVC {
     //MARK:- GetMyBookingData
     func getMyBookigData() {
         ServiceManager.sharedInstance.postMethodAlamofire("api/mybooking", dictionary: ["userid":CAUser.currentUser.id!], withHud: true) { (success, response, error) in
+            self.isLoad = true
+            DispatchQueue.main.async {
+                self.checkBlockStatus()
+            }
             if success {
                 if ((response as! NSDictionary) ["status"] as! Bool) == true {
                     let responseBase = MyBookingBase(dictionary: response as! NSDictionary)
@@ -219,10 +257,14 @@ extension BookingsVC {
                     self.arrayMyBooking = (responseBase?.myBooking_details)!
                     DispatchQueue.main.async {
                         self.isLoad = true
+                        if self.arrayRewards.count > 0{
+                           // self.getRewardDetails(rewardAmount: (self.arrayRewards.first?.reward_earn!)!, reservationAmount: (self.arrayRewards.first?.total!)!)
+                        }
                         self.tableViewBooking.reloadData()
                     }
                 }else{
-                    showDefaultAlert(viewController: self, title: "", msg: response!["message"]!)
+                    self.tableViewBooking.reloadData()
+                    //showDefaultAlert(viewController: self, title: "", msg: response!["message"]!)
                 }
             }else{
                 showDefaultAlert(viewController: self, title: "", msg: "Failed..!")
@@ -232,7 +274,6 @@ extension BookingsVC {
 }
 
 extension BookingsVC {
-    
     //MARK:- Payment Integration
     func initiatePayment() {
         let request = generateInitiatePaymentModel()
@@ -247,14 +288,12 @@ extension BookingsVC {
             }
         })
     }
-    
     func intialisePaymentWithType() {
         if let paymentMethods = paymentMethods, !paymentMethods.isEmpty {
             let selectedIndex = selectedPaymentMethodIndex
             executePayment(paymentMethodId: paymentMethods[selectedIndex].paymentMethodId)
         }
     }
-    
     func executePayment(paymentMethodId: Int) {
         let request = getExecutePaymentRequest(paymentMethodId: paymentMethodId)
         SVProgressHUD.show()
@@ -272,18 +311,13 @@ extension BookingsVC {
                     let remainingAmt : Int = Int(renta! - totalPaid!)
                     DispatchQueue.main.async {
                         self?.payRemainingAmount(reservationId: "\((dict?.id!)!)", totalPaid: "\(remainingAmt)", paymentGateway: (dataDict?.paymentGateway!)!,paymentId: (dataDict?.paymentID!)!,authId: (dataDict?.authorizationID!)!,trackId: (dataDict?.trackID!)!,transcationId: (dataDict?.transactionID)!,invoiceReference: executePaymentResponse.invoiceReference!,referenceId: (dataDict?.referenceID)!)
-                        
                     }
-                    
                 }
             case .failure(let failError):
                 showDefaultAlert(viewController: self!, title: "Failed..!", msg: "result: \(failError)")
             }
         }
     }
-    
-    
-    
      func getExecutePaymentRequest(paymentMethodId: Int) -> MFExecutePaymentRequest {
         
         let amountDict = self.arrayMyBooking[(self.selectedIndex)]
@@ -352,5 +386,28 @@ extension BookingsVC {
         
     }
     
+    func checkBlockStatus() {
+        if CAUser.currentUser.id != nil {
+            ServiceManager.sharedInstance.postMethodAlamofire("api/block_user", dictionary: ["userid": CAUser.currentUser.id!], withHud: true) { [self] (success, response, error) in
+                if success {
+                    let status = ((response as! NSDictionary)["status"] as! Bool)
+                    if status{
+                        self.isUSerIsBlocked = false
+                    }else{
+                        self.isUSerIsBlocked = true
+                    }
+                }else{
+                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: error!.localizedDescription)
+                }
+            }
+        }
+    }
     
+}
+extension Double {
+    /// Rounds the double to decimal places value
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
 }

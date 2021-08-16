@@ -14,8 +14,15 @@ import SVProgressHUD
 import GradientProgress
 
 class ReservationTVC: UITableViewController {
-
     
+    
+    
+    @IBOutlet weak var viewDepositBg: UIView!
+    @IBOutlet weak var lblDeposit72No: UILabel!
+    @IBOutlet var viewPlayer: UIView!
+    @IBOutlet weak var lblCollectionIndex: UILabel!
+    @IBOutlet weak var lblTotalRewardTitle: UILabel!
+    @IBOutlet weak var lblAgreementStr: UILabel!
     @IBOutlet weak var lblDiscountRent: UILabel!
     @IBOutlet weak var lblTotalRent: UILabel!
     @IBOutlet weak var lblTimeProgress: UILabel!
@@ -42,6 +49,8 @@ class ReservationTVC: UITableViewController {
     @IBOutlet weak var viewBookingDetails: UIView!
     @IBOutlet weak var viewChalletDetails: UIView!
     @IBOutlet weak var viewChaletHeadingDetails: UIView!
+    @IBOutlet weak var lbllRemaining: UILabel!
+    @IBOutlet weak var lbllTotalInvoice: UILabel!
     @IBOutlet weak var collectionViewChalletDetails: UICollectionView!
     @IBOutlet weak var viewAgreement: UIView!
     @IBOutlet weak var viewAgreementHeading: UIView!
@@ -50,6 +59,7 @@ class ReservationTVC: UITableViewController {
     @IBOutlet weak var viewDeposit: UIView!
     @IBOutlet weak var heightConstrain: NSLayoutConstraint!
     
+    @IBOutlet weak var viewCollectionIndex: UIView!
     @IBOutlet weak var lblCheckOutDate: UILabel!
     @IBOutlet weak var lblCheckInDate: UILabel!
     @IBOutlet weak var lblCheckOutTime: UILabel!
@@ -58,7 +68,16 @@ class ReservationTVC: UITableViewController {
     
     @IBOutlet weak var viewPrev: UIView!
     @IBOutlet weak var viewForward: UIView!
-
+    var blurView                : UIView!
+    @IBOutlet var popUpSelectImage: UIView!
+    @IBOutlet weak var lblBookingDetails: UILabel!
+    
+    @IBOutlet weak var lblRentalPriceTitel: UILabel!
+    
+    var isUSerIsBlocked = false
+    
+    let text = "I have read and Agree to the terms of service "
+    var lblIndexValue = 1
     var dictBookingDetails = Booking_details(dictionary: NSDictionary())
 
     var imgArr : [UIImage] = [#imageLiteral(resourceName: "icn_Confirmationcode"),#imageLiteral(resourceName: "IconSelect"),#imageLiteral(resourceName: "img_intro1"),#imageLiteral(resourceName: "img_intro2")]
@@ -80,24 +99,49 @@ class ReservationTVC: UITableViewController {
     var dictOfferChaletList : OfferChalet_list!
     var dictAdmin : Admin!
     var arrayAgreements = [Agreement]()
-
+    var arrayAdminDetails = [Admin_details]()
+    var isUnpaidDone = true
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
         self.setUpNavigationBar()
         self.setupUI()
-        self.getAgreementsDetails()
+        self.getAdminDetails()
         if isFromOffer == true{
             self.setValuesFromOffer(selectIndex: 0)
         }else{
             self.setValuesToFields(selectIndex: selectedIndex)
         }
+        //check
+        lblBookingDetails.text = "Booking Details".localized()
+        lblRentalPriceTitel.text = "Rental price".localized()
+        lblTotalRewardTitle.text = "Total Rewards (Discount)".localized()
         
-        
+        if kCurrentLanguageCode == "ar"{
+            lblBookingDetails.font = UIFont(name: kFontAlmaraiRegular, size: 17)
+            lblRentalPriceTitel.font = UIFont(name: kFontAlmaraiRegular, size: 15)
+            lblTotalRewardTitle.font = UIFont(name: kFontAlmaraiRegular, size: 15)
+        }else {
+            lblBookingDetails.font = UIFont(name: "Roboto-Medium", size: 17)
+            lblRentalPriceTitel.font = UIFont(name: "Roboto-Regular", size: 15)
+            lblTotalRewardTitle.font = UIFont(name: "Roboto-Regular", size: 15)
+        }
         
         
         
         initiatePayment()
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
+    }
+    
+    @objc func logoutUser() {
+        
+        appDelegate.logOut()
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -111,6 +155,12 @@ class ReservationTVC: UITableViewController {
         self.viewPrev.roundCorners(corners: [.topRight,.bottomRight], radius: 8.0)
         self.viewForward.roundCorners(corners: [.topLeft,.bottomLeft], radius: 8.0)
         //layer.cornerRadius = 10.0
+        self.viewCollectionIndex.roundCorners(corners: [.bottomRight], radius: 10.0)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kStopVideoPlayer), object: nil, userInfo: nil)
+
     }
 
     //MARK:- SetUp NavigationBar
@@ -124,7 +174,7 @@ class ReservationTVC: UITableViewController {
         self.navigationItem.leftBarButtonItems = [backBarButton]
         let notificationButton = UIBarButtonItem(image: Images.kIconNotification, style: .plain, target: self, action: #selector(backButtonTouched))
         self.navigationItem.rightBarButtonItems = [notificationButton]
-        self.navigationItem.title = "Reservation"
+        self.navigationItem.title = "Reservation".localized()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         self.heightConstrain.constant = 0
         self.viewDeposit.isHidden = true
@@ -160,40 +210,74 @@ class ReservationTVC: UITableViewController {
             btn.addCornerForView(cornerRadius: 17.5)
         }
         
-        let attrsWhatKindOfJob1 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Regular", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)] as [NSAttributedString.Key : Any]
-        let attrsWhatKindOfJob2 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Medium", size: 16)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)] as [NSAttributedString.Key : Any]
-        let attrsWhatKindOfJob3 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Medium", size: 16)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)] as [NSAttributedString.Key : Any]
+        let attrsWhatKindOfJob1 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Regular", size: 14)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)] as [NSAttributedString.Key : Any]
+        let attrsWhatKindOfJob2 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Medium", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)] as [NSAttributedString.Key : Any]
+        let attrsWhatKindOfJob3 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Medium", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1),NSAttributedString.Key.underlineStyle : NSUnderlineStyle.thick.rawValue] as [NSAttributedString.Key : Any]
         
         let attributedStringWhatKindOfJob1 = NSMutableAttributedString(string:"I have read and ", attributes:attrsWhatKindOfJob1)
         let attributedStringWhatKindOfJob2 = NSMutableAttributedString(string:"Agree ", attributes:attrsWhatKindOfJob2)
         let attributedStringWhatKindOfJob3 = NSMutableAttributedString(string:"to the ", attributes:attrsWhatKindOfJob1)
-        let attributedStringWhatKindOfJob4 = NSMutableAttributedString(string:"terms ", attributes:attrsWhatKindOfJob3)
-        let attributedStringWhatKindOfJob5 = NSMutableAttributedString(string:"of service ", attributes:attrsWhatKindOfJob1)
-        
-        
+        let attributedStringWhatKindOfJob4 = NSMutableAttributedString(string:"terms", attributes:attrsWhatKindOfJob3)
+        let attributedStringWhatKindOfJob5 = NSMutableAttributedString(string:" of service ", attributes:attrsWhatKindOfJob1)
         attributedStringWhatKindOfJob1.append(attributedStringWhatKindOfJob2)
         attributedStringWhatKindOfJob1.append(attributedStringWhatKindOfJob3)
         attributedStringWhatKindOfJob1.append(attributedStringWhatKindOfJob4)
         attributedStringWhatKindOfJob1.append(attributedStringWhatKindOfJob5)
         self.lblAgreement.attributedText = attributedStringWhatKindOfJob1
         
+        self.lblAgreement.isUserInteractionEnabled = true
+        self.lblAgreement.addGestureRecognizer(UITapGestureRecognizer(target:self, action: #selector(tapLabel(gesture:))))
+        self.lblDeposit72No.font = UIFont(name: "Roboto-BoldItalic", size: 15)
+        self.lblDeposit72No.text = "No Deposit 72 hours before Check-in".localized()
+    }
+    
+    @objc func tapLabel(gesture: UITapGestureRecognizer) {
+        let termsRange = (text as NSString).range(of: "terms")
+        // comment for now
+        //let privacyRange = (text as NSString).range(of: "Privacy Policy")
+        
+        if gesture.didTapAttributedTextInLabel(label: lblAgreement, inRange: termsRange) {
+            if self.arrayAdminDetails.count > 0 {
+                let termsAndConditionsVC = UIStoryboard(name: "ProfileNew", bundle: Bundle.main).instantiateViewController(identifier: "TermsAndConditionVC") as! TermsAndConditionVC
+                termsAndConditionsVC.isFromReservation = false
+                termsAndConditionsVC.UrlString = self.arrayAdminDetails.first!.legal_privacy!
+                let vc = UINavigationController(rootViewController: termsAndConditionsVC)
+                self.present(vc, animated: true, completion: nil)
+            }
+        } else {
+            print("Tapped none")
+        }
     }
     
     //MARK:- setValuesToFields
     func setValuesToFields(selectIndex:Int) {
-        self.lblRent.text = "KD \(arrayUserDetails[selectIndex].rent!)"
-        self.lblCheckOutDate.text = arrayUserDetails[selectIndex].check_out
-        self.lblCheckInDate.text = arrayUserDetails[selectIndex].check_in
+        
+        let attrsKd = [NSAttributedString.Key.font : UIFont(name: "Roboto-Regular", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.1960784314, green: 0.3843137255, blue: 0.4666666667, alpha: 1)] as [NSAttributedString.Key : Any]
+        let attrsAmt = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 16)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.1960784314, green: 0.3843137255, blue: 0.4666666667, alpha: 1)] as [NSAttributedString.Key : Any]
+        
+        let kd = NSMutableAttributedString(string:"KD ", attributes:attrsKd)
+        let rent = NSMutableAttributedString(string:"\(arrayUserDetails[selectIndex].rent!)", attributes:attrsAmt)
+        kd.append(rent)
+        self.lblRent.attributedText = kd
+
+       // self.lblRent.text = "KD \(arrayUserDetails[selectIndex].rent!)"
+        self.lblCheckOutDate.text = arrayUserDetails[selectIndex].check_out?.appFormattedDate
+        self.lblCheckInDate.text = arrayUserDetails[selectIndex].check_in?.appFormattedDate
         self.lblCheckInTime.text = arrayUserDetails[selectIndex].admincheck_in
         self.lblCheckOutTime.text = arrayUserDetails[selectIndex].admincheck_out
-        self.lblSlNo.text = "No. \(arrayUserDetails[selectedIndex].chalet_id ?? 0)"
+        self.lblSlNo.text = "No.\(arrayUserDetails[selectedIndex].chalet_id ?? 0)"
         self.lblChaletName.text = arrayUserDetails[selectedIndex].chalet_name
-        self.lblDeposit.text = "KD \(arrayUserDetails[selectedIndex].min_deposit!)"
+        
+        let depoKd = NSMutableAttributedString(string:"KD ", attributes:attrsKd)
+        let deposit = NSMutableAttributedString(string:"\(arrayUserDetails[selectedIndex].min_deposit!)", attributes:attrsAmt)
+        depoKd.append(deposit)
+        self.lblDeposit.attributedText = depoKd
+            //"KD \(arrayUserDetails[selectedIndex].min_deposit!)"
         let dateFormater = DateFormatter()
         dateFormater.dateFormat = "yyyy-MM-dd hh:mm a"
         let checkinDate = dateFormater.date(from: "\(String(describing: arrayUserDetails[selectIndex].check_in!)) \(String(describing: arrayUserDetails[selectIndex].admincheck_in!))")
         let difference = Calendar.current.dateComponents([.hour], from: Date(), to: checkinDate!)
-        if difference.hour! <= 72 {
+        if difference.hour! >= 72 {
             self.viewNoDeposit.isHidden = true
             let totalRent = Double(arrayUserDetails[selectIndex].rent!)
             let minDeposit = Double(arrayUserDetails[selectedIndex].min_deposit!)
@@ -203,25 +287,45 @@ class ReservationTVC: UITableViewController {
             let remaingTimeToPay = Int(arrayUserDetails[selectIndex].remaining_amt_pay!)
             
             let wedDate = Calendar.current.date( byAdding: .hour,value: -remaingTimeToPay!,to: checkinDate!)
+            dateFormater.dateFormat = "dd/MM/yyyy ( hh:mm a )"
             lblRemainingDateAndTime.text = dateFormater.string(from: wedDate!)
         }else{
             self.viewNoDeposit.isHidden = false
             self.lblTotalInvoice.text = "KD \(arrayUserDetails[selectIndex].rent!)"
+            self.lblTotalInvoice.font = UIFont(name: "Roboto-Bold", size: 16.0)
         }
+        
+        self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: arrayUserDetails[selectedIndex].chalet_upload!.count))"
     }
     //MARK:- setValuesToFields
     func setValuesFromOffer(selectIndex:Int) {
         
-        self.lblRent.text = "KD \(dictOfferUserDetails.rent!)"
-        self.lblCheckOutDate.text = dictOfferUserDetails.check_out
-        self.lblCheckInDate.text = dictOfferUserDetails.check_in
+        let attrsKd = [NSAttributedString.Key.font : UIFont(name: "Roboto-Regular", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.1960784314, green: 0.3843137255, blue: 0.4666666667, alpha: 1)] as [NSAttributedString.Key : Any]
+        let attrsAmt = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 16)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.1960784314, green: 0.3843137255, blue: 0.4666666667, alpha: 1)] as [NSAttributedString.Key : Any]
+        
+        let totalaMt : Int = dictOfferUserDetails.original_price! - dictOfferUserDetails.discount_amt!
+        let kd = NSMutableAttributedString(string:"KD ", attributes:attrsKd)
+        let rent = NSMutableAttributedString(string:"\(dictOfferUserDetails.rent!)", attributes:attrsAmt)
+        kd.append(rent)
+        self.lblRent.attributedText = kd
+        
+        
+       // self.lblRent.text = "KD \(dictOfferUserDetails.rent!)"
+        self.lblCheckOutDate.text = dictOfferUserDetails.check_out?.appFormattedDateOffereDetail
+        self.lblCheckInDate.text = dictOfferUserDetails.check_in?.appFormattedDateOffereDetail
         self.lblCheckInTime.text = dictOfferUserDetails.admincheck_in
         self.lblCheckOutTime.text = dictOfferUserDetails.admincheck_out
         self.lblSlNo.text = "No. \(dictOfferUserDetails.chalet_id ?? 0)"
         self.lblChaletName.text = dictOfferUserDetails.chalet_name
-        self.lblDeposit.text = "KD \(dictOfferUserDetails.discount_amt!)"
         
-        let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string: "\(dictOfferUserDetails.rent!) KD")
+        let depoKd = NSMutableAttributedString(string:"KD ", attributes:attrsKd)
+        let deposit = NSMutableAttributedString(string:"\(dictOfferUserDetails.min_deposit!)", attributes:attrsAmt)
+        depoKd.append(deposit)
+        self.lblDeposit.attributedText = depoKd
+        
+        //self.lblDeposit.text = "KD \(dictOfferUserDetails.discount_amt!)"
+        
+        let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string: "\(dictOfferUserDetails.original_price!) KD")
             attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributeString.length))
         self.lblTotalRent.attributedText = attributeString
         
@@ -230,7 +334,7 @@ class ReservationTVC: UITableViewController {
         let attrsTotalRent2 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Medium", size: 25)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.1176470588, green: 0.262745098, blue: 0.3333333333, alpha: 1)] as [NSAttributedString.Key : Any]
         
         
-        let attributedTotalRent1 = NSMutableAttributedString(string:"\(dictOfferUserDetails.discount_amt!) ", attributes:attrsTotalRent1)
+        let attributedTotalRent1 = NSMutableAttributedString(string:"\(totalaMt) ", attributes:attrsTotalRent1)
         let attributedTotalRent2 = NSMutableAttributedString(string:"KD", attributes:attrsTotalRent2)
         attributedTotalRent1.append(attributedTotalRent2)
         lblDiscountRent.attributedText = attributedTotalRent1
@@ -252,6 +356,7 @@ class ReservationTVC: UITableViewController {
             lblRemainingDateAndTime.text = dateFormater.string(from: wedDate!)
         }else{
             self.viewNoDeposit.isHidden = false
+            self.lblTotalInvoice.font = UIFont(name: "Roboto-Bold", size: 16.0)
             self.lblTotalInvoice.text = "KD \(dictOfferUserDetails.rent!)"
         }
         
@@ -267,7 +372,7 @@ class ReservationTVC: UITableViewController {
             self.viewTopProgress.gradientColors = [UIColor.yellow.cgColor, UIColor.red.cgColor]
             self.strtTimer(time: expiryStr, offerCreated: offerCreatedDate!)
         }
-        
+        self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: dictOfferUserDetails.chalet_upload!.count))"
         
     }
     
@@ -287,6 +392,7 @@ class ReservationTVC: UITableViewController {
             self.collectionViewAgreement.reloadData()
             self.collectionViewNew.reloadData()
             self.collectionViewChalletDetails.reloadData()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kStopVideoPlayer), object: nil, userInfo: nil)
         }
     }
     @IBAction func btnForwardAction(_ sender: UIButton) {
@@ -297,47 +403,84 @@ class ReservationTVC: UITableViewController {
             self.collectionViewAgreement.reloadData()
             self.collectionViewNew.reloadData()
             self.collectionViewChalletDetails.reloadData()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kStopVideoPlayer), object: nil, userInfo: nil)
         }
     }
     @IBAction func btnPrevActionCollectioView(_ sender: Any) {
-        
         if collectionIndex != 0 {
             collectionIndex = collectionIndex - 1
+            lblIndexValue = lblIndexValue - 1
+            if isFromOffer == true {
+                self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: dictOfferUserDetails.chalet_upload!.count))"
+            }else{
+                self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: arrayUserDetails[selectedIndex].chalet_upload!.count))"
+            }
             collectionViewNew.scrollToItem(at: IndexPath(item: collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
-            
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kStopVideoPlayer), object: nil, userInfo: nil)
         }
         
     }
     @IBAction func btnForwardvActionCollectioView(_ sender: Any) {
         
-        if collectionIndex != (arrayUserDetails[selectedIndex].chalet_upload!.count - 1) {
-            collectionIndex = collectionIndex + 1
-            collectionViewNew.scrollToItem(at: IndexPath(item: collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
-            
+        DispatchQueue.main.async { [self] in
+            if self.isFromOffer == true{
+                if self.dictOfferUserDetails.chalet_upload!.count > 0 {
+                    if self.collectionIndex != (self.dictOfferUserDetails.chalet_upload!.count - 1) {
+                        self.collectionIndex = collectionIndex + 1
+                        self.lblIndexValue = lblIndexValue + 1
+                        self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: self.dictOfferUserDetails.chalet_upload!.count))"
+                        collectionViewNew.scrollToItem(at: IndexPath(item: self.collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
+                    }
+                }
+            }else{
+                if self.arrayUserDetails[selectedIndex].chalet_upload!.count > 0{
+                    if collectionIndex != (self.arrayUserDetails[selectedIndex].chalet_upload!.count - 1) {
+                        self.collectionIndex = collectionIndex + 1
+                        self.lblIndexValue = lblIndexValue + 1
+                        self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: self.arrayUserDetails[selectedIndex].chalet_upload!.count))"
+                        collectionViewNew.scrollToItem(at: IndexPath(item: self.collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
+                    }
+                }
+            }
         }
-        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kStopVideoPlayer), object: nil, userInfo: nil)
     }
     
     @IBAction func btnBookingDetailDepositAction(_ sender: UIButton) {
         
-        if sender.isSelected == false{
-            sender.isSelected = true
-            self.isClickDeposit = true
-                self.heightConstrain.constant = 40
-                self.viewDeposit.isHidden = false
-                self.tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .bottom)
+        var rent = 0
+        var deposit = 0
+        if isFromOffer == false{
             
-            
+            rent = Int(arrayUserDetails[selectedIndex].rent!)!
+            deposit = Int(arrayUserDetails[selectedIndex].min_deposit!)!
         }else{
-            sender.isSelected = false
-            self.isClickDeposit = false
-                self.heightConstrain.constant = 0
-                self.viewDeposit.isHidden = true
-                self.tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .top)
-            
+            rent  = dictOfferUserDetails.discount_amt!
+            deposit = Int(dictOfferUserDetails.min_deposit!)!
         }
         
         
+        if rent >= deposit {
+            if sender.isSelected == false{
+                sender.isSelected = true
+                self.isClickDeposit = true
+                self.heightConstrain.constant = 40
+                self.viewDeposit.isHidden = false
+                self.lblDeposit.textColor = #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)
+                self.viewDepositBg.backgroundColor = #colorLiteral(red: 1, green: 0.06666666667, blue: 0.1647058824, alpha: 1)
+                self.tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .bottom)
+            }else{
+                sender.isSelected = false
+                self.isClickDeposit = false
+                self.heightConstrain.constant = 0
+                self.viewDeposit.isHidden = true
+                self.lblDeposit.textColor = #colorLiteral(red: 0.1176470588, green: 0.262745098, blue: 0.3333333333, alpha: 1)
+                self.viewDepositBg.backgroundColor = #colorLiteral(red: 0.9215686275, green: 0.9215686275, blue: 0.9215686275, alpha: 1)
+                self.tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .top)
+            }
+        }else{
+            showDefaultAlert(viewController: self, title: "Message", msg: "There is no deposit option for this chalet")
+        }
         
     }
     @IBAction func btnWhatsapAction(_ sender: UIButton) {
@@ -393,10 +536,10 @@ class ReservationTVC: UITableViewController {
             self.arrayAgreeMentIdxs.append(sender.tag)
         }
         if self.isSelectTermsAgreement == true && self.arrayAgreeMentIdxs.count == self.arrayAgreements.count{
-            self.btnPayment.backgroundColor = #colorLiteral(red: 0.002171910696, green: 0.6666592845, blue: 0.007707458573, alpha: 1)
+            self.btnPayment.backgroundColor = UIColor("#6FDA44")
             self.isPaymentEnable = true
         }else{
-            self.btnPayment.backgroundColor = .lightGray
+            self.btnPayment.backgroundColor = UIColor("#C2C2C2")
             self.isPaymentEnable = false
         }
         self.collectionViewAgreement.reloadData()
@@ -413,33 +556,38 @@ class ReservationTVC: UITableViewController {
         }
         
         if self.isSelectTermsAgreement == true && self.arrayAgreeMentIdxs.count == self.arrayAgreements.count{
-            self.btnPayment.backgroundColor = #colorLiteral(red: 0.002171910696, green: 0.6666592845, blue: 0.007707458573, alpha: 1)
+            self.btnPayment.backgroundColor = UIColor("#6FDA44")
             self.isPaymentEnable = true
         }else{
-            self.btnPayment.backgroundColor = .lightGray
+            self.btnPayment.backgroundColor = UIColor("#C2C2C2")
             self.isPaymentEnable = false
         }
     }
     
     @IBAction func btnPaymentAction(_ sender: UIButton) {
         
-        if self.isPaymentEnable == true {
-            if CAUser.currentUser.id != nil {
-                self.intialisePaymentWithType()
-            }else{
-              
-                let alert = UIAlertController(title: "Message", message: "Please Login for booking. Do you want to continue?", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
-                    let loginSignUpViewController = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(identifier: "LoginSignUpViewController") as! LoginSignUpViewController
-                    loginSignUpViewController.isFromNoLogin = true
-                    self.navigationController?.pushViewController(loginSignUpViewController, animated: true)
-                }))
-                alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
+        if isUSerIsBlocked == false {
+            if self.isPaymentEnable == true {
+                if CAUser.currentUser.id != nil {
+                    self.intialisePaymentWithType()
+                }else{
                     
-                }))
-                self.present(alert, animated: true, completion: nil)
-                
+                    let alert = UIAlertController(title: "Message", message: "Please Login for booking. Do you want to continue?", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+                        let loginSignUpViewController = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(identifier: "LoginSignUpViewController") as! LoginSignUpViewController
+                        loginSignUpViewController.isFromNoLogin = true
+                        self.navigationController?.pushViewController(loginSignUpViewController, animated: true)
+                    }))
+                    alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
+                        
+                    }))
+                    self.present(alert, animated: true, completion: nil)
+                    
+                }
             }
+        }else{
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Your Account has been Blocked. Please contact Administrator.")
+            appDelegate.checkBlockStatus()
         }
         /*let bookingDetailsTVC = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(identifier: "BookingDetailsTVC") as! BookingDetailsTVC
         bookingDetailsTVC.arrayUserDetails = self.arrayUserDetails
@@ -449,6 +597,35 @@ class ReservationTVC: UITableViewController {
        /* let bookingDetailsTVC = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(identifier: "BookingDetailsTVC") as! BookingDetailsTVC
         self.navigationController?.pushViewController(bookingDetailsTVC, animated: true)*/
     }
+    
+    @IBAction func buttonCancelForgotPasswordAction(_ sender: UIButton) {
+        
+        self.dismissPopUpView()
+        
+    }
+    @IBAction func btnPlayVideoAction(_ sender: UIButton) {
+        if isFromOffer == false{
+            let urlStr =  arrayUserDetails[selectedIndex].chalet_upload![sender.tag].file_name!
+           // self.showPlayerPopup(videourl: urlStr)
+            let videoUrl = URL(string: urlStr.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!)!
+            let player = AVPlayer(url: videoUrl)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.present(playerViewController, animated: true) {
+                playerViewController.player!.play()
+            }
+        }else{
+            let urlStr = dictOfferUserDetails.chalet_upload![sender.tag].file_name!
+            let videoUrl = URL(string: urlStr.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!)!
+            let player = AVPlayer(url: videoUrl)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.present(playerViewController, animated: true) {
+                playerViewController.player!.play()
+            }
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         
@@ -516,7 +693,7 @@ extension ReservationTVC : UICollectionViewDelegate, UICollectionViewDataSource 
             
         }else if collectionView.tag ==  10 {
             if isFromOffer == true{
-                return dictOfferUserDetails.chalet_upload?.count ?? 0
+                return dictOfferUserDetails.chalet_upload!.count > 0 ? dictOfferUserDetails.chalet_upload!.count : 1
             }else{
                 return arrayUserDetails[selectedIndex].chalet_upload?.count ?? 0
             }
@@ -566,10 +743,11 @@ extension ReservationTVC : UICollectionViewDelegate, UICollectionViewDataSource 
                 }else{
                     cell.playVideo(videourl: dictOfferUserDetails.chalet_upload![indexPath.item].file_name!, previewImage: "")
                 }
+                cell.btnPlay.tag = indexPath.item
                 return cell
             }
             }else{
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewVideoCVCell", for: indexPath) as! CollectionViewVideoCVCell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewIMageVideoCVCell", for: indexPath) as! CollectionViewIMageVideoCVCell
                 cell.imgChaletImage.image = kPlaceHolderImage
                 return cell
             }
@@ -588,6 +766,7 @@ extension ReservationTVC : UICollectionViewDelegate, UICollectionViewDataSource 
             }else{
                 cell.setValuesToFields(dict: dictOfferUserDetails.chalet_details![indexPath.item])
             }
+            cell.lblChaletDetails.textAlignment = .right
             return cell
             
         }else  {
@@ -602,6 +781,7 @@ extension ReservationTVC : UICollectionViewDelegate, UICollectionViewDataSource 
                     cell.lblAgreement.text = self.arrayAgreements[indexPath.item].agreement_content!
                 }
             }
+            cell.lblAgreement.textAlignment = .right
             //cell.lblAgreement.text = self.arrayAgreements[indexPath.item].agreement_content!
             cell.btnAgreement.addCornerForView(cornerRadius: 8.0)
             cell.btnAgreement.tag = indexPath.item
@@ -619,15 +799,26 @@ extension ReservationTVC : UICollectionViewDelegate, UICollectionViewDataSource 
         if collectionView.tag == 3 {
             
             if self.arrayAgreements.count > 0 {
+                let htmlStr = self.arrayAgreements[indexPath.item].agreement_content!
                // if verifyUrl(urlString: self.arrayAgreements[indexPath.item].agreement_content!){
-                    let termsAndConditionsVC = UIStoryboard(name: "ProfileNew", bundle: Bundle.main).instantiateViewController(identifier: "TermsAndConditionVC") as! TermsAndConditionVC
+                  /*  let termsAndConditionsVC = UIStoryboard(name: "ProfileNew", bundle: Bundle.main).instantiateViewController(identifier: "TermsAndConditionVC") as! TermsAndConditionVC
                 termsAndConditionsVC.isFromReservation = true
                     termsAndConditionsVC.UrlString = self.arrayAgreements[indexPath.item].agreement_content!
                     let vc = UINavigationController(rootViewController: termsAndConditionsVC)
-                    self.present(vc, animated: true, completion: nil)
+                    self.present(vc, animated: true, completion: nil)*/
                 /*}else{
                     print("Not a valid url")
                 }*/
+                /*if let htmlData = htmlStr.data(using: String.Encoding.unicode) {
+                    do {
+                        lblAgreementStr.attributedText = try NSAttributedString(data: htmlData,options: [.documentType:NSAttributedString.DocumentType.html],documentAttributes: nil)
+                    } catch let e as NSError {
+                        print("Couldn't translate \(htmlStr): \(e.localizedDescription) ")
+                        lblAgreementStr.text = self.arrayAgreements[indexPath.item].agreement_content!
+                    }
+                }
+                lblAgreementStr.textAlignment = .right
+                self.showAuthPopup()*/
             }
         }
     }
@@ -653,15 +844,13 @@ extension ReservationTVC : UICollectionViewDelegate, UICollectionViewDataSource 
         }
         return false
     }
-    
 }
 
 extension ReservationTVC {
     //MARK:- Reservation
-    func chaletBooking(chaletId:String,selectedPackage:String,checkIn:String,checkOut:String,deposit:String,rent:String,totalPaid:String,paymentGateway:String,paymentId:String,authId:String,trackId:String,transcationId:String,invoiceReference:String,referenceId:String) {
-        
+    func chaletBooking(chaletId:String,selectedPackage:String,checkIn:String,checkOut:String,deposit:String,rent:String,totalPaid:String,paymentGateway:String,paymentId:String,authId:String,trackId:String,transcationId:String,invoiceReference:String,referenceId:String,serverUrl:String) {
         if CAUser.currentUser.id != nil {
-            ServiceManager.sharedInstance.postMethodAlamofire("api/booking", dictionary: ["userid":CAUser.currentUser.id!,"chaletid":chaletId,"selected_package":selectedPackage,"check_in":checkIn,"check_out":checkOut,"deposit":deposit,"rent":rent,"total_paid":totalPaid,"reward_discount":0,"offer_discount":0,"payment_gateway":paymentGateway,"payment_id":paymentId,"authorization_id":authId,"track_id":trackId,"transaction_id":transcationId,"invoice_reference":invoiceReference,"reference_id":referenceId], withHud: true) { (success, response, error) in
+            ServiceManager.sharedInstance.postMethodAlamofire(serverUrl, dictionary: ["userid":CAUser.currentUser.id!,"chaletid":chaletId,"selected_package":selectedPackage,"check_in":checkIn,"check_out":checkOut,"deposit":deposit,"rent":rent,"total_paid":totalPaid,"reward_discount":0,"offer_discount":0,"payment_gateway":paymentGateway,"payment_id":paymentId,"authorization_id":authId,"track_id":trackId,"transaction_id":transcationId,"invoice_reference":invoiceReference,"reference_id":referenceId], withHud: true) { (success, response, error) in
                 if success {
                     if ((response as! NSDictionary)["status"] as! Bool) == true {
                         let responseBase = BookingDetailBase(dictionary: response as! NSDictionary)
@@ -669,6 +858,13 @@ extension ReservationTVC {
                         DispatchQueue.main.async {
                             let bookingDetailsTVC = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(identifier: "BookingDetailsTVC") as! BookingDetailsTVC
                             bookingDetailsTVC.dictBookingDetails = self.dictBookingDetails
+                            bookingDetailsTVC.remainingAmtDate = self.lblRemainingDateAndTime.text!
+                            bookingDetailsTVC.isDeposit = self.isClickDeposit
+                            if serverUrl == "api/booking"{
+                                bookingDetailsTVC.isFrom = "Booked Successfully"
+                            }else{
+                                bookingDetailsTVC.isFrom = "Payment failed"
+                            }
                             self.navigationController?.pushViewController(bookingDetailsTVC, animated: true)
                         }
                     }else{
@@ -681,7 +877,6 @@ extension ReservationTVC {
         }else{
             showDefaultAlert(viewController: self, title: "Message", msg: "Please Login for booking")
         }
-        
     }
 }
 extension ReservationTVC {
@@ -716,44 +911,95 @@ extension ReservationTVC {
             switch response {
             case .success(let executePaymentResponse):
                 if let invoiceStatus = executePaymentResponse.invoiceStatus {
-                   // showDefaultAlert(viewController: self!, title: "Success..!", msg: "result: \(invoiceStatus)")
+                    // showDefaultAlert(viewController: self!, title: "Success..!", msg: "result: \(invoiceStatus)")
                     
                     //executePaymentResponse.invoiceReference
                     let dataDict = executePaymentResponse.invoiceTransactions?.first!
                     
-                    let dict = self?.arrayUserDetails[(self?.selectedIndex)!]
-                    DispatchQueue.main.async {
-                        self!.chaletBooking(chaletId: "\((dict?.chalet_id!)!)", selectedPackage: self!.selectedPackage, checkIn: (dict?.check_in!)!, checkOut: (dict?.check_out!)!, deposit: self!.isClickDeposit == false ? "0" : (dict?.min_deposit!)!, rent: (dict?.rent!)!, totalPaid: self!.isClickDeposit == false ? (dict?.rent!)! : (dict?.min_deposit!)!,paymentGateway: (dataDict?.paymentGateway!)!,paymentId: (dataDict?.paymentID!)!,authId: (dataDict?.authorizationID!)!,trackId: (dataDict?.trackID!)!,transcationId: (dataDict?.transactionID)!,invoiceReference: executePaymentResponse.invoiceReference!,referenceId: (dataDict?.referenceID)!)
+                    if self!.isFromOffer == false {
+                        let dict = self?.arrayUserDetails[(self?.selectedIndex)!]
+                        DispatchQueue.main.async {
+                            self!.chaletBooking(chaletId: "\((dict?.chalet_id!)!)", selectedPackage: self!.selectedPackage, checkIn: (dict?.check_in!)!, checkOut: (dict?.check_out!)!, deposit: self!.isClickDeposit == false ? "0" : (dict?.min_deposit!)!, rent: (dict?.rent!)!, totalPaid: self!.isClickDeposit == false ? (dict?.rent!)! : (dict?.min_deposit!)!,paymentGateway: (dataDict?.paymentGateway!)!,paymentId: (dataDict?.paymentID!)!,authId: (dataDict?.authorizationID!)!,trackId: (dataDict?.trackID!)!,transcationId: (dataDict?.transactionID)!,invoiceReference: executePaymentResponse.invoiceReference!,referenceId: (dataDict?.referenceID)!, serverUrl: "api/booking")
+                        }
+                    }else{
+                        let dict = self!.dictOfferUserDetails
+                        let dis = "\(dict!.min_deposit!)"
+                        let ren = "\(dict!.rent!)"
+                        DispatchQueue.main.async {
+                            self!.chaletBooking(chaletId: "\((dict?.chalet_id!)!)", selectedPackage: self!.selectedPackage, checkIn: (dict?.check_in!)!, checkOut: (dict?.check_out!)!, deposit: self!.isClickDeposit == false ? "0" : dis, rent: ren, totalPaid: self!.isClickDeposit == false ? ren : dis,paymentGateway: (dataDict?.paymentGateway!)!,paymentId: (dataDict?.paymentID!)!,authId: (dataDict?.authorizationID!)!,trackId: (dataDict?.trackID!)!,transcationId: (dataDict?.transactionID)!,invoiceReference: executePaymentResponse.invoiceReference!,referenceId: (dataDict?.referenceID)!, serverUrl: "api/booking")
+                        }
                     }
-                    
                 }
             case .failure(let failError):
-                showDefaultAlert(viewController: self!, title: "Failed..!", msg: "result: \(failError)")
+                print(failError)
+                if self!.isUnpaidDone == true{
+                    self!.isUnpaidDone = false
+                    // showDefaultAlert(viewController: self!, title: "Message", msg: "Payment failed...!")
+                    if  failError.errorDescription == "A server with the specified hostname could not be found." || failError.errorDescription == "Transaction not Captured!" {
+                        
+                        
+                        if self!.isFromOffer == false {
+                            let dict = self?.arrayUserDetails[(self?.selectedIndex)!]
+                            DispatchQueue.main.async {
+                                self!.chaletBooking(chaletId: "\((dict?.chalet_id!)!)", selectedPackage: self!.selectedPackage, checkIn: (dict?.check_in!)!, checkOut: (dict?.check_out!)!, deposit: self!.isClickDeposit == false ? "0" : (dict?.min_deposit!)!, rent: (dict?.rent!)!, totalPaid: self!.isClickDeposit == false ? (dict?.rent!)! : (dict?.min_deposit!)!,paymentGateway: "",paymentId: "",authId: "",trackId: "",transcationId: "",invoiceReference: "",referenceId: "", serverUrl: "api/paid_booking")
+                            }
+                        }else{
+                            let dict = self!.dictOfferUserDetails
+                            let dis = "\(dict!.min_deposit!)"
+                            let ren = "\(dict!.rent!)"
+                            DispatchQueue.main.async {
+                                self!.chaletBooking(chaletId: "\((dict?.chalet_id!)!)", selectedPackage: self!.selectedPackage, checkIn: (dict?.check_in!)!, checkOut: (dict?.check_out!)!, deposit: self!.isClickDeposit == false ? "0" : dis, rent: ren, totalPaid: self!.isClickDeposit == false ? ren : dis,paymentGateway: "",paymentId: "",authId: "",trackId: "",transcationId: "",invoiceReference: "",referenceId: "", serverUrl: "api/paid_booking")
+                            }
+                        }
+                        
+                    }else{
+                        showDefaultAlert(viewController: self!, title: "Message", msg: failError.errorDescription)
+                        
+                    }
+                }
             }
-        }
     }
     
-    
+    }
     
      func getExecutePaymentRequest(paymentMethodId: Int) -> MFExecutePaymentRequest {
         
         var rent = ""
         if isClickDeposit == true{
-            rent = self.arrayUserDetails[self.selectedIndex].min_deposit!
+            if isFromOffer == false {
+                rent = self.arrayUserDetails[self.selectedIndex].min_deposit!
+            }else{
+                rent = "\(self.dictOfferUserDetails.min_deposit!)"
+            }
+            
         }else{
-            rent = self.arrayUserDetails[self.selectedIndex].rent!
+            if isFromOffer == false {
+                rent = self.arrayUserDetails[self.selectedIndex].rent!
+            }else{
+                rent = "\(self.dictOfferUserDetails.rent!)"
+            }
         }
         
         let invoiceValue = Decimal(string: rent ) ?? 0
         let request = MFExecutePaymentRequest(invoiceValue: invoiceValue , paymentMethod: paymentMethodId)
         //request.userDefinedField = ""
-        request.customerEmail = self.arrayUserDetails[self.selectedIndex].email!// must be email
-        request.customerMobile = self.arrayUserDetails[self.selectedIndex].phone!
-        request.customerCivilId = self.arrayUserDetails[self.selectedIndex].civil_id!
-        request.customerName = self.arrayUserDetails[self.selectedIndex].firstname!
-        let address = MFCustomerAddress(block: "ddd", street: "sss", houseBuildingNo: "sss", address: "sss", addressInstructions: "sss")
-        request.customerAddress = address
-        request.customerReference = "Test MyFatoorah Reference"
+        if isFromOffer == false {
+            request.customerEmail = self.arrayUserDetails[self.selectedIndex].email!// must be email
+            request.customerMobile = self.arrayUserDetails[self.selectedIndex].phone!
+            request.customerCivilId = self.arrayUserDetails[self.selectedIndex].civil_id!
+            request.customerName = self.arrayUserDetails[self.selectedIndex].firstname!
+            let address = MFCustomerAddress(block: "ddd", street: "sss", houseBuildingNo: "sss", address: "sss", addressInstructions: "sss")
+            request.customerAddress = address
+            request.customerReference = "Test MyFatoorah Reference"
+        }else{
+            request.customerEmail = self.dictOfferUserDetails.email!// must be email
+            request.customerMobile = self.dictOfferUserDetails.phone!
+            request.customerCivilId = self.dictOfferUserDetails.civil_id!
+            request.customerName = self.dictOfferUserDetails.firstname!
+            let address = MFCustomerAddress(block: "ddd", street: "sss", houseBuildingNo: "sss", address: "sss", addressInstructions: "sss")
+            request.customerAddress = address
+            request.customerReference = "Test MyFatoorah Reference"
+        }
         request.language = .english
         request.mobileCountryCode = MFMobileCountryCodeISO.kuwait.rawValue
         request.displayCurrencyIso = .kuwait_KWD
@@ -818,6 +1064,9 @@ extension ReservationTVC {
     
     func getAgreementsDetails() {
         ServiceManager.sharedInstance.postMethodAlamofire("api/agreements", dictionary: nil, withHud: true) { [self] (success, response, error) in
+            DispatchQueue.main.async {
+                self.checkBlockStatus()
+            }
             if success {
                 if ((response as! NSDictionary)["status"] as! Bool) == true {
                     
@@ -828,17 +1077,130 @@ extension ReservationTVC {
                         self.collectionViewAgreement.reloadData()
                         self.tableView.reloadRows(at: [IndexPath(row: 6, section: 0)], with: .none)
                     }
-                    
-                    
                 }else{
-                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Failed...!")
+                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: ((response as! NSDictionary)["message"] as! String))
                 }
             }else{
-                showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Failed...!")
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: error!.localizedDescription)
             }
         }
     }
     
+}
+extension ReservationTVC {
+    
+    func showAuthPopup() {
+        let window = UIApplication.shared.delegate?.window!
+        blurView = UIView(frame: CGRect(x: 0, y: 0, width: window!.frame.size.width, height:  window!.frame.size.height))
+        blurView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        window!.addSubview(blurView)
+        self.tableView.isScrollEnabled = false
+        let x = 15.0
+            //(window!.frame.size.width - 275) / 2
+        let y = (window!.frame.size.height - 180) / 2
+        self.popUpSelectImage.frame = CGRect(x: 20.0, y: 100.0, width: (window?.frame.width)! - 40, height: 180)
+        
+        self.blurView.addSubview(self.popUpSelectImage)
+        self.blurView.bringSubviewToFront(self.popUpSelectImage)
+        self.popUpSelectImage.transform = CGAffineTransform(scaleX: 0.2, y: 0.2)
+        
+        UIView.animate(withDuration: 0.33, animations: {
+            self.popUpSelectImage.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            self.popUpSelectImage.layer.cornerRadius = 8.0
+        })
+    }
+    
+    func dismissPopUpView(){
+        self.tableView.isScrollEnabled = true
+        self.lblAgreementStr.text = ""
+        UIView.animate(withDuration: 0.33, animations: {
+            self.blurView.alpha = 0
+        }, completion: { (completed) in
+            
+        })
+        UIView.animate(withDuration: 0.33, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 10, options: UIView.AnimationOptions(rawValue: 0), animations: {
+            
+        }, completion: { (completed) in
+            self.blurView.removeFromSuperview()
+            self.blurView = nil
+        })
+    }
+    
+    func showPlayerPopup(videourl:String) {
+        let window = UIApplication.shared.delegate?.window!
+        blurView = UIView(frame: CGRect(x: 0, y: 0, width: window!.frame.size.width, height:  window!.frame.size.height))
+        blurView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        window!.addSubview(blurView)
+        self.tableView.isScrollEnabled = false
+        let x = 0
+        //(window!.frame.size.width - 275) / 2
+        let y = ((window!.frame.size.height ) / 2) - 200
+        self.viewPlayer.frame = CGRect(x: 0, y: 30, width: window!.frame.size.width, height:  window!.frame.size.height)
+        viewPlayer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        self.blurView.addSubview(self.viewPlayer)
+        self.blurView.bringSubviewToFront(self.viewPlayer)
+        //self.viewPlayer.transform = CGAffineTransform(scaleX: 0.2, y: 0.2)
+        let playerController                = AVPlayerViewController()
+
+        
+        //UIView.animate(withDuration: 0.33, animations: {
+            //self.viewPlayer.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+           // self.viewPlayer.layer.cornerRadius = 8.0
+            
+            DispatchQueue.main.async {
+                let player = AVPlayer(url: URL(string: videourl.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!)!)
+                //let player = AVPlayer(url: URL(fileURLWithPath: path))
+                playerController.player = player
+                self.viewPlayer.addSubview(playerController.view)
+                playerController.view.frame = CGRect(x: CGFloat(x), y: y, width: window!.frame.size.width - 20, height: 400)
+                playerController.view.tintColor = kAppThemeColor
+                playerController.player?.play()
+                playerController.showsPlaybackControls = true
+            }
+       // })
+        
+    }
     
     
+    
+}
+extension ReservationTVC {
+    func getAdminDetails() {
+        ServiceManager.sharedInstance.postMethodAlamofire("api/view_admin", dictionary: nil, withHud: true) { [self] (success, response, error) in
+            DispatchQueue.main.async {
+                self.getAgreementsDetails()
+            }
+            if success {
+                if ((response as! NSDictionary)["status"] as! Bool) == true {
+                    let jsonBase = AdminDetailsBase(dictionary: response as! NSDictionary)
+                    self.arrayAdminDetails = (jsonBase?.admin_details)!
+                }else{
+                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: ((response as! NSDictionary)["message"] as! String))
+                }
+            }else{
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: error!.localizedDescription)
+            }
+            
+        }
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kStopVideoPlayer), object: nil, userInfo: nil)
+    }
+    func checkBlockStatus() {
+        if CAUser.currentUser.id != nil {
+            ServiceManager.sharedInstance.postMethodAlamofire("api/block_user", dictionary: ["userid": CAUser.currentUser.id!], withHud: true) { [self] (success, response, error) in
+                if success {
+                    let status = ((response as! NSDictionary)["status"] as! Bool)
+                    if status{
+                        self.isUSerIsBlocked = false
+                    }else{
+                        self.isUSerIsBlocked = true
+                    }
+                }else{
+                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: error!.localizedDescription)
+                }
+            }
+        }
+    }
 }

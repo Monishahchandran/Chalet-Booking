@@ -13,6 +13,7 @@ class SearchButtonTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         btnSearch.addCorner()
+        btnSearch.titleLabel?.text = "Search".localized()
         btnSearch.addBorder()
     }
 

@@ -25,14 +25,32 @@ open class SkyFloatingLabelTextField: UITextField { // swiftlint:disable:this ty
            updateTextAligment()
         }
     }
+    func getPreferredLocale() -> Locale {
+        guard let preferredIdentifier = Locale.preferredLanguages.first else {
+            return Locale.current
+        }
+        return Locale(identifier: preferredIdentifier)
+    }
 
     fileprivate func updateTextAligment() {
-        if isLTRLanguage {
-            textAlignment = .left
-            titleLabel.textAlignment = .left
-        } else {
-            textAlignment = .right
-            titleLabel.textAlignment = .right
+        let kCurrentLanguageCode = getPreferredLocale().languageCode
+
+        if kCurrentLanguageCode != "ar"{
+            if isLTRLanguage {
+                textAlignment = .left
+                titleLabel.textAlignment = .left
+            } else {
+                textAlignment = .right
+                titleLabel.textAlignment = .right
+            }
+        }else{
+            if isLTRLanguage {
+                textAlignment = .right
+                titleLabel.textAlignment = .right
+            } else {
+                textAlignment = .right
+                titleLabel.textAlignment = .right
+            }
         }
     }
 
@@ -77,25 +95,32 @@ open class SkyFloatingLabelTextField: UITextField { // swiftlint:disable:this ty
         guard let placeholder = placeholder, let font = placeholderFont ?? font else {
             return
         }
+        let kCurrentLanguageCode = getPreferredLocale().languageCode
+        var newFont = UIFont()
+        if kCurrentLanguageCode == "ar"{
+            newFont = UIFont(name: "Almarai-Regular", size: 15)!
+        }else{
+            newFont = UIFont(name: "Roboto-Medium", size: 15)!
+        }
         let color = isEnabled ? placeholderColor : disabledColor
         #if swift(>=4.2)
             attributedPlaceholder = NSAttributedString(
                 string: placeholder,
                 attributes: [
-                    NSAttributedString.Key.foregroundColor: color, NSAttributedString.Key.font: font
+                    NSAttributedString.Key.foregroundColor: color, NSAttributedString.Key.font: newFont
                 ]
             )
         #elseif swift(>=4.0)
             attributedPlaceholder = NSAttributedString(
                 string: placeholder,
                 attributes: [
-                    NSAttributedStringKey.foregroundColor: color, NSAttributedStringKey.font: font
+                    NSAttributedStringKey.foregroundColor: color, NSAttributedStringKey.font: newFont
                 ]
             )
         #else
             attributedPlaceholder = NSAttributedString(
                 string: placeholder,
-                attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: font]
+                attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: newFont]
             )
         #endif
     }
@@ -485,6 +510,13 @@ open class SkyFloatingLabelTextField: UITextField { // swiftlint:disable:this ty
             return
         }
 
+        let kCurrentLanguageCode = getPreferredLocale().languageCode
+        var newFont = UIFont()
+        if kCurrentLanguageCode == "ar"{
+            newFont = UIFont(name: "Almarai-Regular", size: 15)!
+        }else{
+            newFont = UIFont(name: "Roboto-Medium", size: 15)!
+        }
         var titleText: String?
         if hasErrorMessage {
             titleText = titleFormatter(errorMessage!)
@@ -499,7 +531,8 @@ open class SkyFloatingLabelTextField: UITextField { // swiftlint:disable:this ty
             }
         }
         titleLabel.text = titleText
-        titleLabel.font = titleFont
+        //titleLabel.font = titleFont
+        titleLabel.font = newFont
 
         updateTitleVisibility(animated)
     }

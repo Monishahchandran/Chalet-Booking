@@ -23,9 +23,10 @@ class MyAccountTVC: UITableViewController {
     @IBOutlet weak var viewBottom: UIView!
     @IBOutlet weak var viewUpdateBtn: UIView!
     @IBOutlet weak var imgViewProfilePic: UIImageView!
+    @IBOutlet weak var btnUpdate: UIButton!
     var selectedProfileImage : UIImage!
     var imagePicker = UIImagePickerController()
-
+    var country = ""
     var gender = ""
     
     var countryDetailsArray: [CountryDetailsDataStruct] = [
@@ -44,6 +45,11 @@ class MyAccountTVC: UITableViewController {
         self.setUpNavigationBar()
         self.setuValuesToFields()
         self.setupUI()
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
     
     override func viewDidLayoutSubviews() {
@@ -51,7 +57,9 @@ class MyAccountTVC: UITableViewController {
         self.viewBottom.roundCorners(corners: [.bottomLeft,.bottomRight], radius: 10.0)
         
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
+    }
     override func viewWillDisappear(_ animated: Bool) {
         viewUpdateBtn.removeFromSuperview()
     }
@@ -66,7 +74,7 @@ class MyAccountTVC: UITableViewController {
         self.navigationItem.leftBarButtonItems = [backBarButton]
         let notificationButton = UIBarButtonItem(image: Images.kIconNotification, style: .plain, target: self, action: #selector(notificationButtonTouched))
         self.navigationItem.rightBarButtonItems = [notificationButton]
-        self.navigationItem.title = "My Account"
+        self.navigationItem.title = "My Account".localized()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
 
     }
@@ -75,8 +83,35 @@ class MyAccountTVC: UITableViewController {
     func setupUI()  {
         viewUpdateBtn.frame = CGRect(x: 0, y: kScreenHeight - 130, width: kScreenWidth, height: 130)
         appDelegate.window?.addSubview(viewUpdateBtn)
-        tctFldCountryCode.placeholderFont = UIFont(name: "Roboto-Medium", size: 13)!
+        
+        self.txtFldFrstName.placeholder = "First Name".localized()
+        self.txtFldLastName.placeholder = "Last Name".localized()
+        self.txtFldEmailAddress.placeholder = "Email Address".localized()
+        self.tctFldCountryCode.placeholder = "Country".localized()
+        self.tctFldPhoneNumber.placeholder = "Mobile Number".localized()
+        self.txtFldFrstName.selectedTitle = "First Name".localized()
+        self.txtFldLastName.selectedTitle = "Last Name".localized()
+        self.txtFldEmailAddress.selectedTitle = "Email Address".localized()
+        self.tctFldCountryCode.selectedTitle = "Country".localized()
+        self.tctFldPhoneNumber.selectedTitle = "Mobile Number".localized()
+        self.btnMale.setTitle("Male".localized(), for: .normal)
+        self.btnMale.setTitle("Male".localized(), for: .selected)
+        self.btnFemale.setTitle("Female".localized(), for: .normal)
+        self.btnFemale.setTitle("Female".localized(), for: .selected)
+        self.btnUpdate.setTitle("Update".localized(), for: .normal)
+        
+        if kCurrentLanguageCode == "ar"{
+            self.txtFldFrstName.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.txtFldLastName.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.txtFldEmailAddress.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.tctFldCountryCode.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 13)!
+            self.tctFldPhoneNumber.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            btnUpdate.titleLabel?.font = UIFont(name: kFontAlmaraiBold, size: 20)!
+        }else{
+            btnUpdate.titleLabel?.font = UIFont(name: "Arial Bold", size: 20)!
+            tctFldCountryCode.placeholderFont = UIFont(name: "Roboto-Medium", size: 13)!
 
+        }
     }
     
     //MARK:- SetValuesToFields
@@ -177,13 +212,13 @@ class MyAccountTVC: UITableViewController {
                 if limitValidation(string: tctFldPhoneNumber.text!, minLength: 6, maxLength: 14){
                     self.updateProfile(firstName: txtFldFrstName.text!, lastName: txtFldLastName.text!, email: txtFldEmailAddress.text!, countryCode: tctFldCountryCode.text!, phone: tctFldPhoneNumber.text!, gender: self.gender)
                 }else{
-                    showDefaultAlert(viewController: self, title: "", msg: "Please Enter Minimum 6 and Maximum 14 Characters In Mobile Number")
+                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please Enter Minimum 6 and Maximum 14 Characters In Mobile Number".localized())
                 }
             }else{
-                showDefaultAlert(viewController: self, title: "Message", msg: "Please enter a valid email address")
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please enter valid email address".localized())
             }
         }else{
-            showDefaultAlert(viewController: self, title: "Message", msg: "Please fill all fields")
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please fill all the fields".localized())
         }
     }
     
@@ -231,6 +266,7 @@ extension MyAccountTVC : CountryCodePopUpDelegate{
         self.tctFldCountryCode.textAlignment = .left
         self.tctFldCountryCode.setRightPaddingPoints(1)
         self.imgFlag.image = UIImage(named: Countrydetails.countryFlag )
+        self.country = Countrydetails.countryName
     }
     
     
@@ -256,30 +292,35 @@ extension MyAccountTVC {
             }
         }*/
         
-        var imageData = Data()
+        var imageData : Data?
+        var imgKey = ""
         if selectedProfileImage != nil{
             imageData = self.selectedProfileImage.jpegData(compressionQuality: 0.8)!
+            imgKey = "image"
         }else{
             imageData = Data()
+            imgKey = ""
         }
-        ServiceManager.sharedInstance.uploadSingleData("api/updateprofile", parameters: ["id":CAUser.currentUser.id!,"first_name":firstName,"last_name":lastName,"email":email,"phone":phone,"gender":gender,"country_code":countryCode], imgdata: imageData, filename: "image", withHud: true) { (success, response, error) in
+        let type = CAUser.currentUser.userstatus == "owner" ? "owner" : "user"
+        ServiceManager.sharedInstance.uploadSingleData("api/updateprofile", parameters: ["id":CAUser.currentUser.id!,"first_name":firstName,"last_name":lastName,"email":email,"phone":phone,"gender":gender,"country_code":countryCode,"type":type,"country":country], imgdata: imageData, filename: imgKey, withHud: true) { (success, response, error) in
             if success {
                 if response!["status"] as! Bool == true {
+                    
                     let userDict = ((response as! NSDictionary)["user_details"] as! NSDictionary)
                     CAUser.currentUser.initWithDictionary(userDictionary: userDict)
                     CAUser.saveLoggedUserdetails(dictDetails: userDict)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationNames.kUpdateProfile), object: nil, userInfo: nil)
                     DispatchQueue.main.async {
-                        showDefaultAlert(viewController: self, title: "Success", msg: "Your account details have been updated")
+                        showDefaultAlert(viewController: self, title: "Success".localized(), msg: "Your account details have been updated".localized())
                         self.setuValuesToFields()
                     }
                 }else{
                     showDefaultAlert(viewController: self, title: "", msg: response!["message"] as! String)
                 }
             }else{
-                showDefaultAlert(viewController: self, title: "", msg: "Failed")
+                showDefaultAlert(viewController: self, title: "", msg: error!.localizedDescription)
             }
         }
-        
     }
     
 }

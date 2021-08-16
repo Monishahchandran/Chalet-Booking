@@ -39,7 +39,19 @@ class ConfirmationCodeViewController: UIViewController {
         showCustomAlert(title: "OTP Sent".localized(), message: "", isError: false)
         btnRequestResendOtp.setTitle("Request a new one".localized(), for: .normal)
         lblTimeOut.text = "\("Timeout in".localized()) :"
-        lblInValidCode.text = "Invalid Code. Please check your code and try again".localized()
+        lblInValidCode.text = "Invalid code. Please check your code and try again".localized()
+        
+        let attrsWhatKindOfJob1 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Light", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)] as [NSAttributedString.Key : Any]
+        
+        let attrsWhatKindOfJob2 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 15)!, NSAttributedString.Key.foregroundColor : #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)] as [NSAttributedString.Key : Any]
+        
+        let attributedStringWhatKindOfJob1 = NSMutableAttributedString(string:"Enter the ", attributes:attrsWhatKindOfJob1)
+        let attributedStringWhatKindOfJob2 = NSMutableAttributedString(string:"4-digit ", attributes:attrsWhatKindOfJob2)
+        let attributedStringWhatKindOfJob3 = NSMutableAttributedString(string:"code we sent to", attributes:attrsWhatKindOfJob1)
+        attributedStringWhatKindOfJob1.append(attributedStringWhatKindOfJob2)
+        attributedStringWhatKindOfJob1.append(attributedStringWhatKindOfJob3)
+        self.lbl4DigitCode.attributedText = attributedStringWhatKindOfJob1
+
     }
     override func viewWillAppear(_ animated: Bool) {
       
@@ -200,9 +212,7 @@ extension ConfirmationCodeViewController {
                         self.btnRequestResendOtp.isHidden = true
                     }
                     DispatchQueue.main.async {
-                        let nextVC = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(withIdentifier: "VerifiedResetViewController") as! VerifiedResetViewController
-                        nextVC.verificationFrom = VerificationSuccessFrom.signUp
-                        self.navigationController?.pushViewController(nextVC, animated: true)
+                        self.moveToSuccess()
                     }
                     
                     
@@ -212,6 +222,14 @@ extension ConfirmationCodeViewController {
             }else{
                 showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Verifcation Failed".localized())
             }
+        }
+    }
+    
+    func moveToSuccess(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let nextVC = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(withIdentifier: "VerifiedResetViewController") as! VerifiedResetViewController
+            nextVC.verificationFrom = VerificationSuccessFrom.signUp
+            self.navigationController?.pushViewController(nextVC, animated: true)
         }
     }
 }

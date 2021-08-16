@@ -36,24 +36,29 @@ class SelectPackageTVC: UITableViewController {
     var endDate = ""
     var isLoadHolidaysAndEvents = false
     var holidaySelectedIndex = 0
+    var calendarHeight : CGFloat = 425
+    var selectedIndexHolidays = 0
     @IBOutlet var calenderContainerView     : UIView!
+    @IBOutlet weak var lblAvailableChalets: UILabel!
     var arrayValuesToBackEnd = ["holidays","weekB","weekA","weekend","weekdays"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.getHolidayPackage()
+        
+        
         self.topSelection = arrayValuesToBackEnd[selectedIndex ?? 0]
         
         if topSelection == "holidays"{
             self.isLoadHolidaysAndEvents = true
+            self.getHolidayPackage()
         }else{
             self.isLoadHolidaysAndEvents = false
         }
         
-        topSliderMenuValArray =  ["Holidays and Events", "Thursday to Wednesday", "Sunday to Saturday", "Thursday - Friday - Saturday","Sunday - Monday - Tuesday - Wednesday"]
-                              
-        topSliderMenuArray =  ["Holidays", "Week (B)", "Week (A)", "Weekend", "Weekdays"]
+        topSliderMenuValArray =  ["Holidays and Events".localized(), "Thursday - Wednesday".localized(), "Sunday to Saturday".localized(), "Thursday - Friday - Saturday".localized(),"Sunday - Monday - Tuesday - Wednesday".localized()]
+                              //Sunday-Monday-Tuesday-Wednesday
+        topSliderMenuArray =  ["Holidays", "Week (B)".localized(), "Week (A)".localized(), "Weekend".localized(), "Weekdays".localized()]
         setupForCustomNavigationTitle(self: self)
         collectionView.allowsMultipleSelection = false
         self.navigationController?.navigationBar.isTranslucent = false
@@ -63,7 +68,16 @@ class SelectPackageTVC: UITableViewController {
         self.addBarButtons()
         self.setupUI()
         self.setupCalenderView()
+                
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    @objc func logoutUser() {
         
+        appDelegate.logOut()
+        
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
     }
     
     override func viewDidLayoutSubviews() {
@@ -77,16 +91,17 @@ class SelectPackageTVC: UITableViewController {
         
         self.viewForCalenderContaintView.addCornerForView(cornerRadius: 10.0)
         self.btnSearch.addCorner()
+        self.btnSearch.setTitle("Search".localized(), for: .normal)
         self.btnSearch.addBorder()
         self.lblForSelectedChaletInfo.text = topSliderMenuValArray[selectedIndex ?? 0]
-        
         
         let width = kScreenWidth - 30
         let columnLayout = ColumnFlowLayout.init(cellsPerRow: 1, minimumInteritemSpacing: 0.0, minimumLineSpacing: 0.0, sectionInset: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0), cellHeight: 150, cellWidth: width,scrollDirec: .vertical)
         collectionChalletList?.collectionViewLayout = columnLayout
         
-        let columnLayout1 = ColumnFlowLayout.init(cellsPerRow: 1, minimumInteritemSpacing: 0.0, minimumLineSpacing: 0.0, sectionInset: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0), cellHeight: 94, cellWidth: width,scrollDirec: .vertical)
+        let columnLayout1 = ColumnFlowLayout.init(cellsPerRow: 1, minimumInteritemSpacing: 0.0, minimumLineSpacing: 0.0, sectionInset: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0), cellHeight: 400, cellWidth: width,scrollDirec: .vertical)
         colletionViewHolidays?.collectionViewLayout = columnLayout1
+        self.lblAvailableChalets.text = "Available Chalets".localized()
     }
     
     
@@ -111,12 +126,21 @@ class SelectPackageTVC: UITableViewController {
         calenderView.rightAnchor.constraint(equalTo: calenderContainerView.rightAnchor, constant: 0).isActive=true
         calenderView.leftAnchor.constraint(equalTo: calenderContainerView.leftAnchor, constant: 0).isActive=true
         calenderView.heightAnchor.constraint(equalToConstant: 425).isActive=true
+        
         //calenderView.bookedSlotDate = [10, 12, 15, 18, 20]
         calenderView.topSelection = self.topSelection
         calenderView.myCollectionView.reloadData()
         if topSelection != "holidays"{
             self.getCalendarList(month: "\(calenderView.currentMonthIndex)", year: "\(calenderView.currentYear)", package: topSelection)
         }
+        
+        /*if numOfWeeks == 5{
+            calenderView.heightAnchor.constraint(equalToConstant: 400).isActive=true
+        }else{
+            calenderView.heightAnchor.constraint(equalToConstant: calendarHeight).isActive=true
+        }*/
+        
+        
     }
     
     func addBarButtons() {
@@ -157,7 +181,18 @@ class SelectPackageTVC: UITableViewController {
             }
         }else if indexPath.row == 2 {
             if self.isLoadHolidaysAndEvents == true {
-                return CGFloat(self.arrayChalletList.count * 94)
+                //return CGFloat(self.arrayChalletList.count * 94)
+                
+                if self.arrayChalletList.count > 0{
+                    
+                    let count = self.arrayChalletList.count - 1
+                    let arr = self.arrayChalletList.count * 166
+                    return CGFloat(arr - 5)
+                }else{
+                    return 0
+                }
+                //return CGFloat(arr + 160)
+                //return CGFloat(self.arrayChalletList.count * 400)
             }else{
                 return 0
             }
@@ -171,7 +206,48 @@ class SelectPackageTVC: UITableViewController {
             
         }else if indexPath.row == 3 {
             if self.isLoadHolidaysAndEvents == false {
-                return super.tableView(tableView, heightForRowAt: indexPath)
+                
+                let numOfWeeks = getNumberOfWeekes(year: calenderView.currentYear, month: calenderView.currentMonthIndex)
+                let modelName = UIDevice.modelName
+
+                if numOfWeeks == 5{
+                    /*if modelName == "Simulator iPhone 8" || modelName == "iPhone 7" || modelName == "iPhone 6s" || modelName == "iPhone 8" || modelName == "iPhone 11 Pro" || modelName == "Simulator iPhone 11 Pro" || modelName == "Simulator iPhone SE (2nd generation)" || modelName == "iPhone SE (2nd generation)" {
+                        return 342
+                    }else if modelName == "iPhone 12 Pro Max" || modelName == "Simulator iPhone 12 Pro Max" {
+                        return 373
+                    }else if modelName == "iPhone 12" || modelName == "Simulator iPhone 12" {
+                        return 348
+                    }else if modelName == "iPhone 12 mini" || modelName == "Simulator iPhone 12 mini" {
+                        return 345
+                    }else{
+                        return 367
+                    }*/
+                    if modelName == "Simulator iPhone 8" || modelName == "iPhone 7" || modelName == "iPhone 6s" || modelName == "iPhone 8" || modelName == "iPhone 11 Pro" || modelName == "Simulator iPhone 11 Pro" || modelName == "Simulator iPhone SE (2nd generation)" || modelName == "iPhone SE (2nd generation)" {
+                        return 390
+                    }else if modelName == "iPhone 12 Pro Max" || modelName == "Simulator iPhone 12 Pro Max" {
+                        return 430
+                    }else if modelName == "iPhone 12 mini" || modelName == "Simulator iPhone 12 mini" {
+                        return 390
+                    }else if modelName == "iPhone 12" || modelName == "Simulator iPhone 12" {
+                        return 400
+                    }else{
+                        return 420
+                    }
+                }else{
+                    if modelName == "Simulator iPhone 8" || modelName == "iPhone 7" || modelName == "iPhone 6s" || modelName == "iPhone 8" || modelName == "iPhone 11 Pro" || modelName == "Simulator iPhone 11 Pro" || modelName == "Simulator iPhone SE (2nd generation)" || modelName == "iPhone SE (2nd generation)" {
+                        return 390
+                    }else if modelName == "iPhone 12 Pro Max" || modelName == "Simulator iPhone 12 Pro Max" {
+                        return 430
+                    }else if modelName == "iPhone 12 mini" || modelName == "Simulator iPhone 12 mini" {
+                        return 390
+                    }else if modelName == "iPhone 12" || modelName == "Simulator iPhone 12" {
+                        return 400
+                    }else{
+                        return 420
+                    }
+                    //return 420
+                }
+               // return super.tableView(tableView, heightForRowAt: indexPath)
             }else{
                 return 0
             }
@@ -200,7 +276,6 @@ extension SelectPackageTVC : UICollectionViewDelegate, UICollectionViewDataSourc
             return arrayUserDetails.count
         }
     }
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         if collectionView.tag == 1 {
@@ -210,18 +285,28 @@ extension SelectPackageTVC : UICollectionViewDelegate, UICollectionViewDataSourc
             
             if selectedIndex == indexPath.row {
                 cell.imgViewBg.image = UIImage(named: "icn_SelectedPackage")
+                cell.lblTitle.font = UIFont(name: "Roboto-Bold", size: 17)
             }else{
                 cell.imgViewBg.image = UIImage(named: "icn_DeselectedPackage")
+                cell.lblTitle.font = UIFont(name: "Roboto-Regular", size: 17)
             }
             cell.isSelected = (selectedIndexPath == indexPath)
             
             return cell
         }else if collectionView.tag == 3{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewHolidaysListCVCell", for: indexPath) as! CollectionViewHolidaysListCVCell
+            cell.setupCalenderView()
             let dict = self.arrayChalletList[indexPath.row]
             
             cell.lblEventName.text = dict.event_name!
+            cell.lblEventNameNew.text = dict.event_name!
+           // cell.lblCheckInDate.text = dict.check_in!
             cell.lblCheckInCheckOutDate.text = "\(dict.check_in!) to \(dict.check_out!)"
+            cell.lblCheckOutDateNew.text = dict.check_out!.appFormattedDate
+            cell.lblCheckInDateNew.text = dict.check_in!.appFormattedDate
+            cell.lblCheckOutTimeNew.text = dict.admincheck_out!
+            cell.lblCheckInTimeNew.text = dict.admincheck_in!
+            cell.loadView(dictChalet: dict)
             return cell
         }
         else{
@@ -247,10 +332,11 @@ extension SelectPackageTVC : UICollectionViewDelegate, UICollectionViewDataSourc
                 //self.tblView.reloadSections([0], with: .none)
             }
             if topSelection == "holidays"{
-                
                 self.isLoadHolidaysAndEvents = true
+                self.getHolidayPackage()
                 self.tableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .none)
                 self.tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .none)
+               
             }else{
                 self.getCalendarList(month: "\(calenderView.currentMonthIndex)", year: "\(calenderView.currentYear)", package: topSelection)
                 self.isLoadHolidaysAndEvents = false
@@ -267,11 +353,16 @@ extension SelectPackageTVC : UICollectionViewDelegate, UICollectionViewDataSourc
             self.holidaySelectedIndex = indexPath.row
             self.arrayUserDetails.removeAll()
             self.arrayUserDetails = self.arrayChalletList[self.holidaySelectedIndex].user_details!
+            self.selectedIndexHolidays = indexPath.row
             DispatchQueue.main.async {
+                //self.tableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .none)
                 self.tableView.reloadRows(at: [IndexPath(row: 5, section: 0)], with: .none)
                 self.tableView.reloadRows(at: [IndexPath(row: 6, section: 0)], with: .none)
                 self.collectionChalletList.reloadData()
+                //self.colletionViewHolidays.reloadData()
+                self.tableView.scrollToRow(at: IndexPath(row: 6, section: 0), at: .top, animated: true)
             }
+            
         }else {
             if self.arrayUserDetails.count > 0 {
                 if self.topSelection != "" {
@@ -290,9 +381,19 @@ extension SelectPackageTVC : UICollectionViewDelegate, UICollectionViewDataSourc
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView.tag == 1 {
-            return CGSize(width: 110 , height: collectionView.bounds.size.height)
+            if kCurrentLanguageCode == "ar"{
+                return CGSize(width: 120 , height: collectionView.bounds.size.height)
+            }else{
+                return CGSize(width: 110 , height: collectionView.bounds.size.height)
+            }
         }else if collectionView.tag == 3{
-            return CGSize(width: kScreenWidth , height: 94)
+            return CGSize(width: kScreenWidth , height: 166)
+            /*if indexPath.row == selectedIndexHolidays {
+                return CGSize(width: kScreenWidth , height: 160)
+                
+            }else{
+                return CGSize(width: kScreenWidth , height: 60)
+            }*/
         }else{
             return CGSize(width: kScreenWidth , height: 150)
         }
@@ -312,6 +413,7 @@ extension SelectPackageTVC : UICollectionViewDelegate, UICollectionViewDataSourc
 extension SelectPackageTVC : CalenderDelegateNew {
     
     
+    
     func didTapDate(day: Int, date: String, available: Bool, selectedDates: [String]) {
         
         self.arrayUserDetails.removeAll()
@@ -328,8 +430,8 @@ extension SelectPackageTVC : CalenderDelegateNew {
                 //self.searchChalet(fromDate: convertDateFormat(dateString: selectedDates.first!), toDate: convertDateFormat(dateString: selectedDates.last!), selectedPackage: "weekdays")
             }else{
                 self.isSearchEnable = false
-                self.btnSearch.backgroundColor = #colorLiteral(red: 0.6588235294, green: 0.6588235294, blue: 0.6588235294, alpha: 1)
-                showDefaultAlert(viewController: self, title: "Message", msg: "Package is not available")
+                self.btnSearch.backgroundColor = UIColor("#C2C2C2")
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Package is not available".localized())
             }
         }else if topSelection == "weekA"{
             if selectedDates.count > 6 {
@@ -340,8 +442,8 @@ extension SelectPackageTVC : CalenderDelegateNew {
                 //self.searchChalet(fromDate: convertDateFormat(dateString: selectedDates.first!), toDate: convertDateFormat(dateString: selectedDates.last!), selectedPackage: "weekdays")
             }else{
                 self.isSearchEnable = false
-                self.btnSearch.backgroundColor = #colorLiteral(red: 0.6588235294, green: 0.6588235294, blue: 0.6588235294, alpha: 1)
-                showDefaultAlert(viewController: self, title: "Message", msg: "Package Not Available")
+                self.btnSearch.backgroundColor = UIColor("#C2C2C2")
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Package is not available".localized())
             }
         }else if topSelection == "weekend"{
             if selectedDates.count > 2 {
@@ -352,8 +454,8 @@ extension SelectPackageTVC : CalenderDelegateNew {
                 //self.searchChalet(fromDate: convertDateFormat(dateString: selectedDates.first!), toDate: convertDateFormat(dateString: selectedDates.last!), selectedPackage: "weekdays")
             }else{
                 self.isSearchEnable = false
-                self.btnSearch.backgroundColor = #colorLiteral(red: 0.6588235294, green: 0.6588235294, blue: 0.6588235294, alpha: 1)
-                showDefaultAlert(viewController: self, title: "Message", msg: "Package is not available")
+                self.btnSearch.backgroundColor = UIColor("#C2C2C2")
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Package is not available".localized())
             }
         }else if topSelection == "weekdays"{
             if selectedDates.count > 3 {
@@ -364,8 +466,8 @@ extension SelectPackageTVC : CalenderDelegateNew {
                 //self.searchChalet(fromDate: convertDateFormat(dateString: selectedDates.first!), toDate: convertDateFormat(dateString: selectedDates.last!), selectedPackage: "weekdays")
             }else{
                 self.isSearchEnable = false
-                self.btnSearch.backgroundColor = #colorLiteral(red: 0.6588235294, green: 0.6588235294, blue: 0.6588235294, alpha: 1)
-                showDefaultAlert(viewController: self, title: "Message", msg: "Package is not available")
+                self.btnSearch.backgroundColor = UIColor("#C2C2C2")
+                showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Package is not available".localized())
             }
         }
         
@@ -382,8 +484,9 @@ extension SelectPackageTVC : CalenderDelegateNew {
     }
     
     func noChaletAvailable() {
-        self.btnSearch.backgroundColor = #colorLiteral(red: 0.6588235294, green: 0.6588235294, blue: 0.6588235294, alpha: 1)
-        showDefaultAlert(viewController: self, title: "Message", msg: "Package Not Available")
+        //self.isSearchEnable = false
+        //self.btnSearch.backgroundColor = UIColor("#C2C2C2")
+        showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Package is not available".localized())
     }
     
     func didChangeMonth(monthIndex: Int, year: Int) {
@@ -391,7 +494,13 @@ extension SelectPackageTVC : CalenderDelegateNew {
         //print(year)
         
         self.getCalendarList(month: "\(monthIndex)", year: "\(year)", package: topSelection)
+        self.tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .none)
     }
+    
+    func delegateChaletReserved() {
+        showDefaultAlert(viewController: self, title: "Message".localized(), msg: "All the chalets are booked for this period".localized())
+    }
+    
     func showPopupMaxLimit() {
         print("Maximum 30 dates can be selected")
     }
@@ -409,7 +518,7 @@ extension SelectPackageTVC {
     
     //MARK:- Search Chalet
     func searchChalet(fromDate:String,toDate:String,selectedPackage:String) {
-        ServiceManager.sharedInstance.postMethodAlamofire("api/searchchalet", dictionary: ["from_date":fromDate,"to_date":toDate,"package":selectedPackage], withHud: true) { (success, response, error) in
+        ServiceManager.sharedInstance.postMethodAlamofire("api/searchchalet", dictionary: ["from_date":fromDate,"to_date":toDate,"package":selectedPackage,"userid":CAUser.currentUser.id != nil ? CAUser.currentUser.id! : 0], withHud: true) { (success, response, error) in
             self.arrayUserDetails.removeAll()
             if success {
                 if response!["status"] as! Bool == true {
@@ -420,6 +529,9 @@ extension SelectPackageTVC {
                         self.tableView.reloadRows(at: [IndexPath(row: 5, section: 0)], with: .none)
                         self.tableView.reloadRows(at: [IndexPath(row: 6, section: 0)], with: .none)
                         self.collectionChalletList.reloadData()
+                        if self.arrayUserDetails.count > 0{
+                            self.tableView.scrollToRow(at: IndexPath(row: 5, section: 0), at: .top, animated: true)
+                        }
                     }
                 }else{
                     DispatchQueue.main.async {
@@ -430,7 +542,7 @@ extension SelectPackageTVC {
                     }
                 }
             }else{
-                showDefaultAlert(viewController: self, title: "", msg: "Failed..!")
+                showDefaultAlert(viewController: self, title: "", msg: response!["message"] as! String)
             }
         }
     }
@@ -504,6 +616,23 @@ extension SelectPackageTVC {
             dateFrom = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
         }
         return mydates
+    }
+    
+    func numberOfWeeksInMonth(_ date: Date) -> Int {
+         var calendar = Calendar(identifier: .gregorian)
+         calendar.firstWeekday = 1
+         let weekRange = calendar.range(of: .weekOfMonth,
+                                        in: .month,
+                                        for: date)
+         return weekRange!.count
+    }
+    
+    func getNumberOfWeekes(year:Int,month:Int) -> Int {
+        let dateComponents = DateComponents.init(year: year, month: month)
+        let monthCurrentDayFirst = Calendar.current.date(from: dateComponents)!
+        let monthNextDayFirst = Calendar.current.date(byAdding: .month, value: 1, to: monthCurrentDayFirst)!
+        let monthCurrentDayLast = Calendar.current.date(byAdding: .day, value: -1, to: monthNextDayFirst)!
+        return Calendar.current.component(.weekOfMonth, from: monthCurrentDayLast)
     }
 }
 extension SelectPackageTVC {

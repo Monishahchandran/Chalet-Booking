@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class SelectChaletMenuCollectionViewCell: UICollectionViewCell {
     
@@ -29,5 +30,16 @@ class ContactUsCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var btnWhatsApp: UIButton!
     
     override func awakeFromNib() {
+    }
+    
+    func setValuesToFieldes(dictContact:Contact_list) {
+        self.lblName.text = dictContact.name!
+        if dictContact.profile_pic != ""{
+            self.imgViewProfle.sd_setImage(with: URL(string: dictContact.profile_pic!), placeholderImage: #imageLiteral(resourceName: "maleplaceholder"), options: .highPriority, completed: nil)
+            
+        }else{
+            self.imgViewProfle.image = #imageLiteral(resourceName: "maleplaceholder")
+        }
+        
     }
 }

@@ -81,7 +81,7 @@ class BookingRewardsTVCell: UITableViewCell {
         let attrsWhatKindOfJob3 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 16)!, NSAttributedString.Key.foregroundColor : UIColor("#379BF2")] as [NSAttributedString.Key : Any]
         let attrsWhatKindOfJob4 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Regular", size: 13)!, NSAttributedString.Key.foregroundColor : UIColor("#B10622")] as [NSAttributedString.Key : Any]
         let attrsWhatKindOfJob5 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 14)!, NSAttributedString.Key.foregroundColor : UIColor("#B10622")] as [NSAttributedString.Key : Any]
-        let attrsWhatKindOfJob6 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 16)!, NSAttributedString.Key.foregroundColor : dictReward.rewarded_amt != 0 ?   UIColor("#379F00") : UIColor("#A8A8A8")] as [NSAttributedString.Key : Any]
+        let attrsWhatKindOfJob6 = [NSAttributedString.Key.font : UIFont(name: "Roboto-Bold", size: 16)!, NSAttributedString.Key.foregroundColor : dictReward.rewarded_amt != "" ?   UIColor("#379F00") : UIColor("#A8A8A8")] as [NSAttributedString.Key : Any]
         
         
         let attributedStringEarn1 = NSMutableAttributedString(string:"Earn ", attributes:attrsWhatKindOfJob1)
@@ -105,12 +105,12 @@ class BookingRewardsTVCell: UITableViewCell {
         attributedStringRewards1.append(attributedStringRewards3)
         lblTotalRewardsMessage.attributedText = attributedStringRewards1
         
-        let attributedStringTotalRewards = NSMutableAttributedString(string:"Total Rewards : \(dictReward.rewarded_amt ?? 0) KD", attributes:attrsWhatKindOfJob6)
+        let attributedStringTotalRewards = NSMutableAttributedString(string:"Total Rewards : \(dictReward.rewarded_amt ?? "") KD", attributes:attrsWhatKindOfJob6)
         lblTotalRewards.attributedText = attributedStringTotalRewards
     }
     
     //MARK:- Setup ProgressBar
-    func setupProgressBar() {
+    func setupProgressBar(dictReward:Reward_details) {
         progressView.backgroundColor = .clear
         progress = KDCircularProgress(frame: CGRect(x: 0, y: 0, width: 90, height: 90))
         progress.startAngle = -90
@@ -123,13 +123,59 @@ class BookingRewardsTVCell: UITableViewCell {
         progress.roundedCorners = true
         progress.glowMode = .forward
         progress.glowAmount = 0.5
-        
         progress.set(colors: #colorLiteral(red: 1, green: 0.8431372549, blue: 0, alpha: 1),#colorLiteral(red: 1, green: 0.8431372549, blue: 0, alpha: 1), #colorLiteral(red: 1, green: 0.2705882353, blue: 0, alpha: 1))
-        //progress.center = CGPoint(x: progressView.center.x, y: progressView.center.y)
-        progress.angle = 125
         self.progressView.addSubview(progress)
         
+        
+        
+        
+        if dictReward.total != 0 {
+            
+            let totolD = Double(dictReward.total!)
+            
+            if totolD > 2000 || totolD < 2000{
+                let everySpend = Double(dictReward.every_spend!)
+                let total = totolD / everySpend!
+                let new = total.truncatingRemainder(dividingBy: 1.0)
+                let rounded = Double(round(1000*new)/1000)
+                let inPercentage = rounded * 100
+                if inPercentage > 0 {
+                    let angle = 3.6*inPercentage
+                    let earnRewards = rounded * everySpend!
+                    self.lblEarnRewards.text = "\(earnRewards.clean) KD"
+                    progress.angle = angle
+                    if angle >= 360 {
+                        //self.updateRewardDetails(rewardAmount: "\(dictReward.rewarded_amt!)", reservationAmount: "\(dictReward.total!)")
+                    }
+                }else{
+                    progress.angle = 360
+                    self.lblEarnRewards.text = "\(2000) KD"
+                    //self.updateRewardDetails(rewardAmount: "\(dictReward.rewarded_amt!)", reservationAmount: "\(dictReward.total!)")
+                }
+            }else if totolD == 2000{
+                progress.angle = 360
+                self.lblEarnRewards.text = "\(2000) KD"
+                //self.updateRewardDetails(rewardAmount: "\(dictReward.rewarded_amt!)", reservationAmount: "\(dictReward.total!)")
+                
+            }else {
+                progress.angle = 0
+                self.lblEarnRewards.text = "\(0) KD"
+            }
+            
+            
+        }
+        
     }
+    
+    //MARK:- updateRewardDetails
+    func updateRewardDetails(rewardAmount:String,reservationAmount:String) {
+       /* ServiceManager.sharedInstance.postMethodAlamofire("api/reward_count", dictionary: ["userid":CAUser.currentUser.id!,"reward_amount":rewardAmount,"reservation_amt":reservationAmount], withHud: true) { (success, response, error) in
+            if success {
+                
+            }
+        }*/
+    }
+
 
 }
 
@@ -159,15 +205,14 @@ class InActiveBookingTVCell: UITableViewCell {
         
     }
     func setValuesToFields(dict:MyBooking_details) {
-        
         let arrayBookingDetails = dict.myBookingChalet_details?.first
-        self.lblSlNo.text = "\(arrayBookingDetails?.chalet_id! ?? 0)"
+        self.lblSlNo.text = "No.\(arrayBookingDetails?.chalet_id! ?? 0)"
         self.lblChaletName.text = arrayBookingDetails?.chalet_name!
-        self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.profile_pic!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+        self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
         self.lblRent.text = dict.rent!
-        self.lblCheckOutDate.text = dict.check_out!
+        self.lblCheckOutDate.text = convertDateFormat(dateStr: dict.check_out!)
         self.lblCheckOutTime.text = dict.admincheck_out!
-        self.lblCheckInDate.text = dict.check_in!
+        self.lblCheckInDate.text = convertDateFormat(dateStr: dict.check_in!)
         self.lblCheckInTime.text = dict.admincheck_in!
         self.lblBookingId.text = dict.reservation_id!
         self.lblStatus.text = "Not Active"
@@ -201,13 +246,13 @@ class NotAvailableBookingTVCell: UITableViewCell {
     func setValuesToFields(dict:MyBooking_details) {
         
         let arrayBookingDetails = dict.myBookingChalet_details?.first
-        self.lblSlNo.text = "\(arrayBookingDetails?.chalet_id! ?? 0)"
+        self.lblSlNo.text = "No.\(arrayBookingDetails?.chalet_id! ?? 0)"
         self.lblChaletName.text = arrayBookingDetails?.chalet_name!
-        self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.profile_pic!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+        self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
         self.lblRent.text = dict.rent!
-        self.lblCheckOutDate.text = dict.check_out!
+        self.lblCheckOutDate.text = convertDateFormat(dateStr: dict.check_out!)
         self.lblCheckOutTime.text = dict.admincheck_out!
-        self.lblCheckInDate.text = dict.check_in!
+        self.lblCheckInDate.text = convertDateFormat(dateStr: dict.check_in!)
         self.lblCheckInTime.text = dict.admincheck_in!
         self.lblBookingId.text = dict.reservation_id!
         self.lblStatus.text = "Not Available"
@@ -243,24 +288,29 @@ class ActiveBookingTVCell: UITableViewCell, MKMapViewDelegate {
     func setValuesToFields(dict:MyBooking_details) {
         
         let arrayBookingDetails = dict.myBookingChalet_details?.first
-        self.lblSlNo.text = "\(arrayBookingDetails?.chalet_id! ?? 0)"
+        self.lblSlNo.text = "No.\(arrayBookingDetails?.chalet_id! ?? 0)"
         self.lblChaletName.text = arrayBookingDetails?.chalet_name!
         self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
         self.lblRent.text = dict.rent!
-        self.lblCheckOutDate.text = dict.check_out!
+        
+        self.lblCheckOutDate.text = convertDateFormat(dateStr: dict.check_out!)
         self.lblCheckOutTime.text = dict.admincheck_out!
-        self.lblCheckInDate.text = dict.check_in!
+        self.lblCheckInDate.text = convertDateFormat(dateStr: dict.check_in!)
+            //dict.check_in!
         self.lblCheckInTime.text = dict.admincheck_in!
         self.lblBookingId.text = dict.reservation_id!
         self.lblStatus.text = "Active"
         
-        if arrayBookingDetails != nil {
+        let lat = Double(arrayBookingDetails!.longitude!)
+        let long = Double(arrayBookingDetails!.latitude!)
+        
+        if lat != nil && long != nil {
             mapView.delegate = self
-            annotation.coordinate = CLLocationCoordinate2D(latitude: arrayBookingDetails!.latitude!, longitude: arrayBookingDetails!.longitude!)
-            mapView.setCenter(CLLocationCoordinate2D(latitude: arrayBookingDetails!.latitude!, longitude: arrayBookingDetails!.longitude!), animated: true)
+            annotation.coordinate = CLLocationCoordinate2D(latitude: lat!, longitude: long!)
+            mapView.setCenter(CLLocationCoordinate2D(latitude: lat!, longitude: long!), animated: true)
             mapView.addAnnotation(annotation)
-            
         }
+        
     }
     
     private func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -278,6 +328,24 @@ class ActiveBookingTVCell: UITableViewCell, MKMapViewDelegate {
             }
             return pinView;
         }
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView){
+        if (UIApplication.shared.canOpenURL(URL(string:"comgooglemaps://")!)) {
+            UIApplication.shared.open(URL(string:"comgooglemaps://?center=\(String(describing: view.annotation!.coordinate.latitude)),\(String(describing: view.annotation!.coordinate.longitude))&zoom=14&views=traffic&q=\(String(describing: view.annotation!.coordinate.latitude)),\(String(describing: view.annotation!.coordinate.longitude))")!, options: [:], completionHandler: nil)
+        } else {
+            print("Can't use comgooglemaps://")
+        }
+    }
+    
+    func convertDateFormat(dateStr:String) -> String {
+        var dateString = ""
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: dateStr)
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        dateString = dateFormatter.string(from: date!)
+        return dateString
     }
     
     
@@ -301,7 +369,7 @@ class AwaitingBookingTVCell: UITableViewCell {
     @IBOutlet weak var btnPay: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        btnPay.titleLabel?.text = "Payment now".localized()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -312,21 +380,63 @@ class AwaitingBookingTVCell: UITableViewCell {
     func setValuesToFields(dict:MyBooking_details) {
         
         let arrayBookingDetails = dict.myBookingChalet_details?.first
-        self.lblSlNo.text = "\(arrayBookingDetails?.chalet_id! ?? 0)"
+        self.lblSlNo.text = "No.\(arrayBookingDetails?.chalet_id! ?? 0)"
         self.lblChaletName.text = arrayBookingDetails?.chalet_name!
-        self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.profile_pic!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+        self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
         self.lblRent.text = dict.rent!
-        self.lblCheckOutDate.text = dict.check_out!
+        self.lblCheckOutDate.text = convertDateFormat(dateStr: dict.check_out!)
         self.lblCheckOutTime.text = dict.admincheck_out!
-        self.lblCheckInDate.text = dict.check_in!
+        self.lblCheckInDate.text = convertDateFormat(dateStr: dict.check_in!)
         self.lblCheckInTime.text = dict.admincheck_in!
         self.lblBookingId.text = dict.reservation_id!
         //self.lblStatus.text = "Active"
         let rent = Int(dict.rent!)
         let totalPaid = Int(dict.total_paid!)
         let remainingAmt : Int = Int(rent! - totalPaid!)
-        self.lblReaminingAmt.text = "\(remainingAmt) KD"
-        self.lblRemainingDateTime.text = "\(dict.check_in!) (\(dict.admincheck_in!))"
+        self.lblReaminingAmt.text = "KD \(remainingAmt)"
+        //self.lblRemainingDateTime.text = "\(dict.check_in!) (\(dict.admincheck_in!))"
+        
+        
+        let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "yyyy-MM-dd hh:mm a"
+        let checkinDate = dateFormater.date(from: "\(String(describing: dict.check_in!)) \(String(describing: dict.admincheck_in!))")
+        //let difference = Calendar.current.dateComponents([.hour], from: Date(), to: checkinDate!)
+        let remaingTimeToPay = Int(arrayBookingDetails!.remaining_amt_pay!)
+        
+        let wedDate = Calendar.current.date( byAdding: .hour,value: -remaingTimeToPay!,to: checkinDate!)
+        dateFormater.dateFormat = "dd/MM/yyyy ( hh:mm a )"
+        lblRemainingDateTime.text = dateFormater.string(from: wedDate!)
+
+        
+        
+    }
+}
+
+class CancelledBookingTVCell: UITableViewCell {
+    
+    @IBOutlet weak var lblSlNo: UILabel!
+    @IBOutlet weak var lblChaletName: UILabel!
+    @IBOutlet weak var lblRent: UILabel!
+    @IBOutlet weak var lblCheckOutDate: UILabel!
+    @IBOutlet weak var lblCheckInDate: UILabel!
+    @IBOutlet weak var lblCheckOutTime: UILabel!
+    @IBOutlet weak var lblCheckInTime: UILabel!
+    @IBOutlet weak var imgChaletImage: UIImageView!
+    @IBOutlet weak var lblStatus: UILabel!
+    @IBOutlet weak var lblBookingId: UILabel!
+    
+    func setValuesToFields(dict:MyBooking_details) {
+        
+        let arrayBookingDetails = dict.myBookingChalet_details?.first
+        self.lblSlNo.text = "No.\(arrayBookingDetails?.chalet_id! ?? 0)"
+        self.lblChaletName.text = arrayBookingDetails?.chalet_name!
+        //self.imgChaletImage.sd_setImage(with: URL(string: (arrayBookingDetails?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+        self.lblRent.text = dict.rent!
+        self.lblCheckOutDate.text = convertDateFormat(dateStr: dict.check_out!)
+        self.lblCheckOutTime.text = dict.admincheck_out!
+        self.lblCheckInDate.text = convertDateFormat(dateStr: dict.check_in!)
+        self.lblCheckInTime.text = dict.admincheck_in!
+        self.lblBookingId.text = dict.reservation_id!
         
     }
 }

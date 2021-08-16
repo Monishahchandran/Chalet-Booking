@@ -8,6 +8,8 @@
 import UIKit
 
 class ContactUSVC: UIViewController {
+    
+    var arrayContactList = [Contact_list]()
 
     @IBOutlet weak var collectionViewContact: UICollectionView!
     override func viewDidLoad() {
@@ -15,6 +17,11 @@ class ContactUSVC: UIViewController {
 
         self.setUpNavigationBar()
         self.setupUI()
+        self.getContactList()
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
     
     //MARK:- SetupUI
@@ -59,16 +66,49 @@ class ContactUSVC: UIViewController {
 extension ContactUSVC : UICollectionViewDelegate, UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return arrayContactList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ContactUsCollectionViewCell", for: indexPath) as! ContactUsCollectionViewCell
+        cell.setValuesToFieldes(dictContact: arrayContactList[indexPath.row])
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if arrayContactList.count > 0 {
+            let urlWhats = "whatsapp://send?phone=\(arrayContactList[indexPath.row].phone!)"
+            if let urlString = urlWhats.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed) {
+                if let whatsappURL = URL(string: urlString) {
+                    if UIApplication.shared.canOpenURL(whatsappURL) {
+                        UIApplication.shared.open(whatsappURL, options: [: ], completionHandler: nil)
+                    } else {
+                        print("Install Whatsapp")
+                    }
+                }
+            }
+        }
+    }
+}
+extension ContactUSVC {
     
-    
+    func getContactList() {
+        ServiceManager.sharedInstance.postMethodAlamofire("api/contact", dictionary: nil, withHud: true) { (success, response, error) in
+            if success {
+                if response!["status"] as! Bool == true {
+                    let responseBase = ContactUsBase(dictionary: response as! NSDictionary)
+                    self.arrayContactList = (responseBase?.contact_list)!
+                    DispatchQueue.main.async {
+                        self.collectionViewContact.reloadData()
+                    }
+                }else{
+                    showDefaultAlert(viewController: self, title: "", msg: ((response as! NSDictionary)["message"] as! String))
+                }
+            }else{
+                showDefaultAlert(viewController: self, title: "", msg: error!.localizedDescription)
+            }
+        }
+    }
     
 }

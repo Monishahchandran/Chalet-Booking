@@ -31,19 +31,32 @@ class CountryCodePopUpViewController: UIViewController {
     //Kuwait/Dialing code +965
     var countryCodePopUpDelegate:CountryCodePopUpDelegate?
     var filteredCountryDetailsArray: [CountryDetailsDataStruct] = []
-    var countryDetailsArray: [CountryDetailsDataStruct] = [
+   /* var countryDetailsArray: [CountryDetailsDataStruct] = [
         CountryDetailsDataStruct(countryCode: "+971", countryName: "United Arab Emirates", countryFlag: "icn_UAE"),
         CountryDetailsDataStruct(countryCode: "+966", countryName: "Saudi Arabia", countryFlag: "icn_SA"),
         CountryDetailsDataStruct(countryCode: "+974", countryName: "Qatar", countryFlag: "icn_QA"),
         CountryDetailsDataStruct(countryCode: "+968", countryName: "Oman", countryFlag: "icn_OM"),
         CountryDetailsDataStruct(countryCode: "+973", countryName: "Bahrain", countryFlag: "icn_BH"),
         CountryDetailsDataStruct(countryCode: "+965", countryName: "Kuwait", countryFlag: "icn_KW")
+    ]*/
+    
+    
+    var countryDetailsArray: [CountryDetailsDataStruct] = [
+        CountryDetailsDataStruct(countryCode: "+965", countryName: "Kuwait", countryFlag: "icn_KW"),
+        CountryDetailsDataStruct(countryCode: "+966", countryName: "Saudi Arabia", countryFlag: "icn_SA"),
+        CountryDetailsDataStruct(countryCode: "+971", countryName: "United Arab Emirates", countryFlag: "icn_UAE"),
+        CountryDetailsDataStruct(countryCode: "+974", countryName: "Qatar", countryFlag: "icn_QA"),
+        CountryDetailsDataStruct(countryCode: "+973", countryName: "Bahrain", countryFlag: "icn_BH"),
+        CountryDetailsDataStruct(countryCode: "+968", countryName: "Oman", countryFlag: "icn_OM")
     ]
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         filteredCountryDetailsArray = countryDetailsArray
         searchBar.addCornerForView()
+        searchBar.searchTextField.attributedPlaceholder =  NSAttributedString.init(string: "Search".localized(), attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
+        
         if let textField = self.searchBar.subviews.first?.subviews.flatMap({ $0 as? UITextField }).first {
             textField.subviews.first?.isHidden = true
             textField.textColor = .black
@@ -54,6 +67,13 @@ class CountryCodePopUpViewController: UIViewController {
         }
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).backgroundColor = .clear
 
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    
+    
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

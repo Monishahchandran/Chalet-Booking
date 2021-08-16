@@ -30,7 +30,16 @@ class TermsAndConditionVC: UIViewController,WKUIDelegate,WKNavigationDelegate {
             webView.loadHTMLString(htmlString, baseURL: Bundle.main.bundleURL)
         }
         
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
     }
+    @objc func logoutUser() {
+        appDelegate.logOut()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
+    }
+    
     
     //MARK:- SetUp NavigationBar
     func setUpNavigationBar() {

@@ -9,10 +9,14 @@ import UIKit
 import DHSmartScreenshot
 import MapKit
 import GoogleMaps
-
+import MediaPlayer
+import AVKit
 
 class BookingDetailsTVC: UITableViewController {
 
+    @IBOutlet weak var viewBgDeposit: UIView!
+    @IBOutlet weak var lblCollectionIndex: UILabel!
+    @IBOutlet weak var viewCollectionIndex: UIView!
     @IBOutlet weak var viewMap: UIView!
     @IBOutlet weak var viewTopBooked: UIView!
     @IBOutlet weak var lblBooked: UILabel!
@@ -34,7 +38,6 @@ class BookingDetailsTVC: UITableViewController {
     @IBOutlet weak var viewBookingDetails: UIView!
     @IBOutlet weak var viewLocation: UIView!
     @IBOutlet weak var viewLocationTop: UIView!
-
     
     @IBOutlet weak var lblReservationID: UILabel!
     @IBOutlet weak var lblRent: UILabel!
@@ -45,14 +48,26 @@ class BookingDetailsTVC: UITableViewController {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var lblRemaining: UILabel!
     @IBOutlet weak var btnCopy: UIButton!
+    
+    @IBOutlet weak var lblDpRentalPrice: UILabel!
+    @IBOutlet weak var lblDpDepositr: UILabel!
+    @IBOutlet weak var lblDpRewards: UILabel!
+    @IBOutlet weak var lblDpOffer: UILabel!
+    @IBOutlet weak var lblDpTotalPaid: UILabel!
+    @IBOutlet weak var lblDpRemaining: UILabel!
+    @IBOutlet weak var lblDpRemainingDate: UILabel!
+    @IBOutlet weak var lblBookStatus: UILabel!
+    
+    
     var selectedIndex : Int!
     var collectionIndex = 0
     var arrayUserDetails = [User_details]()
     var dictBookingDetails : Booking_details!
     let annotation = MKPointAnnotation()
-
-
-    
+    var lblIndexValue = 1
+    var isDeposit = true
+    var remainingAmtDate = ""
+    var isFrom = ""
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -63,16 +78,10 @@ class BookingDetailsTVC: UITableViewController {
             mapView.delegate = self
             //annotation.coordinate = CLLocationCoordinate2D(latitude: 46.41434149999999903002390055917203426361083984375, longitude: 29.311784599999999301189745892770588397979736328125)
             // mapView.setCenter(CLLocationCoordinate2D(latitude: 46.41434149999999903002390055917203426361083984375, longitude: 29.311784599999999301189745892770588397979736328125), animated: true)
-            
-            annotation.coordinate = CLLocationCoordinate2D(latitude: dictBookingDetails.latitude!, longitude: dictBookingDetails.longitude!)
-            mapView.setCenter(CLLocationCoordinate2D(latitude: dictBookingDetails.latitude!, longitude: dictBookingDetails.longitude!), animated: true)
+            annotation.coordinate = CLLocationCoordinate2D(latitude: dictBookingDetails.longitude!, longitude: dictBookingDetails.latitude!)
+            mapView.setCenter(CLLocationCoordinate2D(latitude: dictBookingDetails.longitude!, longitude: dictBookingDetails.latitude!), animated: true)
             mapView.addAnnotation(annotation)
-            
-           
-            
         }
-        
-         
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,6 +95,11 @@ class BookingDetailsTVC: UITableViewController {
            marker.map = mapView
            self.viewMap.addSubview(mapView)
         }*/
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+            appDelegate.checkBlockStatus()
+    }
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
 
     override func viewDidLayoutSubviews() {
@@ -110,7 +124,7 @@ class BookingDetailsTVC: UITableViewController {
         //self.navigationItem.leftBarButtonItems = [backBarButton]
         let notificationButton = UIBarButtonItem(image: Images.kIconNotification, style: .plain, target: self, action: #selector(notificationButtonTouched))
         self.navigationItem.rightBarButtonItems = [notificationButton]
-        self.navigationItem.title = "Thank you"
+        self.navigationItem.title = "Thank You"
         
     }
     //MARK:- SetupUI
@@ -119,6 +133,7 @@ class BookingDetailsTVC: UITableViewController {
         self.viewCheckOutIn.addCornerForView(cornerRadius: 10.0)
         self.viewLocation.addCornerForView(cornerRadius: 10.0)
         self.viewBookingDetails.addCornerForView(cornerRadius: 10.0)
+        self.viewBgDeposit.addCornerForView(cornerRadius: 10.0)
 
         let width = kScreenWidth - 30
         let columnLayout10 = ColumnFlowLayout.init(cellsPerRow: 1, minimumInteritemSpacing: 0.0, minimumLineSpacing: 0.0, sectionInset: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0), cellHeight: 315, cellWidth: width,scrollDirec: .horizontal)
@@ -127,21 +142,43 @@ class BookingDetailsTVC: UITableViewController {
     
     //MARK:- SetValuesToFields
     func setValuesToFields() {
-        self.lblSlNo.text = "No.1"
+        self.lblSlNo.text =  "No. \(dictBookingDetails.id ?? 0)"
         self.lblChaletName.text = dictBookingDetails.chalet_name!
         self.lblReservationID.text = dictBookingDetails.reservation_id!
-        self.lblCheckOutDate.text = dictBookingDetails.check_out!
+        self.lblCheckOutDate.text = dictBookingDetails.check_out?.appFormattedDate
         self.lblCheckOutTime.text = dictBookingDetails.checkout_time!
-        self.lblCheckInDate.text = dictBookingDetails.check_in!
+        self.lblCheckInDate.text = dictBookingDetails.check_in!.appFormattedDate
         self.lblCheckInTime.text = dictBookingDetails.checkin_time!
-        self.lblRent.text = dictBookingDetails.rent!
-        self.lblDeposit.text = dictBookingDetails.deposit!
-        self.lblRewards.text = "\(dictBookingDetails.reward_discount!)"
-        self.lblOffer.text = "\(dictBookingDetails.offer_discount!)"
-        self.lblTotal.text = dictBookingDetails.total_paid!
-        self.lblRemaining.text = "\(dictBookingDetails.remaining!)"
+        self.lblRent.text = "KD \(dictBookingDetails.rent!)"
+        self.lblDeposit.text = "KD \(dictBookingDetails.deposit!)"
+        self.lblRewards.text = "KD \(dictBookingDetails.reward_discount!)"
+        self.lblOffer.text = "KD \(dictBookingDetails.offer_discount!)"
+        self.lblTotal.text = "KD \(dictBookingDetails.total_paid!)"
+        self.lblRemaining.text = "KD \(dictBookingDetails.remaining!)"
+        self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: (dictBookingDetails.chalet_upload!.count)))"
+        self.lblDpRentalPrice.text = "KD \(dictBookingDetails.rent!)"
+        self.lblDpDepositr.text = "KD \(dictBookingDetails.deposit!)"
+        self.lblDpRewards.text = "KD \(dictBookingDetails.reward_discount!)"
+        self.lblDpOffer.text = "KD \(dictBookingDetails.offer_discount!)"
+        self.lblDpTotalPaid.text = "KD \(dictBookingDetails.total_paid!)"
+        self.lblDpRemaining.text = "KD \(dictBookingDetails.remaining!)"
         
         
+        /*let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "yyyy-MM-dd hh:mm a"
+        let checkinDate = dateFormater.date(from: "\(String(describing: dictBookingDetails.check_in!)) \(String(describing: dictBookingDetails.checkin_time!))")
+        //let difference = Calendar.current.dateComponents([.hour], from: Date(), to: checkinDate!)
+        let remaingTimeToPay = Int(arrayBookingDetails!.remaining_amt_pay!)
+        
+        let wedDate = Calendar.current.date( byAdding: .hour,value: -remaingTimeToPay!,to: checkinDate!)
+        dateFormater.dateFormat = "dd/MM/yyyy ( hh:mm a )"*/
+        
+        self.lblDpRemainingDate.text = remainingAmtDate
+        if isFrom == "Booked Successfully" {
+            self.lblBookStatus.text = "Booked Successfully"
+        }else{
+            self.lblBookStatus.text = "Payment failed"
+        }
         
     }
 
@@ -202,8 +239,9 @@ class BookingDetailsTVC: UITableViewController {
         
         if collectionIndex != 0 {
             collectionIndex = collectionIndex - 1
+            lblIndexValue = lblIndexValue - 1
+            self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: (dictBookingDetails.chalet_upload!.count)))"
             collectionViewNew.scrollToItem(at: IndexPath(item: collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
-            
         }
         
     }
@@ -211,6 +249,8 @@ class BookingDetailsTVC: UITableViewController {
         
         if collectionIndex != (dictBookingDetails.chalet_upload!.count - 1) {
             collectionIndex = collectionIndex + 1
+            lblIndexValue = lblIndexValue + 1
+            self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: (dictBookingDetails.chalet_upload!.count)))"
             collectionViewNew.scrollToItem(at: IndexPath(item: collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
             
         }
@@ -229,12 +269,44 @@ class BookingDetailsTVC: UITableViewController {
     }
     
     @IBAction func btnClickMapAction(_ sender: UIButton) {
-        
         if (UIApplication.shared.canOpenURL(URL(string:"comgooglemaps://")!)) {
-            UIApplication.shared.open(URL(string:"comgooglemaps://?center=\(dictBookingDetails.latitude!),\(dictBookingDetails.longitude!)&zoom=14&views=traffic&q=\(dictBookingDetails.latitude!),\(dictBookingDetails.longitude!)")!, options: [:], completionHandler: nil)
+            UIApplication.shared.open(URL(string:"comgooglemaps://?center=\(dictBookingDetails.longitude!),\(dictBookingDetails.latitude!)&zoom=14&views=traffic&q=\(dictBookingDetails.longitude!),\(dictBookingDetails.latitude!)")!, options: [:], completionHandler: nil)
         } else {
             print("Can't use comgooglemaps://")
         }
+    }
+    
+    @IBAction func btnPlayVideoAction(_ sender: UIButton) {
+        
+        let urlStr =  dictBookingDetails.chalet_upload![sender.tag].file_name!
+           // self.showPlayerPopup(videourl: urlStr)
+        let videoUrl = URL(string: urlStr.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!)!
+            let player = AVPlayer(url: videoUrl)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.present(playerViewController, animated: true) {
+                playerViewController.player!.play()
+            }
+        
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if isDeposit == true{
+            if indexPath.row == 3{
+                return 0
+            }else if indexPath.row == 4{
+                return 556
+            }
+        }else{
+            if indexPath.row == 3{
+                return 296
+            }else if indexPath.row == 4{
+                return 0
+
+            }
+        }
+        return super.tableView(tableView, heightForRowAt: indexPath)
     }
     
 }
@@ -269,6 +341,7 @@ extension BookingDetailsTVC : UICollectionViewDelegate, UICollectionViewDataSour
              }
              }*/
             cell.playVideo(videourl: arr[indexPath.item].file_name!, previewImage: "")
+            cell.btnPlay.tag = indexPath.item
             return cell
         }
     }
@@ -286,9 +359,17 @@ extension BookingDetailsTVC : MKMapViewDelegate {
                 pinView = dequeuedView;
             }else{
                 pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: pinIdent);
-
+                
             }
             return pinView;
+        }
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView){
+        if (UIApplication.shared.canOpenURL(URL(string:"comgooglemaps://")!)) {
+            UIApplication.shared.open(URL(string:"comgooglemaps://?center=\(String(describing: view.annotation!.coordinate.latitude)),\(String(describing: view.annotation!.coordinate.longitude))&zoom=14&views=traffic&q=\(String(describing: view.annotation!.coordinate.latitude)),\(String(describing: view.annotation!.coordinate.longitude))")!, options: [:], completionHandler: nil)
+        } else {
+            print("Can't use comgooglemaps://")
         }
     }
 }

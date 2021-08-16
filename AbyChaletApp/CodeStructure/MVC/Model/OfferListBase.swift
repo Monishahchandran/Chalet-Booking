@@ -98,11 +98,13 @@ public class OfferUser_details {
     public var phone : String?
     public var gender : String?
     public var profile_pic : String?
+    public var cover_photo : String?
     public var civil_id : String?
     public var chalet_ownership : String?
     public var bank_holder_name : String?
     public var bank_name : String?
     public var iban_num : String?
+    public var min_deposit : String?
     public var original_price : Int?
     public var rent : Int?
     public var discount_amt : Int?
@@ -110,7 +112,7 @@ public class OfferUser_details {
     public var chalet_upload : [Chalet_upload]?
     public var created_at : String?
     public var updated_at : String?
-
+    public var package : String?
 
     public class func modelsFromDictionaryArray(array:NSArray) -> [OfferUser_details]
     {
@@ -121,7 +123,6 @@ public class OfferUser_details {
         }
         return models
     }
-
 
     required public init?(dictionary: NSDictionary) {
 
@@ -140,11 +141,13 @@ public class OfferUser_details {
         phone = dictionary["phone"] as? String
         gender = dictionary["gender"] as? String
         profile_pic = dictionary["profile_pic"] as? String
+        cover_photo = dictionary["cover_photo"] as? String
         civil_id = dictionary["civil_id"] as? String
         chalet_ownership = dictionary["chalet_ownership"] as? String
         bank_holder_name = dictionary["bank_holder_name"] as? String
         bank_name = dictionary["bank_name"] as? String
         iban_num = dictionary["iban_num"] as? String
+        min_deposit = dictionary["min_deposit"] as? String
         original_price = dictionary["original_price"] as? Int
         rent = dictionary["rent"] as? Int
         discount_amt = dictionary["discount_amt"] as? Int
@@ -152,6 +155,7 @@ public class OfferUser_details {
         if (dictionary["chalet_upload"] != nil) { chalet_upload = Chalet_upload.modelsFromDictionaryArray(array: dictionary["chalet_upload"] as! NSArray) }
         created_at = dictionary["created_at"] as? String
         updated_at = dictionary["updated_at"] as? String
+        package = dictionary["package"] as? String
     }
 
     public func dictionaryRepresentation() -> NSDictionary {
@@ -173,6 +177,7 @@ public class OfferUser_details {
         dictionary.setValue(self.phone, forKey: "phone")
         dictionary.setValue(self.gender, forKey: "gender")
         dictionary.setValue(self.profile_pic, forKey: "profile_pic")
+        dictionary.setValue(self.cover_photo, forKey: "cover_photo")
         dictionary.setValue(self.civil_id, forKey: "civil_id")
         dictionary.setValue(self.chalet_ownership, forKey: "chalet_ownership")
         dictionary.setValue(self.bank_holder_name, forKey: "bank_holder_name")
@@ -183,7 +188,7 @@ public class OfferUser_details {
         dictionary.setValue(self.discount_amt, forKey: "discount_amt")
         dictionary.setValue(self.created_at, forKey: "created_at")
         dictionary.setValue(self.updated_at, forKey: "updated_at")
-
+        dictionary.setValue(self.min_deposit, forKey: "min_deposit")
         return dictionary
     }
 

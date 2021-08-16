@@ -10,13 +10,22 @@ import MessageUI
 
 class InviteAFriendTVC: UITableViewController {
 
+    @IBOutlet weak var lblInviteOthers: UILabel!
+    @IBOutlet weak var lblInviteBySms: UILabel!
+    @IBOutlet weak var lblInviteWhatsap: UILabel!
     var inviteFriendUrl = ""
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.setUpNavigationBar()
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
     }
-
+    @objc func logoutUser() {
+        appDelegate.logOut()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
+    }
     //MARK:- SetUp NavigationBar
     func setUpNavigationBar() {
         self.navigationController?.navigationBar.isHidden = false
@@ -28,8 +37,21 @@ class InviteAFriendTVC: UITableViewController {
         self.navigationItem.leftBarButtonItems = [backBarButton]
         let notificationButton = UIBarButtonItem(image: Images.kIconNotification, style: .plain, target: self, action: #selector(notificationButtonTouched))
         self.navigationItem.rightBarButtonItems = [notificationButton]
-        self.navigationItem.title = "Invite Friend"
+        self.navigationItem.title = "Invite friend".localized()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+
+    }
+    
+    //MARK:- SetupUI
+    func setupUI(){
+        if kCurrentLanguageCode == "ar"{
+            self.lblInviteBySms.text = "Invite friend by SMS".localized()
+            self.lblInviteWhatsap.text = "Invite friend by WhatsApp".localized()
+            self.lblInviteOthers.text = "Invite friend by ...".localized()
+            self.lblInviteWhatsap.font = UIFont(name: kFontAlmaraiRegular, size: 17)!
+            self.lblInviteOthers.font = UIFont(name: kFontAlmaraiRegular, size: 17)!
+            self.lblInviteBySms.font = UIFont(name: kFontAlmaraiRegular, size: 17)!
+        }
 
     }
     

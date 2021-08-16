@@ -5,15 +5,67 @@
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4C244299-043E-4D86-9AE0-558EF4B1DAB7"
+            uuid = "55C9078C-8F93-44A7-BA47-FF8AFC10DF9F"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            breakpointStackSelectionBehavior = "1"
-            scope = "1"
-            stopOnStyle = "0">
+            filePath = "AbyChaletApp/CodeStructure/MVC/Controllers/NotificationVC/MessagesVC/MessagesVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
+            landmarkName = "getmessageList()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6B048288-434C-431D-B730-93300EA78A48"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AbyChaletApp/CodeStructure/MVC/Controllers/NotificationVC/MessagesVC/MessagesVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "95"
+            endingLineNumber = "95"
+            landmarkName = "getmessageList()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6B048288-434C-431D-B730-93300EA78A48 - 85e1ee0b3f018ced"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AbyChaletApp.MessagesVC.getmessageList() -&gt; ()"
+                  moduleName = "AbyChaletApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/visakhsrishti/Desktop/Chalet-Booking/AbyChaletApp/CodeStructure/MVC/Controllers/NotificationVC/MessagesVC/MessagesVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "95"
+                  endingLineNumber = "95"
+                  offsetFromSymbolStart = "80">
+               </Location>
+               <Location
+                  uuid = "6B048288-434C-431D-B730-93300EA78A48 - 548db50627718080"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Bool, Swift.Optional&lt;Swift.AnyObject&gt;, Swift.Optional&lt;__C.NSError&gt;) -&gt; () in AbyChaletApp.MessagesVC.getmessageList() -&gt; ()"
+                  moduleName = "AbyChaletApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/visakhsrishti/Desktop/Chalet-Booking/AbyChaletApp/CodeStructure/MVC/Controllers/NotificationVC/MessagesVC/MessagesVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "96"
+                  endingLineNumber = "96"
+                  offsetFromSymbolStart = "280">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -25,9 +25,9 @@ class SelectPackageVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        topSliderMenuValArray =  ["Holidays and Events", "Thursday to Wednesday", "Sunday to Saturday", "Thursday - Friday - Saturday","Sunday - Monday - Tuesday - Wednesday"]
+        topSliderMenuValArray =  ["Holidays and Events".localized(), "Thursday - Wednesday".localized(), "Sunday - Saturday".localized(), "Thursday - Friday - Saturday".localized(),"Sunday - Monday - Tuesday - Wednesday".localized()]
                               
-        topSliderMenuArray =  ["Holidays", "Week (B)", "Week (A)", "Weekend", "Weekdays"]
+        topSliderMenuArray =  ["Holidays", "Week (B)".localized(), "Week (A)".localized(), "Weekend".localized(), "Weekdays".localized()]
         setupForCustomNavigationTitle(self: self)
         collectionView.allowsMultipleSelection = false
         
@@ -204,6 +204,10 @@ extension SelectPackageVC {
     
 }
 extension SelectPackageVC : CalenderDelegateNew {
+    func delegateChaletReserved() {
+        
+    }
+    
     
     
     func didTapDate(day: Int, date: String, available: Bool, selectedDates: [String]) {
@@ -213,7 +217,7 @@ extension SelectPackageVC : CalenderDelegateNew {
             
         }else{
             
-            //self.showAlertWithOkButton(message: "Chalet Not Available")
+            //self.showAlertWithOkButton(message: "Chalet is not available".localized())
         }
         
         print(selectedDates)
@@ -225,7 +229,7 @@ extension SelectPackageVC : CalenderDelegateNew {
     }
     
     func noChaletAvailable() {
-        //self.showAlertWithOkButton(message: "Chalet Not Available")
+//        self.showAlertWithOkButton(message: "Chalet is not available".localized())
     }
     
    

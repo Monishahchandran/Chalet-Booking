@@ -21,6 +21,7 @@ class SignUpProfileDetailsTableViewCell2: UITableViewCell {
     @IBOutlet weak var txtforMobileNumber: SkyFloatingLabelTextField!
     
     @IBOutlet weak var imgViewForCountryCode: UIImageView!
+    var country = ""
     override func awakeFromNib() {
         super.awakeFromNib()
         txtEmailAdd.keyboardType = .emailAddress
@@ -30,9 +31,17 @@ class SignUpProfileDetailsTableViewCell2: UITableViewCell {
         txtConfirmPasswrd.isSecureTextEntry = true
         [txtEmailAdd, txtPassword, txtConfirmPasswrd,txtforMobileNumber, txtForCountryCode].forEach { (skyFloatingTextField) in
             skyFloatingTextField?.lineView.isHidden = true
-            skyFloatingTextField?.titleFont = UIFont(name: "Roboto-Medium", size: 15)!
-            skyFloatingTextField?.placeholderFont = UIFont(name: "Roboto-Medium", size: 15)!
-            skyFloatingTextField?.font = UIFont(name: "Roboto-Medium", size: 15)!
+            if kCurrentLanguageCode == "ar"{
+                skyFloatingTextField?.titleFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.textAlignment = .right
+            }else{
+                skyFloatingTextField?.titleFont = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.placeholderFont = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.font = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.textAlignment = .left
+            }
             skyFloatingTextField?.titleFormatter = { (text: String) -> String in
                 return text
             }

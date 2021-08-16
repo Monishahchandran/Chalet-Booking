@@ -16,10 +16,14 @@ class InboxVC: UIViewController {
     var selectedIndx = 0
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.getOwnerInboxDetails(ownerId: "6")
+        
+        if CAUser.currentUser.userstatus == "owner" {
+            self.getOwnerInboxDetails(ownerId: "\(CAUser.currentUser.id!)")
+        }
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        //appDelegate.checkBlockStatus()
+    }
 
     //MARK:- ButtonActions
     @IBAction func btnRejectAction(_ sender: UIButton) {
@@ -72,16 +76,18 @@ extension InboxVC : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let dict = arrayReservationList[indexPath.row]
-        if dict.booking_status == "Processing"{
-            if self.isClicked == false {
-                isClicked = true
-                selectedIndx = indexPath.row
-                tableView.reloadData()
-            }else{
-                isClicked = false
-                selectedIndx = indexPath.row
-                tableView.reloadData()
+        if self.arrayReservationList.count > 0{
+            let dict = arrayReservationList[indexPath.row]
+            if dict.booking_status == "Processing"{
+                if self.isClicked == false {
+                    isClicked = true
+                    selectedIndx = indexPath.row
+                    tableView.reloadData()
+                }else{
+                    isClicked = false
+                    selectedIndx = indexPath.row
+                    tableView.reloadData()
+                }
             }
         }
     }
@@ -116,6 +122,7 @@ extension InboxVC {
     
     func getOwnerInboxDetails(ownerId:String) {
         ServiceManager.sharedInstance.postMethodAlamofire("api/owner_chalet", dictionary: ["ownerid":ownerId], withHud: true) { [self] (success, response, error) in
+            self.checkBlockStatus()
             if success {
                 if response!["status"] as! Bool == true {
                     let jsonBase = OwnerListBase(dictionary: response as! NSDictionary)
@@ -124,7 +131,7 @@ extension InboxVC {
                         self.tableViewInbox.reloadData()
                     }
                 }else{
-                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Failed...!")
+                    showDefaultAlert(viewController: self, title: "Message".localized(), msg: ((response! as! NSDictionary)["message"] as! String))
                 }
             }else{
                 showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Failed...!")
@@ -132,7 +139,20 @@ extension InboxVC {
         }
     }
     
-    
+    func checkBlockStatus() {
+        if CAUser.currentUser.id != nil {
+            ServiceManager.sharedInstance.postMethodAlamofire("api/block_user", dictionary: ["userid": CAUser.currentUser.id!], withHud: true) { [self] (success, response, error) in
+                if success {
+                    let status = ((response as! NSDictionary)["status"] as! Bool)
+                    if status == false{
+                        DispatchQueue.main.async {
+                            appDelegate.logOut()
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     
 }
@@ -145,7 +165,9 @@ extension InboxVC{
                     self.isClicked = false
                     self.selectedIndx = 0
                     DispatchQueue.main.async {
-                        self.getOwnerInboxDetails(ownerId: "6")
+                        if CAUser.currentUser.userstatus == "owner" {
+                            self.getOwnerInboxDetails(ownerId: "\(CAUser.currentUser.id!)")
+                        }
                     }
                 }else{
                     showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Failed...!")

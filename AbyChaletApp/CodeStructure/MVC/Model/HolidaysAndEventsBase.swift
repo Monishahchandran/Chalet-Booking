@@ -41,9 +41,10 @@ public class Chalet_list {
     public var event_name : String?
     public var check_in : String?
     public var check_out : String?
+    
+    public var admincheck_in : String?
+    public var admincheck_out : String?
     public var user_details : [User_details]?
-
-
     public class func modelsFromDictionaryArray(array:NSArray) -> [Chalet_list]
     {
         var models:[Chalet_list] = []
@@ -61,6 +62,8 @@ public class Chalet_list {
         event_name = dictionary["event_name"] as? String
         check_in = dictionary["events_checkin"] as? String
         check_out = dictionary["events_checkout"] as? String
+        admincheck_in = dictionary["admin_check_in"] as? String
+        admincheck_out = dictionary["admin_check_out"] as? String
         if (dictionary["user_details"] != nil) { user_details = User_details.modelsFromDictionaryArray(array: dictionary["user_details"] as! NSArray) }
     }
 

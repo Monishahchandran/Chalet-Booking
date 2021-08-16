@@ -16,17 +16,25 @@ class OffersListVC: UIViewController {
     var isLoad = false
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.setUpNavigationBar()
-        
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if CAUser.currentUser.id != nil{
+        /*if CAUser.currentUser.id != nil{
             self.getRewardsData()
-        }
+        }else {
+            self.isLoad = true
+        }*/
         
+        self.getRewardsData()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+        appDelegate.checkBlockStatus()
+    }
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
     
 
@@ -41,7 +49,7 @@ class OffersListVC: UIViewController {
         //self.navigationItem.leftBarButtonItems = [backBarButton]
         let notificationButton = UIBarButtonItem(image: Images.kIconNotification, style: .plain, target: self, action: #selector(notificationButtonTouched))
         self.navigationItem.rightBarButtonItems = [notificationButton]
-        self.navigationItem.title = "Offers"
+        self.navigationItem.title = "Offers".localized()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
 
         
@@ -88,7 +96,7 @@ extension OffersListVC : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if self.arryOfferList.count > 0{
             let count = arryOfferList[indexPath.row].offerUser_details!.count
-            return CGFloat((count * 150) + 60)
+            return CGFloat((count * 155) + 60)
         }else{
             return 174
         }
@@ -117,8 +125,9 @@ extension OffersListVC : UICollectionViewDelegate, UICollectionViewDataSource, U
         reservationVC.isFromOffer = true
         reservationVC.dictAdmin = self.dictAdmin
         reservationVC.dictOfferChaletList = self.arryOfferList[collectionView.tag]
+        
         //reservationVC.selectedIndex = indexPath.item
-        //reservationVC.selectedPackage = self.topSelection
+        reservationVC.selectedPackage = arryOfferList[collectionView.tag].offerUser_details![indexPath.row].package!
         navigationController?.pushViewController(reservationVC, animated: true)
                 
     }
@@ -127,7 +136,9 @@ extension OffersListVC {
     
     //MARK:- GetMyBookingData
     func getRewardsData() {
-        ServiceManager.sharedInstance.postMethodAlamofire("api/offers", dictionary: ["userid":CAUser.currentUser.id!], withHud: true) { (success, response, error) in
+       //["userid":CAUser.currentUser.id!]
+        ServiceManager.sharedInstance.postMethodAlamofire("api/offers", dictionary: nil, withHud: true) { (success, response, error) in
+            self.isLoad = true
             if success {
                 if ((response as! NSDictionary) ["status"] as! Bool) == true {
                     let responseBase = OfferListBase(dictionary: response as! NSDictionary)

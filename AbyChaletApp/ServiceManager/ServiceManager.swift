@@ -9,7 +9,10 @@ import Foundation
 import Alamofire
 import SVProgressHUD
 
-let kBaseUrl            = "https://web.sicsglobal.com/aby_chalet/"
+let kBaseUrl            = "https://sicsapp.com/Aby_chalet/"
+    //"https://sicsapp.com/Aby_chalet/"
+    //"https://web.sicsglobal.com/aby_chalet/"
+
 
 class ServiceManager: NSObject {
     

@@ -335,6 +335,7 @@ func showCustomAlert(title:String, message:String, isError: Bool){
     config.dimMode = .gray(interactive: true)
     SwiftMessages.show(config: config, view: alertBottomView)
 }
+
 //MARK:- TimeFormattingForTimer
 func timeFormatted(_ totalSeconds: Int) -> String {
     let seconds: Int = totalSeconds % 60

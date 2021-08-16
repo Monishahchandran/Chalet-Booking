@@ -25,7 +25,7 @@ class LoginSignUpViewController: UIViewController , UINavigationControllerDelega
     var countryCodePopUpDelegate:CountryCodePopUpDelegate?
     
     var firstName: String = "", lastName: String = "", dateOfBirth: String = "", birthDay: String = "",
-        birthMonth: String = "", birthYear: String = "", emailAddress: String = "", personGender: String = "", password: String = "", confirmPassword: String = "", contryCode: String = "", mobileNumber: String = ""
+        birthMonth: String = "", birthYear: String = "", emailAddress: String = "", personGender: String = "", password: String = "", confirmPassword: String = "", contryCode: String = "", mobileNumber: String = "",countryName : String = ""
     var isBtnGenderSelected:Bool = false
     var isRemember:Bool = false
     var timerTest : Timer?
@@ -42,9 +42,18 @@ class LoginSignUpViewController: UIViewController , UINavigationControllerDelega
         txtEmailAddress.autocapitalizationType = .none
         [txtEmailAddress,txtPassword].forEach { (skyFloatingTextField) in
             skyFloatingTextField?.lineView.isHidden = true
-            skyFloatingTextField?.titleFont = UIFont(name: "Roboto-Medium", size: 15)!
-            skyFloatingTextField?.placeholderFont = UIFont(name: "Roboto-Medium", size: 15)!
-            skyFloatingTextField?.font = UIFont(name: "Roboto-Medium", size: 15)!
+            if kCurrentLanguageCode == "ar"{
+                skyFloatingTextField?.titleFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.placeholderFont = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+                skyFloatingTextField?.textAlignment = .right
+                
+            }else{
+                skyFloatingTextField?.titleFont = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.placeholderFont = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.font = UIFont(name: "Roboto-Medium", size: 15)!
+                skyFloatingTextField?.textAlignment = .left
+            }
             skyFloatingTextField?.titleFormatter = { (text: String) -> String in
                 return text
             }
@@ -60,7 +69,22 @@ class LoginSignUpViewController: UIViewController , UINavigationControllerDelega
         txtEmailAddress.placeholder = "Email Address".localized()
         txtPassword.placeholder = "Password".localized()
         txtEmailAddress.selectedTitle = "Email Address".localized()
+        
         txtPassword.selectedTitle = "Password".localized()
+        if kCurrentLanguageCode == "ar"{
+            btnsignUpTopMenu.titleLabel?.font = UIFont(name: kFontAlmaraiBold, size: 18)
+            btnForgotPassword.titleLabel?.font = UIFont(name: kFontAlmaraiRegular, size: 15)
+            btnLoginTopMenu.titleLabel?.font = UIFont(name: kFontAlmaraiBold, size: 18)
+            btnLogin.titleLabel?.font = UIFont(name: kFontAlmaraiBold, size: 20)
+        }else{
+            btnsignUpTopMenu.titleLabel?.font = UIFont(name: "Arial Bold", size: 20)
+            btnForgotPassword.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 15)
+            btnLoginTopMenu.titleLabel?.font = UIFont(name: "Arial Bold", size: 20)
+            btnLogin.titleLabel?.font = UIFont(name: kFontRobotoBold, size: 20)
+        }
+        
+        btnLogin.addCorner()
+        btnLogin.addBorder()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -68,13 +92,14 @@ class LoginSignUpViewController: UIViewController , UINavigationControllerDelega
         self.tabBarController?.tabBar.isHidden = false
         navigationItem.title = ""
         self.navigationController?.navigationBar.isHidden = true
+        
+        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        btnLogin.addCorner()
-        btnLogin.addBorder()
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -93,20 +118,20 @@ extension LoginSignUpViewController {
         let emailAddForLogin = txtEmailAddress.text ?? ""
         let passwordForLogin = txtPassword.text ?? ""
         if emailAddForLogin.isEmpty && password.isEmpty {
-            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please Enter Email Address and Password".localized())
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please enter email address and password".localized())
             return (false , nil , nil)
         }
         else if emailAddForLogin.isEmpty {//&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please Enter Email Address".localized())
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please enter email address".localized())
             return (false , nil , nil)
         }
         else if !AbyChaletApp.isValidEmail(email: emailAddForLogin){
-            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please Enter Valid Email Address".localized())
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please enter valid email address".localized())
             
             return (false, nil, nil)
         }
         else if passwordForLogin.isEmpty {
-            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please Enter Password".localized())
+            showDefaultAlert(viewController: self, title: "Message".localized(), msg: "Please enter password".localized())
             
             return (false, nil , nil)
         }
@@ -117,66 +142,66 @@ extension LoginSignUpViewController {
         // dateOfBirth = "\(birthDay)-)"+"\(birthMonth)-)"+"\(birthYear)"
         dateOfBirth = "\(birthYear)-"+"\(birthMonth)-"+"\(birthDay)"
         if firstName.isEmpty {//&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter First Name")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter first name".localized())
             return (false , nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         } else if lastName.isEmpty {//&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Last Name")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter last name".localized())
             return (false , nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         } else if birthDay.isEmpty{ //&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Day of birth")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter day of birth".localized())
             
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         }else if birthMonth.isEmpty{ //&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Month of birth")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter month of birth".localized())
             
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         }else if birthYear.isEmpty{ //&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Year Of birth")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter year of birth".localized())
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         }else if dateOfBirth.isEmpty{ //&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Date Of birth")
+            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Date Of birth".localized())
             
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         } else if personGender.isEmpty {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Select Gender")
+            showDefaultAlert(viewController: self, title: "", msg: "Please select gender".localized())
             
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         }else  if emailAddress.isEmpty {//&& phoneNumberFromSocialMedia.isEmpty  {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Email Address")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter email address".localized())
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         }
         else if !AbyChaletApp.isValidEmail(email: emailAddress) && emailAddress.isEmpty {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Valid Email Address")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter valid email address".localized())
             return (false, nil, nil, nil , nil, nil, nil, nil, nil, nil, nil)
         }
         else if password.isEmpty {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Password")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter password".localized())
             return (false, nil , nil , nil, nil, nil, nil, nil, nil, nil, nil)
         }
         else if !limitValidation(string: password, minLength: 5, maxLength: 0){
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Minimum 5 Characters In Password")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter minimum 5 characters in password".localized())
             return (false, nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         }
         else if confirmPassword.isEmpty {
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Confirm Password")
+            showDefaultAlert(viewController: self, title: "", msg: "Please enter confirm password".localized())
             return (false, nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         }
         
         else if password != confirmPassword {
-            showDefaultAlert(viewController: self, title: "", msg: "Passwords do not match")
+            showDefaultAlert(viewController: self, title: "", msg: "Passwords do not match".localized())
             return (false, nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         }
         else if contryCode.isEmpty{
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Country Code")
+            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Country Code".localized())
             return (false, nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         }
         else if  mobileNumber.isEmpty{
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Mobile Number")
+            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Mobile Number".localized())
             
             return (false, nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         }
         else if !limitValidation(string: mobileNumber, minLength: 6, maxLength: 14){
-            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Minimum 6 and Maximum 14 Characters In Mobile Number")
+            showDefaultAlert(viewController: self, title: "", msg: "Please Enter Minimum 6 and Maximum 14 Characters In Mobile Number".localized())
             
             return (false, nil , nil , nil , nil, nil, nil, nil, nil, nil, nil)
         }
@@ -302,7 +327,7 @@ extension LoginSignUpViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
+        /*switch indexPath.section {
         case 0:
             let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpProfileDetailsTableViewCell1", for: indexPath) as! SignUpProfileDetailsTableViewCell1
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imgViewForProfilePictureDidTap(tapGestureRecognizer:)))
@@ -317,8 +342,6 @@ extension LoginSignUpViewController: UITableViewDataSource {
             cell.btnFemale.addTarget(self, action: #selector(btnFemaleDidTap(_:)), for: .touchUpInside)
             cell.btnMale.addTarget(self, action: #selector(btnMaleDidTap(_:)), for: .touchUpInside)
             // cell.btnDateOfBirth.addTarget(self, action: #selector(btnDateOfBirthDidTap(_:)), for: .touchUpInside)
-            
-            
             return cell
         case 1:
             let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpProfileDetailsTableViewCell2", for: indexPath) as! SignUpProfileDetailsTableViewCell2
@@ -331,12 +354,74 @@ extension LoginSignUpViewController: UITableViewDataSource {
             
             return cell
         default:
-            let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpButtonTableViewCell", for: indexPath) as! SignUpButtonTableViewCell
+            /*let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpButtonTableViewCell", for: indexPath) as! SignUpButtonTableViewCell
+            cell.btnSignUp.addTarget(self, action: #selector(btnSignUpDidTap(_:)), for: .touchUpInside)
+            return cell*/
+            let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpProfileDetailsTableViewCell1", for: indexPath) as! SignUpProfileDetailsTableViewCell1
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imgViewForProfilePictureDidTap(tapGestureRecognizer:)))
+            cell.imgViewForProfilePicture.isUserInteractionEnabled = true
+           // cell.imgViewForProfilePicture.removeCornerForView()
+            cell.imgViewForProfilePicture.addGestureRecognizer(tapGestureRecognizer)
+            cell.txtBirthDay.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtBirthMonth.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtBirthYear.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtFirstName.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtLastName.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.btnFemale.addTarget(self, action: #selector(btnFemaleDidTap(_:)), for: .touchUpInside)
+            cell.btnMale.addTarget(self, action: #selector(btnMaleDidTap(_:)), for: .touchUpInside)
+            // cell.btnDateOfBirth.addTarget(self, action: #selector(btnDateOfBirthDidTap(_:)), for: .touchUpInside)
+            return cell
+        }*/
+        
+        if indexPath.section == 0{
+            let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpProfileDetailsTableViewCell1", for: indexPath) as! SignUpProfileDetailsTableViewCell1
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imgViewForProfilePictureDidTap(tapGestureRecognizer:)))
+            cell.imgViewForProfilePicture.isUserInteractionEnabled = true
+           // cell.imgViewForProfilePicture.removeCornerForView()
+            cell.imgViewForProfilePicture.addGestureRecognizer(tapGestureRecognizer)
+            cell.txtBirthDay.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtBirthMonth.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtBirthYear.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtFirstName.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtLastName.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.btnFemale.addTarget(self, action: #selector(btnFemaleDidTap(_:)), for: .touchUpInside)
+            cell.btnMale.addTarget(self, action: #selector(btnMaleDidTap(_:)), for: .touchUpInside)
+            // cell.btnDateOfBirth.addTarget(self, action: #selector(btnDateOfBirthDidTap(_:)), for: .touchUpInside)
+            return cell
+        }else if indexPath.section == 1{
+            let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpProfileDetailsTableViewCell2", for: indexPath) as! SignUpProfileDetailsTableViewCell2
+            cell.txtEmailAdd.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtPassword.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtConfirmPasswrd.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtForCountryCode.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtforMobileNumber.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
+            cell.txtforMobileNumber.keyboardType = .phonePad
+            
+            return cell
+        }else{
+            let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpButtonTableViewCell") as! SignUpButtonTableViewCell
+            //dequeueReusableCell(withIdentifier: "SignUpButtonTableViewCell", for: indexPath) as! SignUpButtonTableViewCell
             cell.btnSignUp.addTarget(self, action: #selector(btnSignUpDidTap(_:)), for: .touchUpInside)
             return cell
         }
         
     }
+    
+    /*func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let cell = tblView.dequeueReusableCell(withIdentifier: "SignUpButtonTableViewCell") as! SignUpButtonTableViewCell
+        //dequeueReusableCell(withIdentifier: "SignUpButtonTableViewCell", for: indexPath) as! SignUpButtonTableViewCell
+        cell.btnSignUp.addTarget(self, action: #selector(btnSignUpDidTap(_:)), for: .touchUpInside)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        
+        if section == 1{
+            return 75
+        }else{
+            return 0
+        }
+    }*/
     
 }
 
@@ -344,13 +429,20 @@ extension LoginSignUpViewController: UITableViewDataSource {
 //MARK:- UITableViewDelegate
 extension LoginSignUpViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
+        /*switch indexPath.section {
         case 0:
             return 320
         case 1:
             return 280
         default:
-            return 100
+            return 320
+        }*/
+        if indexPath.section == 0{
+            return 296
+        }else if indexPath.section == 1{
+            return 226
+        }else{
+            return 75
         }
     }
     
@@ -462,6 +554,30 @@ extension LoginSignUpViewController: UITextFieldDelegate {
         }
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        switch textField.tag {
+        case 31:
+            if textField.text != "" {
+            let value = Int(textField.text!)
+                if value! > 31 {
+                    textField.text = ""
+                    showDefaultAlert(viewController: self, title: "", msg: "Please enter a valid day")
+                }
+            }
+        case 32:
+            if textField.text != "" {
+            let value = Int(textField.text!)
+                if value! > 12 {
+                    textField.text = ""
+                    showDefaultAlert(viewController: self, title: "", msg: "Please enter a valid month")
+                }
+            }
+        
+        default:
+            print("")
+        }
+    }
+    
     @objc func textFieldDidChange(_ textfield: UITextField) {
         switch textfield.tag {
         case 1:
@@ -507,9 +623,11 @@ extension LoginSignUpViewController: CountryCodePopUpDelegate{
     func selectedCountryDetails(Countrydetails: CountryDetailsDataStruct) {
         
         contryCode = Countrydetails.countryCode
+        countryName = Countrydetails.countryName
         let cell:SignUpProfileDetailsTableViewCell2 = tblView.cellForRow(at: IndexPath(row: 0, section: 1)) as! SignUpProfileDetailsTableViewCell2
         cell.txtForCountryCode.text = contryCode
         cell.txtForCountryCode.textAlignment = .right
+        cell.country = Countrydetails.countryName
         cell.txtForCountryCode.setRightPaddingPoints(10)
         cell.imgViewForCountryCode.image = UIImage(named: Countrydetails.countryFlag )
     }
@@ -527,7 +645,6 @@ extension LoginSignUpViewController {
         }else{
             deviceeToken = ""
         }
-        
         openAlertPopup(selfVc: self, alertMessage: "Processing...".localized(), showAlert: true)
         ServiceManager.sharedInstance.postMethodAlamofire("api/login", dictionary: ["email":emailID,"password":password,"device_token":deviceeToken], withHud: false) { (success, response, error) in
             openAlertPopup(selfVc: self, alertMessage: "Processing...".localized(), showAlert: false)
@@ -598,15 +715,17 @@ extension LoginSignUpViewController {
         }else{
             deviceeToken = ""
         }
-        
         var imageData = Data()
+        var fileName = ""
         if selectedProfileImage != nil{
             imageData = self.selectedProfileImage.jpegData(compressionQuality: 0.8)!
+            fileName = "image"
         }else{
             imageData = Data()
+            fileName = ""
         }
         openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: true)
-        ServiceManager.sharedInstance.uploadSingleData("api/register", parameters: ["fname":frstName,"lname":lastName,"email":emailID,"password":password,"device_token":deviceeToken,"phone":phone,"dob":dob,"gender":gender,"country":country,"country_code":countryCode], imgdata: imageData, filename: "image", withHud: false) { (success, response, error) in
+        ServiceManager.sharedInstance.uploadSingleData("api/register", parameters: ["fname":frstName,"lname":lastName,"email":emailID,"password":password,"device_token":deviceeToken,"phone":phone,"dob":dob,"gender":gender,"country":countryName,"country_code":countryCode,"userid":CAGuestUser.currentUser.id != nil ? "\(CAGuestUser.currentUser.id!)" : ""], imgdata: imageData, filename: fileName, withHud: false) { (success, response, error) in
             let responseMsg = ((response as! NSDictionary)["message"] as! String)
             openAlertPopup(selfVc: self, alertMessage: "Processing...", showAlert: false)
             if success {
@@ -617,12 +736,15 @@ extension LoginSignUpViewController {
                     CAUser.saveLoggedUserdetails(dictDetails: userDict)
                     let otpVal = ((response as! NSDictionary)["otp"] as! Int)
                     
-                    let nextVC = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(withIdentifier: "ConfirmationCodeViewController") as! ConfirmationCodeViewController
-                    nextVC.otpFrom = VerificationCodeFrom.signUp
-                    nextVC.otpValue = otpVal
-                    nextVC.userId = userDict["id"] as? Int
-                    nextVC.userEmailAddress = userDict["email"] as? String
-                    self.navigationController?.pushViewController(nextVC, animated: true)
+                    DispatchQueue.main.async {
+                        let nextVC = UIStoryboard(name: "Profile", bundle: Bundle.main).instantiateViewController(withIdentifier: "ConfirmationCodeViewController") as! ConfirmationCodeViewController
+                        nextVC.otpFrom = VerificationCodeFrom.signUp
+                        nextVC.otpValue = otpVal
+                        nextVC.userId = userDict["id"] as? Int
+                        nextVC.userEmailAddress = userDict["email"] as? String
+                        self.navigationController?.pushViewController(nextVC, animated: true)
+                    }
+                    
                 }else {
                     showDefaultAlert(viewController: self, title: "", msg: responseMsg)
                 }
@@ -644,4 +766,7 @@ extension LoginSignUpViewController {
         countryCodePopup.modalPresentationStyle = .overCurrentContext
         tabBarController?.present(countryCodePopup, animated: true)
     }
+    
+    
+    
 }

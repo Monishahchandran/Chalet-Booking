@@ -49,12 +49,44 @@ class MyProfileTableVC: UITableViewController {
     var arrayAdminDetails = [Admin_details]()
     override func viewDidLoad() {
         super.viewDidLoad()
+        if kCurrentLanguageCode == "ar"{
+            btnLogOut.titleLabel?.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            btnLegalPrivacy.titleLabel?.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblForMyAccount.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblChangePassword.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblNotification.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblInviteFriends.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblContactUs.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblForShareApp.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+            self.lblForAddChalet.font = UIFont(name: kFontAlmaraiRegular, size: 15)!
+        }else{
+            //Roboto-Medium 15.0
+            btnLogOut.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 15)!
+            btnLegalPrivacy.titleLabel?.font = UIFont(name: "Roboto-Light", size: 15)!
+            
+        }
+        self.lblForMyAccount.text = "My Account".localized()
+        self.lblChangePassword.text  = "Change Password".localized()
+        self.lblNotification.text  = "Notifications".localized()
+        self.lblInviteFriends.text  = "Invite friend".localized()
+        self.lblContactUs.text  = "Contact Us WhatsApp".localized()
+        self.lblForShareApp.text  = "Share App".localized()
+        self.lblForAddChalet.text  = "Add your Chalet".localized()
+        self.btnLegalPrivacy.setTitle("Legal & Privacy".localized(), for: .normal)
+        self.btnLogOut.setTitle("Logout".localized(), for: .normal)
         self.getAdminDetails()
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    
+    
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         self.setValuesToFields()
-        
+        appDelegate.checkBlockStatus()
     }
     
     override func viewDidLayoutSubviews() {
@@ -93,18 +125,26 @@ class MyProfileTableVC: UITableViewController {
     }
     
     @IBAction func btnShareDidTap(_ sender: Any) {
-        if let name = URL(string: "https://itunes.apple.com/us/app/myapp/idxxxxxxxx?ls=1&mt=8"), !name.absoluteString.isEmpty {
-            let objectsToShare = [name]
-            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
-            self.present(activityVC, animated: true, completion: nil)
-        } else {
-            // show alert for not available
+        
+        if arrayAdminDetails.count > 0{
+           /* if let name = URL(string: (arrayAdminDetails.first?.invite_friend!)!), !name.absoluteString.isEmpty {
+                let objectsToShare = [name]
+                let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+                self.present(activityVC, animated: true, completion: nil)
+            } else {
+                // show alert for not available
+            }*/
+            let activityController = UIActivityViewController(activityItems: [(arrayAdminDetails.first?.invite_friend!)!], applicationActivities: nil)
+            present(activityController, animated: true, completion: nil)
         }
     }
     
     @IBAction func btnAddChaletDidTap(_ sender: Any) {
-        guard let url = URL(string: "https://web.sicsglobal.com/aby_chalet/adminmail") else { return }
-        UIApplication.shared.open(url)
+        /*guard let url = URL(string: "https://web.sicsglobal.com/aby_chalet/adminmail") else { return }
+        UIApplication.shared.open(url)*/
+        
+        let addNewChaletVC = UIStoryboard(name: "ProfileNew", bundle: Bundle.main).instantiateViewController(identifier: "AddNewChaletVC") as! AddNewChaletVC
+        navigationController?.pushViewController(addNewChaletVC, animated: true)
     }
     
     @IBAction func btnInstagramDidTap(_ sender: Any) {
@@ -140,7 +180,7 @@ class MyProfileTableVC: UITableViewController {
         
         if self.arrayAdminDetails.count > 0 {
             let termsAndConditionsVC = UIStoryboard(name: "ProfileNew", bundle: Bundle.main).instantiateViewController(identifier: "TermsAndConditionVC") as! TermsAndConditionVC
-            termsAndConditionsVC.UrlString = self.arrayAdminDetails.first!.terms_url!
+            termsAndConditionsVC.UrlString = self.arrayAdminDetails.first!.legal_privacy!
             let vc = UINavigationController(rootViewController: termsAndConditionsVC)
             self.present(vc, animated: true, completion: nil)
         }
@@ -166,7 +206,7 @@ extension MyProfileTableVC {
     func setValuesToFields() {
         self.imgViewForProfile.image = #imageLiteral(resourceName: "Icn_UserProfileImage")
         self.lblForUserName.text = "\(CAUser.currentUser.first_name!) \(CAUser.currentUser.last_name!)"
-        self.lblForMobileNum.text = CAUser.currentUser.phone!
+        self.lblForMobileNum.text = "\(CAUser.currentUser.country_code!)-\(CAUser.currentUser.phone!) - \(CAUser.currentUser.country!)"
         self.lblForEmailId.text = CAUser.currentUser.email!
         
         if CAUser.currentUser.profile_pic != nil{
@@ -181,15 +221,13 @@ extension MyProfileTableVC {
             }else{
                 self.imgViewProfilePic.image = CAUser.currentUser.gender == "Female" ? kFemalePlaceHolderImage : kMalePlaceHolderImage
             }
-           
+            
         }else{
             self.imgViewProfilePic.image = CAUser.currentUser.gender == "Female" ? kFemalePlaceHolderImage : kMalePlaceHolderImage
         }
     }
 }
 extension MyProfileTableVC {
-    
-    
     func getAdminDetails() {
         ServiceManager.sharedInstance.postMethodAlamofire("api/view_admin", dictionary: nil, withHud: true) { [self] (success, response, error) in
             if success {
@@ -206,7 +244,4 @@ extension MyProfileTableVC {
             }
         }
     }
-    
-    
-    
 }

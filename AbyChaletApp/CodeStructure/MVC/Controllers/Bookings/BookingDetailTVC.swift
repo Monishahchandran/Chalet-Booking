@@ -7,9 +7,13 @@
 
 import UIKit
 import DHSmartScreenshot
-
+import MediaPlayer
+import AVKit
 
 class BookingDetailTVC: UITableViewController {
+
+    @IBOutlet weak var lblCollectionIndex: UILabel!
+    @IBOutlet weak var viewCollectionIndex: UIView!
 
     @IBOutlet weak var lblTotalPaid: UILabel!
     @IBOutlet weak var lblDiscount: UILabel!
@@ -28,6 +32,7 @@ class BookingDetailTVC: UITableViewController {
     var dictMyBooking : MyBooking_details!
     var arrayAgreements = [Agreement]()
     var collectionIndex = 0
+    var lblIndexValue = 1
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,11 +41,21 @@ class BookingDetailTVC: UITableViewController {
         self.getAgreementsDetails()
         self.setupUI()
         self.setValuesToFields()
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    @objc func logoutUser() {
+        appDelegate.logOut()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        appDelegate.checkBlockStatus()
     }
     
     override func viewDidLayoutSubviews() {
         self.viewChaletHeadingDetails.roundCorners(corners: [.topLeft,.topRight], radius: 10.0)
         self.viewBgCollectionView.roundCorners(corners: [.bottomLeft,.bottomRight], radius: 10.0)
+        self.viewCollectionIndex.roundCorners(corners: [.bottomRight], radius: 10.0)
 
     }
 
@@ -85,13 +100,15 @@ class BookingDetailTVC: UITableViewController {
         let dict = dictMyBooking.myBookingChalet_details?.first
         self.lblChaletId.text = "\(String(describing: dict!.chalet_id!))"
         self.lblChaletName.text = dict?.chalet_name!
-        self.lblCheckOutDate.text = dictMyBooking.check_out!
+        self.lblCheckOutDate.text = dictMyBooking.check_out!.appFormattedDate
         self.lblCheckOutTime.text = dictMyBooking.admincheck_out!
-        self.lblCheckInDate.text = dictMyBooking.check_in!
+        self.lblCheckInDate.text = dictMyBooking.check_in!.appFormattedDate
         self.lblCheckInTime.text = dictMyBooking.admincheck_in!
         self.lblRent.text = "KD \(dictMyBooking.rent!)"
         self.lblDiscount.text = "KD \(dictMyBooking.reward_discount!)"
         self.lblTotalPaid.text = "KD \(dictMyBooking.total_paid!)"
+        
+        self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: (dictMyBooking.myBookingChalet_details?.first?.chalet_details!.count)!))"
     }
     
     //MARK:- ButtonActions
@@ -106,6 +123,8 @@ class BookingDetailTVC: UITableViewController {
         
         if collectionIndex != 0 {
             collectionIndex = collectionIndex - 1
+            lblIndexValue = lblIndexValue - 1
+            self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: (dictMyBooking.myBookingChalet_details?.first?.chalet_upload!.count)!))"
             collectionViewChalletImage.scrollToItem(at: IndexPath(item: collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
             
         }
@@ -115,6 +134,8 @@ class BookingDetailTVC: UITableViewController {
         
         if collectionIndex != ((dictMyBooking.myBookingChalet_details?.first?.chalet_upload!.count)! - 1) {
             collectionIndex = collectionIndex + 1
+            lblIndexValue = lblIndexValue + 1
+            self.lblCollectionIndex.text = "\(lblIndexValue)/\(String(describing: (dictMyBooking.myBookingChalet_details?.first?.chalet_upload!.count)!))"
             collectionViewChalletImage.scrollToItem(at: IndexPath(item: collectionIndex, section: 0), at: .centeredHorizontally, animated: true)
             
         }
@@ -138,6 +159,20 @@ class BookingDetailTVC: UITableViewController {
             
             present(activityController, animated: true, completion: nil)
         }
+    }
+    
+    @IBAction func btnPlayVideoAction(_ sender: UIButton) {
+        
+        let urlStr =  dictMyBooking.myBookingChalet_details?.first?.chalet_upload![sender.tag].file_name!
+           // self.showPlayerPopup(videourl: urlStr)
+        let videoUrl = URL(string: urlStr!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!)!
+            let player = AVPlayer(url: videoUrl)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.present(playerViewController, animated: true) {
+                playerViewController.player!.play()
+            }
+        
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -188,9 +223,9 @@ extension BookingDetailTVC : UICollectionViewDelegate, UICollectionViewDataSourc
                 }
                 return cell
             }else{
-                
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewVideoCVCell", for: indexPath) as! CollectionViewVideoCVCell
                 cell.playVideo(videourl: arr![indexPath.item].file_name!, previewImage: "")
+                cell.btnPlay.tag = indexPath.item
                 return cell
             }
             

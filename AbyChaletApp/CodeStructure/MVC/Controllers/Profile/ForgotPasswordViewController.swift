@@ -34,7 +34,7 @@ class ForgotPasswordViewController: UIViewController {
         txtEmailAddress.placeholder = "Email Address".localized()
         txtEmailAddress.selectedTitle = "Email Address".localized()
         lblResetPassword.text = "Reset your password".localized()
-        lblMessage.text = "Enter the email address you used create your account and we will email you a link to reset your password".localized()
+        lblMessage.text = "Enter the email address you used to create your account and we will email you a link to reset your password".localized()
         btnReset.setTitle("Reset".localized(), for: .normal)
 
     }
@@ -42,6 +42,7 @@ class ForgotPasswordViewController: UIViewController {
         super.viewDidLayoutSubviews()
         btnReset.addCorner()
         btnReset.addBorder()
+        self.view.layoutSubviews()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

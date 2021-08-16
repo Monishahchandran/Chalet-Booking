@@ -25,6 +25,7 @@ class InboxListTVCell: UITableViewCell {
     @IBOutlet weak var lblId: UILabel!
     @IBOutlet weak var lblStatus: UILabel!
     @IBOutlet weak var imgChaletImage: UIImageView!
+    @IBOutlet weak var lblRentTitle: UILabel!
     
     
     @IBOutlet weak var lblARSlNo: UILabel!
@@ -45,6 +46,9 @@ class InboxListTVCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        lblRentTitle.text = "Rental Price".localized()
+
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -58,13 +62,17 @@ class InboxListTVCell: UITableViewCell {
         self.lblId.text = "\(dict.ownerChalet_details?.first?.chalet_id! ?? 0)"
         self.lblChaletName.text = dict.ownerChalet_details?.first?.chalet_name!
         self.lblRent.text = dict.total_paid!
-        self.lblCheckOutDate.text = dict.check_out!
+        self.lblCheckOutDate.text = dict.check_out!.appFormattedDate
         self.lblCheckOutTime.text = dict.checkout_time!
-        self.lblCheckInDate.text = dict.check_in!
+        self.lblCheckInDate.text = dict.check_in!.appFormattedDate
         self.lblCheckInTime.text = dict.checkin_time!
         self.lblId.text = dict.reservation_id!
         self.lblStatus.text = dict.booking_status!
+        if dict.ownerChalet_details!.count > 0{
         self.imgChaletImage.sd_setImage(with: URL(string: (dict.ownerChalet_details?.first?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+        }else{
+            self.imgChaletImage.image = kPlaceHolderImage
+        }
         if dict.booking_status == "Reject"{
             self.lblStatus.backgroundColor = UIColor("#FC2447")
         }else if dict.booking_status == "Processing"{
@@ -76,12 +84,16 @@ class InboxListTVCell: UITableViewCell {
         self.lblARId.text = "\(dict.ownerChalet_details?.first?.chalet_id! ?? 0)"
         self.lblARChaletName.text = dict.ownerChalet_details?.first?.chalet_name!
         self.lblARRent.text = dict.total_paid!
-        self.lblARCheckOutDate.text = dict.check_out!
+        self.lblARCheckOutDate.text = dict.check_out!.appFormattedDate
         self.lblARCheckOutTime.text = dict.checkout_time!
-        self.lblARCheckInDate.text = dict.check_in!
+        self.lblARCheckInDate.text = dict.check_in!.appFormattedDate
         self.lblARCheckInTime.text = dict.checkin_time!
         self.lblARId.text = dict.reservation_id!
+        if dict.ownerChalet_details!.count > 0{
         self.imgARChaletImage.sd_setImage(with: URL(string: (dict.ownerChalet_details?.first?.cover_photo!)!), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+        }else{
+            self.imgARChaletImage.image = kPlaceHolderImage
+        }
         self.lblARTotalPaid.text = dict.total_paid!
         self.btnARAccept.tag = index
         self.btnARReject.tag = index
@@ -187,5 +199,87 @@ class InboxAcceptRejectTVCell: UITableViewCell {
     }
 }
 class NoNotificationTVCell: UITableViewCell {
+    
+}
+class CancelReservationTVCell: UITableViewCell {
+    
+    @IBOutlet weak var lblSlNo: UILabel!
+    @IBOutlet weak var lblChaletName: UILabel!
+    @IBOutlet weak var lblRent: UILabel!
+    @IBOutlet weak var lblCheckOutDate: UILabel!
+    @IBOutlet weak var lblCheckInDate: UILabel!
+    @IBOutlet weak var lblCheckOutTime: UILabel!
+    @IBOutlet weak var lblCheckInTime: UILabel!
+    @IBOutlet weak var imgChaletImage: UIImageView!
+    @IBOutlet weak var lblBookingId: UILabel!
+    @IBOutlet weak var lblRemainingAmt: UILabel!
+    @IBOutlet weak var lblCanceledDate: UILabel!
+    @IBOutlet weak var lblCanceledTime: UILabel!
+    @IBOutlet weak var lblCanceledStatus: UILabel!
+    
+    
+    func setValuesToFields(dict:Message_Notifcation) {
+        
+        if dict.reservation_details!.count > 0{
+            let detailDict = dict.reservation_details?.first!
+            lblSlNo.text = "\(detailDict?.chalet_details?.first?.chalet_id! ?? 0)"
+            lblChaletName.text = "\(detailDict?.chalet_details?.first?.chalet_name! ?? "")"
+            lblRent.text =  detailDict?.rent!
+            lblCheckOutDate.text = detailDict?.check_out!
+            lblCheckOutTime.text = detailDict?.checkout_time!
+            lblCheckInDate.text = detailDict?.check_in!
+            lblCheckInTime.text = detailDict?.checkin_time!
+            if let imgUrl = detailDict?.chalet_details?.first?.cover_photo {
+                self.imgChaletImage.sd_setImage(with: URL(string: imgUrl), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+            }
+            lblRemainingAmt.text = "KD\(detailDict?.remaining_amt! ?? "0")"
+            lblCanceledDate.text = detailDict?.canceled_date!
+            self.lblBookingId.text = detailDict?.reservation_id!
+        }
+    }
+
+    
+}
+class ChalletTVCell: UITableViewCell {
+    @IBOutlet weak var lblSlNo: UILabel!
+    @IBOutlet weak var lblChaletName: UILabel!
+    @IBOutlet weak var lblRent: UILabel!
+    @IBOutlet weak var lblOfferRent: UILabel!
+    @IBOutlet weak var lblCheckOutDate: UILabel!
+    @IBOutlet weak var lblCheckInDate: UILabel!
+    @IBOutlet weak var lblCheckOutTime: UILabel!
+    @IBOutlet weak var lblCheckInTime: UILabel!
+    @IBOutlet weak var imgChaletImage: UIImageView!
+    @IBOutlet weak var lblDiscountAmt: UILabel!
+    
+    
+    func setValuesToFields(dict:Message_Notifcation) {
+        if dict.reservation_details!.count > 0{
+            let detailDict = dict.reservation_details?.first!
+            lblSlNo.text = "\(detailDict?.chalet_details?.first?.chalet_id! ?? 0)"
+            lblChaletName.text = "\(detailDict?.chalet_details?.first?.chalet_name! ?? "")"
+            lblRent.text =  detailDict?.rent!
+            lblCheckOutDate.text = detailDict?.check_out!
+            lblCheckOutTime.text = detailDict?.checkout_time!
+            lblCheckInDate.text = detailDict?.check_in!
+            lblCheckInTime.text = detailDict?.checkin_time!
+            if let imgUrl = detailDict?.chalet_details?.first?.cover_photo {
+                self.imgChaletImage.sd_setImage(with: URL(string: imgUrl), placeholderImage: kPlaceHolderImage, options: .highPriority, completed: nil)
+            }
+        }
+    }
+}
+class ChalletTextTVCell: UITableViewCell {
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var lblMesage: UILabel!
+    @IBOutlet weak var lblTime: UILabel!
+    
+    func setValuesToFields(dict:Message_Notifcation) {
+        self.lblTime.text = ""
+        self.lblTitle.text = dict.notification_title!
+        self.lblMesage.text = dict.notification_message!
+    }
+}
+class CancelPaymentTVCell: UITableViewCell {
     
 }

@@ -188,7 +188,7 @@ class CalenderViewNew: UIView, UICollectionViewDelegate, UICollectionViewDataSou
             if calcDate < todaysDate && currentYear == presentYear && currentMonthIndex == presentMonthIndex  {
                 cell.isUserInteractionEnabled=false
                 cell.dateLbl.backgroundColor = UIColor.clear
-                cell.dateLbl.textColor = UIColor.lightGray
+                cell.dateLbl.textColor = UIColor("#EBEBEB")
                 cell.dateLbl.backgroundColor = UIColor.clear
                 cell.dateLbl.layer.borderColor = UIColor.clear.cgColor
                 cell.dateLbl.layer.borderWidth = 0.0
@@ -232,20 +232,73 @@ class CalenderViewNew: UIView, UICollectionViewDelegate, UICollectionViewDataSou
                 dateFormatter.dateFormat = "dd/MM/yyyy"
                 let jDate = dateFormatter.date(from: clickedDate)!
                 if selectedArray.contains(dateFormatter.string(from: jDate)){
-                    if self.selectedArray.first == dateFormatter.string(from: jDate) {
-                        cell.dateLbl.roundCorners(corners: [.topLeft,.bottomLeft], radius: 10)
-                        cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
-                    }else if self.selectedArray.last == dateFormatter.string(from: jDate){
-                        cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight], radius: 10)
-                        cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
-                    }else {
-                        cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 0.5271136225)
-                        cell.dateLbl.layer.cornerRadius = 0.0
+                    if topSelection == "weekend" {
+                        if self.selectedArray.count == 3 {
+                            if self.selectedArray.first == dateFormatter.string(from: jDate) {
+                                cell.dateLbl.roundCorners(corners: [.topLeft,.bottomLeft], radius: 10)
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                            }else if self.selectedArray.last == dateFormatter.string(from: jDate){
+                                cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight], radius: 10)
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                            }else {
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 0.5271136225)
+                                cell.dateLbl.layer.cornerRadius = 0.0
+                            }
+                        }else{
+                            cell.dateLbl.layer.cornerRadius = 0.0
+                            cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight,.topLeft,.bottomLeft], radius: 0)
+                            cell.dateLbl.backgroundColor = UIColor("#EBEBEB").withAlphaComponent(0.5)
+                        }
+                    }else if topSelection == "weekdays" {
+                        if self.selectedArray.count == 4 {
+                            if self.selectedArray.first == dateFormatter.string(from: jDate) {
+                                cell.dateLbl.roundCorners(corners: [.topLeft,.bottomLeft], radius: 10)
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                            }else if self.selectedArray.last == dateFormatter.string(from: jDate){
+                                cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight], radius: 10)
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                            }else {
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 0.5271136225)
+                                cell.dateLbl.layer.cornerRadius = 0.0
+                            }
+                        }else{
+                            cell.dateLbl.layer.cornerRadius = 0.0
+                            cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight,.topLeft,.bottomLeft], radius: 0)
+                            cell.dateLbl.backgroundColor = UIColor("#EBEBEB").withAlphaComponent(0.5)
+                        }
+                    }else if topSelection == "weekA" || topSelection == "weekB" {
+                        if self.selectedArray.count == 7 {
+                            if self.selectedArray.first == dateFormatter.string(from: jDate) {
+                                cell.dateLbl.roundCorners(corners: [.topLeft,.bottomLeft], radius: 10)
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                            }else if self.selectedArray.last == dateFormatter.string(from: jDate){
+                                cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight], radius: 10)
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                            }else {
+                                cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 0.5271136225)
+                                cell.dateLbl.layer.cornerRadius = 0.0
+                            }
+                        }else{
+                            cell.dateLbl.layer.cornerRadius = 0.0
+                            cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight,.topLeft,.bottomLeft], radius: 0)
+                            cell.dateLbl.backgroundColor = UIColor("#EBEBEB").withAlphaComponent(0.5)
+                        }
+                    }else{
+                        if self.selectedArray.first == dateFormatter.string(from: jDate) {
+                            cell.dateLbl.roundCorners(corners: [.topLeft,.bottomLeft], radius: 10)
+                            cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                        }else if self.selectedArray.last == dateFormatter.string(from: jDate){
+                            cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight], radius: 10)
+                            cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.7844216353, blue: 0, alpha: 1)
+                        }else {
+                            cell.dateLbl.backgroundColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 0.5271136225)
+                            cell.dateLbl.layer.cornerRadius = 0.0
+                        }
                     }
                 }else{
                     cell.dateLbl.layer.cornerRadius = 0.0
                     cell.dateLbl.roundCorners(corners: [.bottomRight,.topRight,.topLeft,.bottomLeft], radius: 0)
-                    cell.dateLbl.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
+                    cell.dateLbl.backgroundColor = UIColor("#EBEBEB").withAlphaComponent(0.5)
                 }
             }
         }
@@ -325,7 +378,11 @@ class CalenderViewNew: UIView, UICollectionViewDelegate, UICollectionViewDataSou
             let jobDate: String = dateFormatter.string(from: jDate)
             self.selectedDateFormatArray.insert(jobDate, at: 0)
             //delegate?.didTapDate(day: calcDate, date: "Date:\(calcDate)/\(currentMonthIndex)/\(currentYear)", available: true, selectedDates: selectedDateFormatArray)
-        }*/
+        }*/if arrayListToCalender.contains(where: {$0.jobDate == calcDate && $0.jobYear == currentYear && $0.jobMonth ==  currentMonthIndex}) {
+            
+            print("red")
+            delegate?.delegateChaletReserved()
+        }else{
         let clickedDate = "\(calcDate)/\(currentMonthIndex)/\(currentYear)"
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy"
@@ -1094,7 +1151,7 @@ class CalenderViewNew: UIView, UICollectionViewDelegate, UICollectionViewDataSou
             delegate?.noChaletAvailable()
         }
         
-        
+        }
         
         print(selectedArray)
         collectionView.reloadData()
@@ -1246,6 +1303,7 @@ protocol CalenderDelegateNew {
     func didChangeMonth(monthIndex:Int,year:Int)
     func showPopupMaxLimit()
     func noChaletAvailable()
+    func delegateChaletReserved()
 }
 
 class dateCVCell: UICollectionViewCell {
@@ -1287,7 +1345,7 @@ class dateCVCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "00"
         label.textAlignment = .center
-        label.font=UIFont.systemFont(ofSize: 16)
+        label.font = UIFont(name: "Roboto-Bold", size: 16.0)
         label.textColor=ColorsNew.darkGray
         label.layer.cornerRadius = 18
         label.translatesAutoresizingMaskIntoConstraints=false

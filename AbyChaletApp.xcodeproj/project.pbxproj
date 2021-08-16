@@ -65,6 +65,7 @@
 		00FD4E7926398C54009C9932 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00FD4E6C26398C53009C9932 /* Roboto-Thin.ttf */; };
 		00FD4E7A26398C54009C9932 /* Roboto-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00FD4E6D26398C53009C9932 /* Roboto-Black.ttf */; };
 		A10816A02668945C00054DB2 /* OwnerListBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A108169F2668945C00054DB2 /* OwnerListBase.swift */; };
+		A10D337C26957EAC00B2AC07 /* MessageListBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10D337B26957EAC00B2AC07 /* MessageListBase.swift */; };
 		A12F5E1B266360CC00142A06 /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12F5E1A266360CB00142A06 /* NotificationVC.swift */; };
 		A12F5E1F266362D800142A06 /* MessagesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12F5E1E266362D800142A06 /* MessagesVC.swift */; };
 		A12F5E22266362EF00142A06 /* InboxVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12F5E21266362EF00142A06 /* InboxVC.swift */; };
@@ -86,10 +87,16 @@
 		A1685E4B26673F43006AD531 /* Hebrew.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1685E4A26673F43006AD531 /* Hebrew.strings */; };
 		A169D580265CFCF700EB4015 /* InviteAFriendTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A169D57F265CFCF700EB4015 /* InviteAFriendTVC.swift */; };
 		A169D583265D057C00EB4015 /* ContactUSVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A169D582265D057C00EB4015 /* ContactUSVC.swift */; };
+		A16C376A266DE2D300CE3AC5 /* AddNewChaletVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16C3769266DE2D300CE3AC5 /* AddNewChaletVC.swift */; };
 		A16C7B7A265E5FFE00A6306E /* KDCircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A16C7B79265E5FFE00A6306E /* KDCircularProgress.framework */; };
 		A1730D71266787230097AD23 /* AdminDetailsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1730D70266787230097AD23 /* AdminDetailsBase.swift */; };
 		A1730D74266789100097AD23 /* TermsAndConditionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1730D73266789100097AD23 /* TermsAndConditionVC.swift */; };
 		A1730D76266792A10097AD23 /* AgreementListBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1730D75266792A10097AD23 /* AgreementListBase.swift */; };
+		A1A882CF26720E4F0085C281 /* Almarai-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1A882CA26720E4F0085C281 /* Almarai-Bold.ttf */; };
+		A1A882D026720E4F0085C281 /* Almarai-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1A882CB26720E4F0085C281 /* Almarai-ExtraBold.ttf */; };
+		A1A882D126720E4F0085C281 /* Almarai-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1A882CC26720E4F0085C281 /* Almarai-Regular.ttf */; };
+		A1A882D226720E4F0085C281 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = A1A882CD26720E4F0085C281 /* OFL.txt */; };
+		A1A882D326720E4F0085C281 /* Almarai-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1A882CE26720E4F0085C281 /* Almarai-Light.ttf */; };
 		A1ABBF57265CC18500F00253 /* MyAccountTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1ABBF56265CC18500F00253 /* MyAccountTVC.swift */; };
 		A1ABBF5A265CD3E700F00253 /* ChangePasswordTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1ABBF59265CD3E700F00253 /* ChangePasswordTVC.swift */; };
 		A1C6CEF7265FB78800BE396B /* OffersListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C6CEF6265FB78800BE396B /* OffersListVC.swift */; };
@@ -101,6 +108,7 @@
 		A1ED8335265BEF91004CD060 /* MyBookingBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1ED8334265BEF91004CD060 /* MyBookingBase.swift */; };
 		A1FD69C6265016A600A03987 /* ReservationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD69C5265016A600A03987 /* ReservationTVC.swift */; };
 		A1FD69C826501A5F00A03987 /* CollectionViewIMageVideoCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD69C726501A5F00A03987 /* CollectionViewIMageVideoCVCell.swift */; };
+		A1FFE28F2680903A0087756C /* ContactUsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FFE28E268090390087756C /* ContactUsBase.swift */; };
 		F816F2C627006BBE1208642B /* Pods_AbyChaletApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C8CAD5721864641A82BE1B0 /* Pods_AbyChaletApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -168,6 +176,7 @@
 		0B99CCC9C0909ED0B6A7FA8A /* Pods-AbyChaletApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbyChaletApp.debug.xcconfig"; path = "Target Support Files/Pods-AbyChaletApp/Pods-AbyChaletApp.debug.xcconfig"; sourceTree = "<group>"; };
 		8C8CAD5721864641A82BE1B0 /* Pods_AbyChaletApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AbyChaletApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A108169F2668945C00054DB2 /* OwnerListBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OwnerListBase.swift; sourceTree = "<group>"; };
+		A10D337B26957EAC00B2AC07 /* MessageListBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageListBase.swift; sourceTree = "<group>"; };
 		A12F5E1A266360CB00142A06 /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
 		A12F5E1E266362D800142A06 /* MessagesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesVC.swift; sourceTree = "<group>"; };
 		A12F5E21266362EF00142A06 /* InboxVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxVC.swift; sourceTree = "<group>"; };
@@ -189,10 +198,16 @@
 		A1685E4A26673F43006AD531 /* Hebrew.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Hebrew.strings; sourceTree = "<group>"; };
 		A169D57F265CFCF700EB4015 /* InviteAFriendTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteAFriendTVC.swift; sourceTree = "<group>"; };
 		A169D582265D057C00EB4015 /* ContactUSVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUSVC.swift; sourceTree = "<group>"; };
+		A16C3769266DE2D300CE3AC5 /* AddNewChaletVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewChaletVC.swift; sourceTree = "<group>"; };
 		A16C7B79265E5FFE00A6306E /* KDCircularProgress.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KDCircularProgress.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1730D70266787230097AD23 /* AdminDetailsBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdminDetailsBase.swift; sourceTree = "<group>"; };
 		A1730D73266789100097AD23 /* TermsAndConditionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionVC.swift; sourceTree = "<group>"; };
 		A1730D75266792A10097AD23 /* AgreementListBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgreementListBase.swift; sourceTree = "<group>"; };
+		A1A882CA26720E4F0085C281 /* Almarai-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Almarai-Bold.ttf"; sourceTree = "<group>"; };
+		A1A882CB26720E4F0085C281 /* Almarai-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Almarai-ExtraBold.ttf"; sourceTree = "<group>"; };
+		A1A882CC26720E4F0085C281 /* Almarai-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Almarai-Regular.ttf"; sourceTree = "<group>"; };
+		A1A882CD26720E4F0085C281 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
+		A1A882CE26720E4F0085C281 /* Almarai-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Almarai-Light.ttf"; sourceTree = "<group>"; };
 		A1ABBF56265CC18500F00253 /* MyAccountTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountTVC.swift; sourceTree = "<group>"; };
 		A1ABBF59265CD3E700F00253 /* ChangePasswordTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordTVC.swift; sourceTree = "<group>"; };
 		A1C3CA6D266734D700B85493 /* AbyChaletApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AbyChaletApp.entitlements; sourceTree = "<group>"; };
@@ -205,6 +220,7 @@
 		A1ED8334265BEF91004CD060 /* MyBookingBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyBookingBase.swift; sourceTree = "<group>"; };
 		A1FD69C5265016A600A03987 /* ReservationTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReservationTVC.swift; sourceTree = "<group>"; };
 		A1FD69C726501A5F00A03987 /* CollectionViewIMageVideoCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewIMageVideoCVCell.swift; sourceTree = "<group>"; };
+		A1FFE28E268090390087756C /* ContactUsBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactUsBase.swift; sourceTree = "<group>"; };
 		A59B862D9FA6114F417EBF4E /* Pods-AbyChaletApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbyChaletApp.release.xcconfig"; path = "Target Support Files/Pods-AbyChaletApp/Pods-AbyChaletApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -312,6 +328,8 @@
 		00AAB6752632C919003F3761 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A10D337B26957EAC00B2AC07 /* MessageListBase.swift */,
+				A1FFE28E268090390087756C /* ContactUsBase.swift */,
 				A108169F2668945C00054DB2 /* OwnerListBase.swift */,
 				A1730D75266792A10097AD23 /* AgreementListBase.swift */,
 				A1730D70266787230097AD23 /* AdminDetailsBase.swift */,
@@ -329,6 +347,7 @@
 		00AAB6762632C920003F3761 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				A16C3768266DE2AF00CE3AC5 /* AddNewChaletVC */,
 				A1730D72266788F10097AD23 /* TermsAndConditionsVC */,
 				A12F5E19266360B400142A06 /* NotificationVC */,
 				A1C6CEF5265FB77200BE396B /* Offers */,
@@ -481,6 +500,7 @@
 		00FD4E5F26398C37009C9932 /* CustomFonts */ = {
 			isa = PBXGroup;
 			children = (
+				A1A882C926720E4F0085C281 /* Arabic-Font-Almarai */,
 				00FD4E6026398C53009C9932 /* Roboto */,
 			);
 			path = CustomFonts;
@@ -623,12 +643,32 @@
 			path = ContactUS;
 			sourceTree = "<group>";
 		};
+		A16C3768266DE2AF00CE3AC5 /* AddNewChaletVC */ = {
+			isa = PBXGroup;
+			children = (
+				A16C3769266DE2D300CE3AC5 /* AddNewChaletVC.swift */,
+			);
+			path = AddNewChaletVC;
+			sourceTree = "<group>";
+		};
 		A1730D72266788F10097AD23 /* TermsAndConditionsVC */ = {
 			isa = PBXGroup;
 			children = (
 				A1730D73266789100097AD23 /* TermsAndConditionVC.swift */,
 			);
 			path = TermsAndConditionsVC;
+			sourceTree = "<group>";
+		};
+		A1A882C926720E4F0085C281 /* Arabic-Font-Almarai */ = {
+			isa = PBXGroup;
+			children = (
+				A1A882CA26720E4F0085C281 /* Almarai-Bold.ttf */,
+				A1A882CB26720E4F0085C281 /* Almarai-ExtraBold.ttf */,
+				A1A882CC26720E4F0085C281 /* Almarai-Regular.ttf */,
+				A1A882CD26720E4F0085C281 /* OFL.txt */,
+				A1A882CE26720E4F0085C281 /* Almarai-Light.ttf */,
+			);
+			path = "Arabic-Font-Almarai";
 			sourceTree = "<group>";
 		};
 		A1ABBF55265CC16C00F00253 /* MyAccount */ = {
@@ -734,6 +774,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				00FD4E7826398C54009C9932 /* Roboto-Bold.ttf in Resources */,
+				A1A882D326720E4F0085C281 /* Almarai-Light.ttf in Resources */,
+				A1A882D126720E4F0085C281 /* Almarai-Regular.ttf in Resources */,
 				00FD4E7626398C54009C9932 /* LICENSE.txt in Resources */,
 				00FD4E7326398C54009C9932 /* Roboto-BoldItalic.ttf in Resources */,
 				00FD4E7026398C54009C9932 /* Roboto-Regular.ttf in Resources */,
@@ -741,7 +783,10 @@
 				00FD4E6E26398C54009C9932 /* Roboto-Medium.ttf in Resources */,
 				00AAB6672632C742003F3761 /* LaunchScreen.storyboard in Resources */,
 				00FD4E7726398C54009C9932 /* Roboto-BlackItalic.ttf in Resources */,
+				A1A882D026720E4F0085C281 /* Almarai-ExtraBold.ttf in Resources */,
 				00FD4E7926398C54009C9932 /* Roboto-Thin.ttf in Resources */,
+				A1A882CF26720E4F0085C281 /* Almarai-Bold.ttf in Resources */,
+				A1A882D226720E4F0085C281 /* OFL.txt in Resources */,
 				00FD4E6F26398C54009C9932 /* Roboto-Light.ttf in Resources */,
 				00FD4E7226398C54009C9932 /* Roboto-ThinItalic.ttf in Resources */,
 				A146A2AF2654EDEE0051C33D /* ProfileNew.storyboard in Resources */,
@@ -861,6 +906,7 @@
 				00D0FE39264E6A0E0088472A /* StaticTableViewCell.swift in Sources */,
 				007A52B226410A2800DC1127 /* SignUpProfileDetailsTableViewCell2.swift in Sources */,
 				A15D051926522D7F00F9B6FC /* CalendarListBase.swift in Sources */,
+				A16C376A266DE2D300CE3AC5 /* AddNewChaletVC.swift in Sources */,
 				007A52AF26410A0800DC1127 /* SignUpProfileDetailsTableViewCell1.swift in Sources */,
 				A1ED8335265BEF91004CD060 /* MyBookingBase.swift in Sources */,
 				A12F5E22266362EF00142A06 /* InboxVC.swift in Sources */,
@@ -874,7 +920,9 @@
 				A1EAB132265B7BD20069EBB0 /* BookingsVC.swift in Sources */,
 				A169D583265D057C00EB4015 /* ContactUSVC.swift in Sources */,
 				00AAB68D2632DFB8003F3761 /* IntroScreenVC.swift in Sources */,
+				A1FFE28F2680903A0087756C /* ContactUsBase.swift in Sources */,
 				0091C4A52639B13D00EC0CF7 /* EnumObjects.swift in Sources */,
+				A10D337C26957EAC00B2AC07 /* MessageListBase.swift in Sources */,
 				00326FEB264577A200B2C630 /* ColumnFlowLayout.swift in Sources */,
 				A146A2B32654EE340051C33D /* MyProfileTableVC.swift in Sources */,
 				A1730D76266792A10097AD23 /* AgreementListBase.swift in Sources */,
@@ -1044,7 +1092,7 @@
 				CODE_SIGN_ENTITLEMENTS = AbyChaletApp/AbyChaletApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.21;
+				CURRENT_PROJECT_VERSION = 1.0.60;
 				DEVELOPMENT_TEAM = 23D9P95352;
 				INFOPLIST_FILE = AbyChaletApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1055,7 +1103,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.srishti.AbyChaletApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = DevChalletApp;
-				SWIFT_OBJC_BRIDGING_HEADER = "./AbyChaletApp/AbyChaletApp/CodeStructure/AbyChalet_Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/visakhsrishti/Desktop/Chalet-Booking/AbyChaletApp/CodeStructure/AbyChalet_Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1070,7 +1118,7 @@
 				CODE_SIGN_ENTITLEMENTS = AbyChaletApp/AbyChaletApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.0.21;
+				CURRENT_PROJECT_VERSION = 1.0.60;
 				DEVELOPMENT_TEAM = 23D9P95352;
 				INFOPLIST_FILE = AbyChaletApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1081,7 +1129,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.srishti.AbyChaletApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = Chalet_App_Dist;
-				SWIFT_OBJC_BRIDGING_HEADER = "./AbyChaletApp/AbyChaletApp/CodeStructure/AbyChalet_Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/visakhsrishti/Desktop/Chalet-Booking/AbyChaletApp/CodeStructure/AbyChalet_Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

@@ -17,9 +17,16 @@ class NotificationVC: UIViewController {
 
         self.setUpNavigationBar()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name(rawValue: NotificationNames.kBlockedUser), object: nil)
+    }
+    
+    @objc func logoutUser() {
+        appDelegate.logOut()
     }
     override func viewWillAppear(_ animated: Bool) {
         self.didSetInboxVC()
+        appDelegate.checkBlockStatus()
+        
     }
     
     //MARK:- SetUp NavigationBar
@@ -29,8 +36,8 @@ class NotificationVC: UIViewController {
 
         self.navigationController?.navigationBar.barTintColor = kAppThemeColor
         self.navigationItem.setHidesBackButton(true, animated: true)
-        //let backBarButton = UIBarButtonItem(image: Images.kIconBackGreen, style: .plain, target: self, action: #selector(backButtonTouched))
-        //self.navigationItem.leftBarButtonItems = [backBarButton]
+        let backBarButton = UIBarButtonItem(image: Images.kIconBackGreen, style: .plain, target: self, action: #selector(backButtonTouched))
+        self.navigationItem.leftBarButtonItems = [backBarButton]
         let notificationButton = UIBarButtonItem(image: Images.kIconNotification, style: .plain, target: self, action: #selector(notificationButtonTouched))
         self.navigationItem.rightBarButtonItems = [notificationButton]
         self.navigationItem.title = "Notifications"
@@ -46,6 +53,9 @@ class NotificationVC: UIViewController {
     @objc func notificationButtonTouched()  {
         
         
+    }
+    @objc func backButtonTouched()  {
+        self.navigationController?.popViewController(animated: true)
     }
     @IBAction func btnSwitchActions(_ sender: UIButton) {
         switch sender.tag {

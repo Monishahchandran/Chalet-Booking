@@ -13,7 +13,9 @@ protocol MonthViewDelegateNew: class {
 }
 
 class MonthViewNew: UIView {
-    var monthsArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    //var monthsArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    
+    var monthsArr = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
     var currentMonthIndex = 0
     var currentYear: Int = 0
     var delegate: MonthViewDelegateNew?
@@ -46,7 +48,7 @@ class MonthViewNew: UIView {
                 currentYear -= 1
             }
         }
-        lblName.text="\(monthsArr[currentMonthIndex]) \(currentYear)"
+        lblName.text="\(monthsArr[currentMonthIndex]) / \(currentYear)"
         delegate?.didChangeMonth(monthIndex: currentMonthIndex, year: currentYear)
     }
     
@@ -56,7 +58,7 @@ class MonthViewNew: UIView {
         lblName.centerXAnchor.constraint(equalTo: centerXAnchor).isActive=true
         lblName.widthAnchor.constraint(equalToConstant: 150).isActive=true
         lblName.heightAnchor.constraint(equalTo: heightAnchor).isActive=true
-        lblName.text="\(monthsArr[currentMonthIndex]) \(currentYear)"
+        lblName.text="\(monthsArr[currentMonthIndex]) / \(currentYear)"
         
         self.addSubview(btnRight)
         btnRight.topAnchor.constraint(equalTo: topAnchor).isActive=true
@@ -76,7 +78,7 @@ class MonthViewNew: UIView {
         lbl.text="Default Month Year text"
         lbl.textColor = StyleNew.activeCellLblColor
         lbl.textAlignment = .center
-        lbl.font = UIFont.boldSystemFont(ofSize: 16)
+        lbl.font = UIFont(name: "Roboto-Bold", size: 15.0)
         lbl.translatesAutoresizingMaskIntoConstraints=false
         return lbl
     }()

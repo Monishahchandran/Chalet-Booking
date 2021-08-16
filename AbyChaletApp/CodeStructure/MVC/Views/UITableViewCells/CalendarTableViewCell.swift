@@ -12,6 +12,7 @@ class CalendarTableViewCell: UITableViewCell {
     @IBOutlet weak var viewForCalenderContaintView: UIView!
     @IBOutlet weak var viewForCalendar: UIView!
     @IBOutlet weak var viewForReservedInfo: UIView!
+    @IBOutlet weak var lblRedclrReservedTitle: UILabel!
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
     fileprivate let formatter: DateFormatter = {
@@ -22,7 +23,14 @@ class CalendarTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        //Arial Bold 22.0
+        lblRedclrReservedTitle.text = "Red color is (reserved)".localized()
+        if kCurrentLanguageCode == "ar"{
+            lblRedclrReservedTitle?.font = UIFont(name: kFontAlmaraiBold, size: 22)!
+            
+        }else{
+            lblRedclrReservedTitle?.font = UIFont(name: "Arial-BoldMT", size: 22)!
+        }
     }
     
     

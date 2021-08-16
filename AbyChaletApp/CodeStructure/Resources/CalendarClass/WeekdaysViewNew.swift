@@ -30,6 +30,7 @@ class WeekdaysViewNew: UIView {
             lbl.text=daysArr[i]
             lbl.textAlignment = .center
             lbl.textColor = .white
+            lbl.font = UIFont(name: "Roboto-Bold", size: 16.0)
             myStackView.addArrangedSubview(lbl)
         }
     }

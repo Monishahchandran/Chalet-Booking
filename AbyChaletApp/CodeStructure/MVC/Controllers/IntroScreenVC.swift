@@ -16,11 +16,11 @@ class IntroScreenVC: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     var currentPage:Int?
     var scrView = UIScrollView()
-    lazy var introScreenArray1: [IntroScreenStruct] = [
-        IntroScreenStruct(IntroImg: UIImage(named: "img_intro1")!, title: "Open Aby Chalet App", isButtonHide: true),
+    lazy var introScreenArray1: [IntroScreenStruct] = [ //Open Aby Chalet App
+        IntroScreenStruct(IntroImg: UIImage(named: "img_intro1")!, title: "Open Aby Chalet App".localized(), isButtonHide: true),
         IntroScreenStruct(IntroImg: UIImage(named: "img_intro2")!, title: "Select The Date And Find Available chalets".localized(), isButtonHide: true),
         
-        IntroScreenStruct( IntroImg: UIImage(named: "img_intro3")!, title: "Payment", isButtonHide: true),
+        IntroScreenStruct( IntroImg: UIImage(named: "img_intro3")!, title: "Payment".localized(), isButtonHide: true),
         
         IntroScreenStruct(IntroImg: UIImage(named: "img_intro4")!, title: "", isButtonHide: false)
     ]
